@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:fresco="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:fitsSystemWindows="false"
+  app:layout_constraintBottom_toBottomOf="parent">
+
+  <com.google.android.material.card.MaterialCardView
+    android:id="@+id/main_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="60dp"
+    app:cardCornerRadius="10dp"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+    tools:context=".fragment.PlayerFragment">
+
+    <LinearLayout
+      android:id="@+id/player_bar"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical">
+      <SeekBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:clickable="false"
+        android:progress="0"
+        android:progressTint="@color/playing"
+        android:thumb="@android:color/transparent" />
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <androidx.constraintlayout.widget.ConstraintLayout
+          android:layout_width="342dp"
+          android:layout_height="60dp">
+
+          <TextView
+            android:id="@+id/podcast_title"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginStart="16dp"
+            android:autoSizeMaxTextSize="18sp"
+            android:marqueeRepeatLimit="marquee_forever"
+            android:maxEms="18"
+            android:maxLength="42"
+            android:maxLines="1"
+            android:scrollHorizontally="true"
+            android:singleLine="true"
+            android:text="@string/test_podcast_episode_title"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+          android:layout_width="67dp"
+          android:layout_height="62dp">
+
+          <ImageView
+            android:id="@+id/bar_btn_play"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:clickable="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_play" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+      </LinearLayout>
+    </LinearLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+      android:id="@+id/player_content"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+      <!--   play button   -->
+      <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="36dp"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/trackbar">
+        <com.airbnb.lottie.LottieAnimationView
+          android:id="@+id/btn_play_pause"
+          android:layout_width="250dp"
+          android:layout_height="250dp"
+          android:layout_gravity="center"
+          app:lottie_fileName="Lottie_play_pause.json" />
+        <com.airbnb.lottie.LottieAnimationView
+          android:id="@+id/State_loading"
+          android:layout_width="48dp"
+          android:layout_height="48dp"
+          android:layout_gravity="center"
+          android:visibility="gone"
+          app:lottie_fileName="Lottie_loading.json"
+          app:lottie_loop="true" />
+      </FrameLayout>
+
+      <ImageView
+        android:id="@+id/playlist"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginStart="32dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:src="@drawable/ic_playlist"
+        app:layout_constraintBottom_toBottomOf="@+id/lav_prev"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/lav_prev" />
+      <ImageView
+        android:id="@+id/btn_download"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="32dp"
+        android:background="?attr/selectableItemBackground"
+        android:scaleType="centerInside"
+        app:layout_constraintBottom_toBottomOf="@+id/lav_next"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/lav_next"
+        app:srcCompat="@drawable/ic_download" />
+      <ProgressBar
+        android:id="@+id/download_progress"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="32dp"
+        android:background="@android:color/transparent"
+        android:progressTint="@color/colorChecked"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/lav_next"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/lav_next" />
+      <SeekBar
+        android:id="@+id/trackbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:paddingHorizontal="0dp"
+        android:progress="0"
+        android:progressTint="#2196F3"
+        android:thumbTint="#2196F3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Podcast_author" />
+      <TextView
+        android:id="@+id/Track_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/Track_start"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/trackbar"
+        app:layout_constraintTop_toBottomOf="@+id/trackbar" />
+      <TextView
+        android:id="@+id/track_duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@string/Format_time_left"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/Track_start"
+        app:layout_constraintEnd_toEndOf="@+id/trackbar"
+        app:layout_constraintTop_toBottomOf="@+id/trackbar" />
+      <TextView
+        android:id="@+id/Episode_title"
+        android:textStyle="bold"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="18dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:fontFamily="@font/noto_sans"
+        android:text="@string/test_podcast_episode_title"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Episode_cover" />
+      <TextView
+        android:id="@+id/Podcast_author"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="@font/noto_serif"
+        android:text="@string/test_author_en"
+        android:textAllCaps="false"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/Episode_title"
+        app:layout_constraintTop_toBottomOf="@+id/Episode_title"
+        app:layout_constraintVertical_bias="0.0" />
+      <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lav_next"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="32dp"
+        android:layout_gravity="center"
+        android:rotation="180"
+        app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
+        app:layout_constraintStart_toEndOf="@+id/frameLayout"
+        app:layout_constraintTop_toTopOf="@+id/frameLayout"
+        app:layout_constraintVertical_bias="0.50"
+        app:lottie_colorFilter="#4A4A4A"
+        app:lottie_fileName="lottie_play_next_pre.json" />
+      <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lav_prev"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="32dp"
+        android:layout_gravity="center"
+        app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
+        app:layout_constraintEnd_toStartOf="@+id/frameLayout"
+        app:layout_constraintTop_toTopOf="@+id/frameLayout"
+        app:lottie_colorFilter="#4A4A4A"
+        app:lottie_fileName="lottie_play_next_pre.json" />
+      <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/Episode_cover"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:contentDescription="@string/episode_cover_desc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        fresco:actualImageScaleType="centerInside"
+        fresco:placeholderImage="@drawable/test_episode_cover" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+  </com.google.android.material.card.MaterialCardView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

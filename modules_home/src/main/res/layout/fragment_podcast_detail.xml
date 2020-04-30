@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:fresco="http://schemas.android.com/apk/res-auto"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:id="@+id/Podcast_detail">
+
+  <androidx.core.widget.NestedScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="50dp"
+    android:background="#FFFFFF"
+    android:fillViewport="true">
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical">
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <CheckBox
+          android:id="@+id/Subscribe_check"
+          style="@android:style/Widget.Material.Light.CompoundButton.CheckBox"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:checked="false"
+          android:text="@string/btn_subscribe"
+          app:layout_constraintBottom_toBottomOf="@+id/Podcast_Title"
+          app:layout_constraintStart_toEndOf="@+id/Podcast_Title"
+          app:layout_constraintTop_toTopOf="@+id/Podcast_Title"
+          app:layout_constraintVertical_bias="0.50" />
+        <ImageView
+          android:id="@+id/Sort_btn"
+          android:layout_width="32dp"
+          android:layout_height="32dp"
+          android:layout_marginEnd="16dp"
+          android:clickable="true"
+          android:src="@drawable/ic_sort"
+          app:layout_constraintBottom_toBottomOf="@+id/Episode_label"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="@+id/Episode_label" />
+        <TextView
+          android:id="@+id/Podcast_Author"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:text="@string/test_author_en"
+          android:textColor="@android:color/primary_text_light_nodisable"
+          android:textSize="16sp"
+          app:layout_constraintStart_toStartOf="@+id/Podcast_Title"
+          app:layout_constraintTop_toBottomOf="@+id/Podcast_Title" />
+
+        <TextView
+          android:id="@+id/Podcast_Title"
+          android:textStyle="bold"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="32dp"
+          android:layout_marginStart="16dp"
+          android:fontFamily="@font/noto_sans"
+          android:maxEms="6"
+          android:maxLength="6"
+          android:maxLines="2"
+          android:text="@string/test_title_cn"
+          android:textColor="@android:color/primary_text_light_nodisable"
+          android:textSize="20sp"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+          android:id="@+id/Podcast_intro"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="40dp"
+          android:layout_marginStart="16dp"
+          android:layout_marginEnd="16dp"
+          android:fontFamily="@font/noto_sans"
+          android:text="@string/test_podcast_detail_introduction"
+          android:textSize="14sp"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintHorizontal_bias="1.0"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/Podcast_Author" />
+
+        <TextView
+          android:id="@+id/Episode_label"
+          android:textStyle="bold"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="40dp"
+          android:layout_marginStart="16dp"
+          android:text="@string/Episode_label"
+          android:textColor="@android:color/primary_text_light_nodisable"
+          android:textSize="18sp"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/Podcast_intro" />
+
+        <androidx.recyclerview.widget.RecyclerView
+          android:id="@+id/Podcast_Episodes"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:layout_marginBottom="32dp"
+          android:layout_marginStart="16dp"
+          android:layout_marginEnd="16dp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintHorizontal_bias="0.0"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/Episode_label"
+          app:layout_constraintVertical_bias="1.0" />
+
+        <com.facebook.drawee.view.SimpleDraweeView
+          android:id="@+id/Podcast_logo"
+          android:layout_width="@dimen/Podcast_detail_logo_size"
+          android:layout_height="@dimen/Podcast_detail_logo_size"
+          android:layout_marginTop="32dp"
+          android:layout_marginEnd="24dp"
+          android:contentDescription="@string/logo_description"
+          android:scaleType="fitStart"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          fresco:placeholderImage="@drawable/test_podcast_logo"
+          fresco:roundedCornerRadius="5dp" />
+
+      </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+  </androidx.core.widget.NestedScrollView>
+</FrameLayout>

@@ -1,0 +1,30 @@
+<resources>
+  <string name="app_name">Bocast User Center</string>
+
+  <!-- TODO: Remove or change this placeholder text -->
+  <string name="hello_blank_fragment">Hello blank fragment</string>
+  <string name="Using_without_login">Login please</string>
+  <string name="User_center_Subscribed_option">Subscribed</string>
+  <string name="User_center_Settings_option">Settings</string>
+  <string name="User_center_history_option">History</string>
+  <string name="User_center_download_option">Download</string>
+  <string name="test_email">embrace@weareones.com</string>
+  <!-- Preference Titles -->
+  <string name="messages_header">Messages</string>
+  <string name="sync_header">Sync</string>
+
+  <!-- Messages Preferences -->
+  <string name="signature_title">Your signature</string>
+  <string name="reply_title">Default reply action</string>
+
+  <!-- Sync Preferences -->
+  <string name="sync_title">Sync email periodically</string>
+  <string name="attachment_title">Download incoming attachments</string>
+  <string name="attachment_summary_on">Automatically download attachments for incoming emails
+  </string>
+  <string name="attachment_summary_off">Only download attachments when manually requested</string>
+  <string name="History_day">Mar 28</string>
+  <string name="progress"> 60%</string>
+  <string name="item_delete">Delete</string>
+  <string name="item_undo">Undo</string>
+</resources>

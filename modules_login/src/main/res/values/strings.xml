@@ -1,0 +1,23 @@
+<resources>
+  <string name="app_name">modules_login</string>
+  <!-- Strings related to login -->
+  <string name="prompt_account">Email / Username</string>
+  <string name="prompt_password">Password</string>
+  <string name="action_sign_up">Sign up</string>
+  <string name="action_login">Login</string>
+  <string name="welcome_back">Welcome back</string>
+  <string name="welcome">Welcome! Enjoy your podcasts now</string>
+  <string name="invalid_username">Not a valid username</string>
+  <string name="invalid_password">Password must be >5 characters</string>
+  <string name="login_failed">"Login failed"</string>
+  <string name="account_text">Don\'t have an account?</string>
+
+  <!-- TODO: Remove or change this placeholder text -->
+  <string name="hello_blank_fragment">Hello blank fragment</string>
+  <string name="sign_up_title">Create an account</string>
+  <string name="promot_username">Username</string>
+  <string name="promot_email">Email</string>
+  <string name="Sign_up_quit_text">Already have an account？</string>
+  <string name="signup_failed">Sign up failed</string>
+  <string name="invalid_email" />
+</resources>

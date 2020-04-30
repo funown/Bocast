@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:fresco="http://schemas.android.com/apk/res-auto"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/to_detail"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:background="?android:attr/selectableItemBackground"
+    fresco:layout_constraintBottom_toBottomOf="parent"
+    fresco:layout_constraintEnd_toStartOf="@+id/constraintLayout2"
+    fresco:layout_constraintStart_toStartOf="parent"
+    fresco:layout_constraintTop_toTopOf="parent"
+    fresco:layout_constraintVertical_bias="0.0">
+
+    <TextView
+      android:id="@+id/podcast"
+      android:textStyle="bold"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="8dp"
+      android:ellipsize="marquee"
+      android:fontFamily="@font/noto_sans"
+      android:maxEms="16"
+      android:maxLength="16"
+      android:singleLine="true"
+      android:text="@string/test_title_cn"
+      android:textSize="18sp"
+      app:layout_constraintBottom_toTopOf="@+id/author"
+      app:layout_constraintStart_toStartOf="@+id/guideline5"
+      app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+      android:id="@+id/author"
+      android:textStyle="bold"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:fontFamily="@font/noto_sans"
+      android:text="@string/test_author_en"
+      android:typeface="normal"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/podcast"
+      fresco:layout_constraintStart_toStartOf="@+id/podcast" />
+    <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline5"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_begin="80dp" />
+    <com.facebook.drawee.view.SimpleDraweeView
+      android:id="@+id/Podcast_logo"
+      android:layout_width="60dp"
+      android:layout_height="60dp"
+      android:layout_marginTop="8dp"
+      android:layout_marginBottom="8dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="@+id/guideline5"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      fresco:placeholderImage="@drawable/test_podcast_logo" />
+  </androidx.constraintlayout.widget.ConstraintLayout>
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/constraintLayout2"
+    android:layout_width="wrap_content"
+    android:layout_height="0dp"
+    fresco:layout_constraintBottom_toBottomOf="parent"
+    fresco:layout_constraintEnd_toEndOf="parent"
+    fresco:layout_constraintHorizontal_bias="0.704"
+    fresco:layout_constraintStart_toEndOf="@+id/to_detail"
+    fresco:layout_constraintTop_toTopOf="parent">
+
+    <ImageView
+      android:id="@+id/delete"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginEnd="16dp"
+      android:clickable="true"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      app:srcCompat="@drawable/ic_delete"
+      fresco:layout_constraintStart_toStartOf="parent" />
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

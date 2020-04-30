@@ -1,0 +1,13 @@
+<resources>
+  <string name="app_name">Bocast Home</string>
+  <string name="podcast_logo">Podcast Logo</string>
+  <string name="Episode_label">EPISODES</string>
+
+  <!-- TODO: Remove or change this placeholder text -->
+  <string name="hello_blank_fragment">Hello blank fragment</string>
+  <string name="logo_description">podcast\'s logo</string>
+  <string name="btn_play">play</string>
+  <string name="Home_panel_Subscribed_Section">Subscribed Podcasts</string>
+  <string name="Home_panel_Recommend_Section">Recommendation</string>
+  <string name="Recommendation_section_title">Podcasts in </string>
+</resources>

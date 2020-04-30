@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">Bocast Resource Library</string>
+    <string name="test_title_cn">迟早更新</string>
+    <string name="test_title_en">left-right</string>
+    <string name="test_author_en">ones ventures</string>
+
+    <string name="test_podcast_detail_introduction">*</string>
+    <string name="test_podcast_episode_title">Not selected Episode</string>
+    <string name="test_podcast_episode_update_time">Feb 1,2020 · 24mins</string>
+    <string name="test_shownotes">
+        <![CDATA[
+<p>2020 开头的这场疫病，不仅抢过了庚子年春节的主调，也注定会成为日后我们构建集体记忆和文化身份的注脚。我们会以什么方式去描述它，也就是我们会以什么方式来描述自己。</p>
+<p>Show Notes:</p>
+<ul>
+ <li><a href="https://book.douban.com/subject/2157402" rel="nofollow">潘国灵的书《城市學2：香港文化研究》</a></li>
+ <li><a href="https://hk.news.appledaily.com/local/daily/article/20150222/19050701" rel="nofollow">袁柏恩的报道《時代廣場 PageOne 後日結業》</a></li>
+ <li><a href="https://podcast.weareones.com/40" rel="nofollow">《迟早更新》#40「迟早过年」·《论家用电器》</a></li>
+ <li><a href="https://book.douban.com/subject/26669641" rel="nofollow">汪民安的书《身体，空间与后现代性》</a></li>
+ <li><a href="https://book.douban.com/subject/1064734" rel="nofollow">苏珊·桑塔格的书《疾病的隐喻》</a></li>
+ <li><a href="https://m.weibo.cn/search?containerid=231522type%3D1%26t%3D10%26q%3D%23%E6%80%8E%E4%B9%88%E5%8A%9D%E8%AF%B4%E7%88%B6%E6%AF%8D%E6%88%B4%E5%8F%A3%E7%BD%A9%23&extparam=%23%E6%80%8E%E4%B9%88%E5%8A%9D%E8%AF%B4%E7%88%B6%E6%AF%8D%E6%88%B4%E5%8F%A3%E7%BD%A9%23&luicode=10000011&lfid=1005053743149912" rel="nofollow">「怎么劝说父母戴口罩」的微博热搜标签页面</a></li>
+ <li><a href="https://book.douban.com/subject/1056023" rel="nofollow">阿尔贝·加缪的《鼠疫》（La Paste）</a></li>
+ <li><a href="http://epaper.tianjinwe.com/tjrb/html/2020-01/28/content_151_2249422.htm" rel="nofollow">徐杨的报道《我市启动战时机制 成立疫情医疗救治总医院 统筹全市医疗机构和卫生资源 打造全行业一盘棋共同战「疫」格局》</a></li>
+ <li><a href="https://book.douban.com/subject/1037148" rel="nofollow">埃米尔·涂尔干的书《社会分工论》（De la Division du Travail Social）</a></li>
+ <li><a href="https://zh.wikipedia.org/wiki/%E9%A6%99%E6%B8%AF%E7%89%B9%E5%88%A5%E8%A1%8C%E6%94%BF%E5%8D%80%E5%9F%BA%E6%9C%AC%E6%B3%95%E7%AC%AC%E4%BA%8C%E5%8D%81%E4%B8%89%E6%A2%9D" rel="nofollow">《中华人民共和国香港特别行政区基本法》第 23 条的维基百科页面</a></li>
+ <li><a href="https://m.weibo.cn/search?containerid=231522type%3D1%26t%3D10%26q%3D%23%E7%A7%91%E6%AF%94%E5%8E%BB%E4%B8%96%23&extparam=%23%E7%A7%91%E6%AF%94%E5%8E%BB%E4%B8%96%23&luicode=10000011&lfid=1076032674977220&featurecode=newtitle%3F" rel="nofollow">「科比去世」的微博热搜标签页面</a></li>
+ <li><a href="https://movie.douban.com/subject/1305257" rel="nofollow">赵良骏导演的电影《金鸡 2》</a></li>
+ <li><a href="https://www.youtube.com/watch?v=8_lEh68F3ZY" rel="nofollow">林奕华、胡恩威导演的话剧《東宮西宮之 2046 特首不見了》</a></li>
+ <li><a href="https://book.douban.com/subject/4215534" rel="nofollow">李纯恩的书《最是瘟疫難捨時》（前称《张大明非礼事件》）</a></li>
+ <li><a href="http://www.huayuqiao.org/LLM/LLM-1819/LLM181909.htm" rel="nofollow">钟梦婷的文章《「香港無故事？」──從後殖民理論再思陳冠中〈金都茶餐廳〉》</a></li>
+ <li><a href="https://www.info.gov.hk/gia/general/200407/07/0707333.htm" rel="nofollow">董建华宣布卫生福利及食物局局长请辞的谈话全文</a></li>
+ <li><a href="https://www.hkmms.org.hk/zh/explore-now/resources-publications/sars-oral-history-archive" rel="nofollow">「十年回望」 香港医学博物馆沙士口述历史档案精选页面</a></li>
+ </ul>
+ <p>主播：任宁</p>
+ <hr>
+ <p>「迟早更新」是一档探讨科技、商业、设计和生活之间混沌关系的播客节目，也是风险基金 ONES Ventures 关于热情、趣味和好奇心的音频记录。
+ 我们希望通过这档播客，能让熟悉的事物变得新鲜，让新鲜的事物变得熟悉。</p>
+ <p>官网：<a href="https://podcast.weareones.com" rel="nofollow">https://podcast.weareones.com</a>
+ <br>
+  微博：<a href="http://weibo.com/chizaogengxin" rel="nofollow">http://weibo.com/chizaogengxin</a></p>
+  <p>如果有任何问题或反馈，欢迎发电子邮件至 <a href="mailto:embrace@weareones.com" rel="nofollow">embrace@weareones.com</a>。</p>
+]]>
+    </string>
+    <string name="btn_subscribe">SUBSCRIBE</string>
+
+    <string name="iTunes_Module">http://www.itunes.com/dtds/podcast-1.0.dtd</string>
+    <string name="item_deleted">Item deleted</string>
+    <string name="item_undo">Undo</string>
+  <string name="Download_error">Download Failed</string>
+</resources>

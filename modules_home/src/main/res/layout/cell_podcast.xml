@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:fresco="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="wrap_content"
+  android:layout_height="wrap_content"
+  android:foreground="?android:attr/selectableItemBackground">
+
+    <com.google.android.material.card.MaterialCardView
+      android:layout_width="108dp"
+      android:layout_height="150dp"
+      android:layout_marginTop="16dp"
+      android:layout_marginBottom="16dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="8dp"
+      android:clickable="true"
+      app:cardCornerRadius="10dp"
+      app:cardElevation="8dp"
+      android:foreground="?attr/selectableItemBackground"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+          android:id="@+id/podcast_card"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:clickable="true">
+
+            <TextView
+              android:id="@+id/podcast_title"
+              android:textStyle="bold"
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="8dp"
+              android:layout_marginStart="8dp"
+              android:layout_marginEnd="8dp"
+              android:fontFamily="@font/noto_sans"
+              android:maxEms="10"
+              android:maxLines="2"
+              android:text="@string/test_title_cn"
+              android:textColor="@android:color/primary_text_light_nodisable"
+              android:textSize="14sp"
+              app:layout_constraintBottom_toTopOf="@+id/podcast_author"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintHorizontal_bias="0.08"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toBottomOf="@+id/podcast_logo" />
+
+            <TextView
+              android:id="@+id/podcast_author"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="8dp"
+              android:layout_marginBottom="16dp"
+              android:fontFamily="@font/noto_sans"
+              android:maxEms="10"
+              android:maxLines="1"
+              android:text="@string/test_author_en"
+              android:textColor="@android:color/primary_text_light_nodisable"
+              android:textSize="10sp"
+              android:typeface="sans"
+              app:layout_constraintBottom_toBottomOf="parent"
+              app:layout_constraintStart_toStartOf="@+id/podcast_title"
+              app:layout_constraintTop_toBottomOf="@+id/podcast_title" />
+
+            <com.facebook.drawee.view.SimpleDraweeView
+              android:id="@+id/podcast_logo"
+              android:layout_width="60dp"
+              android:layout_height="60dp"
+              android:layout_marginTop="12dp"
+              android:layout_marginBottom="8dp"
+              android:contentDescription="@string/podcast_logo"
+              app:layout_constraintBottom_toTopOf="@+id/podcast_title"
+              app:layout_constraintEnd_toEndOf="parent"
+              app:layout_constraintStart_toStartOf="parent"
+              app:layout_constraintTop_toTopOf="parent"
+              fresco:roundedCornerRadius="5dp"
+              fresco:placeholderImage="@drawable/test_podcast_logo" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

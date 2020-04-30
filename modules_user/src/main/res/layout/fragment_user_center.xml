@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:id="@+id/UserCenter"
+  android:background="#FFFFFF"
+  tools:context=".fragment.UserCenterFragment">
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+      android:id="@+id/linearLayout"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:orientation="vertical"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="@+id/guideline3"
+      app:layout_constraintHorizontal_bias="0.0"
+      app:layout_constraintStart_toStartOf="@+id/guideline2"
+      app:layout_constraintTop_toTopOf="@+id/guideline">
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/subscribed"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:contentDescription="@string/User_center_Subscribed_option">
+
+        <ImageView
+          android:id="@+id/Subscribed_icon"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:src="@drawable/ic_subscribed"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+          android:id="@+id/Option_Subscribed"
+          android:textStyle="bold"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:alpha="0.80"
+          android:fontFamily="@font/noto_sans"
+          android:text="@string/User_center_Subscribed_option"
+          android:textColor="?android:attr/actionMenuTextColor"
+          android:textSize="18sp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toEndOf="@+id/Subscribed_icon"
+          app:layout_constraintTop_toTopOf="parent" />
+      </androidx.constraintlayout.widget.ConstraintLayout>
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/download"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:contentDescription="@string/User_center_download_option">
+
+        <ImageView
+          android:id="@+id/Download_icon"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:src="@drawable/ic_download"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+          android:id="@+id/Option_Download"
+          android:textStyle="bold"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:alpha="0.80"
+          android:fontFamily="@font/noto_sans"
+          android:text="@string/User_center_download_option"
+          android:textColor="?android:attr/actionMenuTextColor"
+          android:textSize="18sp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toEndOf="@+id/Download_icon"
+          app:layout_constraintTop_toTopOf="parent" />
+      </androidx.constraintlayout.widget.ConstraintLayout>
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/history"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:contentDescription="@string/User_center_history_option">
+
+        <ImageView
+          android:id="@+id/History_icon"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:src="@drawable/ic_history"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+          android:id="@+id/Option_History"
+          android:textStyle="bold"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:alpha="0.80"
+          android:fontFamily="@font/noto_sans"
+          android:text="@string/User_center_history_option"
+          android:textColor="?android:attr/actionMenuTextColor"
+          android:textSize="18sp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toEndOf="@+id/History_icon"
+          app:layout_constraintTop_toTopOf="parent" />
+      </androidx.constraintlayout.widget.ConstraintLayout>
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/settings"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:contentDescription="@string/User_center_Settings_option">
+
+        <ImageView
+          android:id="@+id/Settings_icon"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:src="@drawable/ic_shezhi"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+          android:id="@+id/Option_Settings"
+          android:textStyle="bold"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="16dp"
+          android:alpha="0.80"
+          android:fontFamily="@font/noto_sans"
+          android:text="@string/User_center_Settings_option"
+          android:textColor="?android:attr/actionMenuTextColor"
+          android:textSize="18sp"
+          app:layout_constraintBottom_toBottomOf="parent"
+          app:layout_constraintStart_toEndOf="@+id/Settings_icon"
+          app:layout_constraintTop_toTopOf="parent" />
+      </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+<!--    <TextView-->
+<!--      android:id="@+id/Username"-->
+<!--      android:textStyle="bold"-->
+<!--      android:layout_width="wrap_content"-->
+<!--      android:layout_height="wrap_content"-->
+
+<!--      android:layout_marginStart="16dp"-->
+<!--      android:fontFamily="@font/noto_sans"-->
+<!--      android:text="@string/test_title_cn"-->
+<!--      android:textAlignment="viewStart"-->
+<!--      android:textSize="18sp"-->
+<!--      app:layout_constraintStart_toEndOf="@+id/Avatar"-->
+<!--      app:layout_constraintTop_toTopOf="@+id/Avatar" />-->
+<!--    <TextView-->
+<!--      android:id="@+id/Login"-->
+<!--      android:textStyle="bold"-->
+<!--      android:layout_width="wrap_content"-->
+<!--      android:layout_height="wrap_content"-->
+<!--      android:layout_marginStart="16dp"-->
+<!--      android:clickable="true"-->
+<!--      android:fontFamily="@font/noto_sans"-->
+<!--      android:text="@string/Using_without_login"-->
+<!--      android:textAllCaps="true"-->
+<!--      android:textSize="18sp"-->
+<!--      android:visibility="gone"-->
+<!--      app:layout_constraintBottom_toBottomOf="@+id/Avatar"-->
+<!--      app:layout_constraintStart_toEndOf="@+id/Avatar"-->
+<!--      app:layout_constraintTop_toTopOf="@+id/Avatar" />-->
+<!--    <TextView-->
+<!--      android:id="@+id/textView4"-->
+<!--      android:textStyle="bold"-->
+<!--      android:layout_width="wrap_content"-->
+<!--      android:layout_height="wrap_content"-->
+<!--      android:fontFamily="@font/noto_sans"-->
+<!--      android:text="@string/test_email"-->
+<!--      android:textSize="16sp"-->
+<!--      app:layout_constraintBottom_toBottomOf="@+id/Avatar"-->
+<!--      app:layout_constraintStart_toStartOf="@+id/Username" />-->
+    <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline4"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_begin="180dp" />
+    <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_begin="16dp" />
+    <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline2"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_begin="16dp" />
+    <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline3"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      app:layout_constraintGuide_end="16dp" />
+<!--    <de.hdodenhof.circleimageview.CircleImageView-->
+<!--      android:id="@+id/Avatar"-->
+<!--      android:layout_width="60dp"-->
+<!--      android:layout_height="60dp"-->
+<!--      android:layout_marginStart="32dp"-->
+<!--      android:src="@drawable/test_podcast_logo"-->
+<!--      app:layout_constraintBottom_toTopOf="@+id/guideline4"-->
+<!--      app:layout_constraintStart_toStartOf="@+id/guideline2"-->
+<!--      app:layout_constraintTop_toTopOf="@+id/guideline" />-->
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

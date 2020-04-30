@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="#FFFFFF"
+  android:id="@+id/Subscribed_Fragment"
+  tools:context=".fragment.SubscribedPodcastFragment">
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <TextView
+      android:id="@+id/title"
+      android:textStyle="bold"
+      android:layout_width="98dp"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="16dp"
+      android:fontFamily="@font/noto_sans"
+      android:text="@string/User_center_Subscribed_option"
+      android:textSize="18sp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent" />
+    <View
+      android:id="@+id/divider3"
+      android:layout_width="409dp"
+      android:layout_height="1dp"
+      android:layout_marginTop="16dp"
+      android:background="?android:attr/listDivider"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/title" />
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/SubscribedPanel"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="1.0"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/divider3" />
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

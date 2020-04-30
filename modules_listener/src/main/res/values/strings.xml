@@ -1,0 +1,14 @@
+<resources>
+  <string name="app_name">Bocast Listener</string>
+
+  <!-- TODO: Remove or change this placeholder text -->
+  <string name="hello_blank_fragment">Hello blank fragment</string>
+  <string name="episode_cover_desc">Episode Cover</string>
+  <string name="Track_start">0:00</string>
+  <string name="Format_time_left">-1:00 </string>
+  <string name="Track_speed">1.0x</string>
+  <string name="Track_speed_prefix">x</string>
+  <string name="download_button">download</string>
+  <string name="duration">1 hour 20 min</string>
+  <string name="item_undo">Undo</string>
+</resources>

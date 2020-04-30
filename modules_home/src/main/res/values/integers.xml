@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <integer name="recommendation_num">8</integer>
+  <integer name="recommendation_page">3</integer>
+  <integer name="recommendation_page_size">12</integer>
+</resources>

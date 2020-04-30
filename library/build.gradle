@@ -1,0 +1,139 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion rootProject.ext.android["compileSdkVersion"]
+    buildToolsVersion rootProject.ext.android["buildToolsVersion"]
+
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.android["minSdkVersion"]
+        targetSdkVersion rootProject.ext.android["targetSdkVersion"]
+        versionCode rootProject.ext.android["versionCode"]
+        versionName rootProject.ext.android["versionName"]
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles 'consumer-rules.pro'
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [AROUTER_MODULE_NAME: project.getName()]
+            }
+        }
+
+        multiDexEnabled true
+
+        ndk {
+            abiFilters "armeabi"
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'lib/armeabi/libtbs.so'
+        pickFirst 'rome-utils-1.12.2.jar'
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    api 'androidx.paging:paging-runtime:2.1.2'
+    api 'com.google.android.material:material:1.2.0-alpha05'
+    api 'com.google.android.gms:play-services-cast:18.1.0'
+    api 'com.google.android.gms:play-services-cast-framework:18.1.0'
+    api "androidx.viewpager2:viewpager2:1.0.0"
+
+    // Room
+    def room_version = "2.2.2"
+
+    api "androidx.room:room-runtime:2.2.5"
+    annotationProcessor "androidx.room:room-compiler:2.2.5"
+    testImplementation "androidx.room:room-testing:2.2.5"
+
+    implementation project(":library_res")
+//    api(rootProject.ext.dependencies["Rome-modules"]) {
+//        exclude module: "rome-utils"
+//    }
+    api rootProject.ext.dependencies["Retrofit-Simplexml"]
+//    api rootProject.ext.dependencies["PodEngine"]
+
+    api rootProject.ext.dependencies["RxJava"]
+    api rootProject.ext.dependencies["adapter-rxjava"]
+    api rootProject.ext.dependencies["okhttp"]
+    api rootProject.ext.dependencies["retrofit"]
+    api rootProject.ext.dependencies["Logging Interceptor"]
+
+    api rootProject.ext.dependencies["kxt"]
+    api rootProject.ext.dependencies["Sqlite"]
+    api rootProject.ext.dependencies["Okdownload"]
+    api rootProject.ext.dependencies["Filedownloader"]
+
+    api rootProject.ext.dependencies["router"]
+    annotationProcessor rootProject.ext.dependencies["router-compiler"]
+
+    api rootProject.ext.dependencies["lottie"]
+    api rootProject.ext.dependencies["CircleImageView"]
+    api rootProject.ext.dependencies["PlayPauseButton"]
+//    implementation rootProject.ext.dependencies['BubbleSeekBar']
+
+    api rootProject.ext.dependencies["Gson"]
+    api rootProject.ext.dependencies["gson-converter"]
+    api rootProject.ext.dependencies["scalars-converter"]
+    api rootProject.ext.dependencies["tikxml-core"]
+    api rootProject.ext.dependencies["tikxml-converter"]
+    api rootProject.ext.dependencies["tikxml-annotation"]
+    annotationProcessor rootProject.ext.dependencies["tikxml-processor"]
+
+    api rootProject.ext.dependencies["ExoPlayer"]
+    api rootProject.ext.dependencies["ExoPlayer-okhttp"]
+    api rootProject.ext.dependencies["ExoPlayer-mediasession"]
+    api rootProject.ext.dependencies["SlideupPannel"]
+    api rootProject.ext.dependencies["Starrysky"]
+
+    api rootProject.ext.dependencies["Markdown-core"]
+    api rootProject.ext.dependencies["Markdown-html"]
+    api rootProject.ext.dependencies["Markdown-linkify"]
+
+    api rootProject.ext.dependencies["bmob-sdk"]
+    api rootProject.ext.dependencies["Okio"]
+    api rootProject.ext.dependencies["Rxandroid"]
+    api rootProject.ext.dependencies["SoulPermission"]
+
+    api rootProject.ext.dependencies["Fresco"]
+    api 'androidx.paging:paging-runtime:2.1.2'
+    api 'androidx.cardview:cardview:1.0.0'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    api 'androidx.work:work-runtime:2.4.0-alpha02'
+}
+repositories {
+    mavenCentral()
+}

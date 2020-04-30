@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:fresco="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:id="@+id/Episode_detail">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="50dp"
+    android:background="#FFFFFF">
+
+    <androidx.cardview.widget.CardView
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="@+id/guideline6">
+
+      <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+          android:id="@+id/Episode_Title"
+          android:textStyle="bold"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:layout_marginStart="24dp"
+          android:layout_marginEnd="24dp"
+          android:fontFamily="@font/noto_sans"
+          android:lineSpacingExtra="4sp"
+          android:text="@string/test_podcast_episode_title"
+          android:textAlignment="textStart"
+          android:textSize="20sp"
+          app:layout_constraintBottom_toTopOf="@+id/guideline8"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintHorizontal_bias="0.9"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+          android:id="@+id/Podcast_author"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:text="@string/test_author_en"
+          android:textColor="@color/design_default_color_primary"
+          android:textSize="16sp"
+          app:layout_constraintStart_toStartOf="@+id/Episode_Title"
+          app:layout_constraintTop_toBottomOf="@+id/Episode_Title" />
+
+        <TextView
+          android:id="@+id/pubDate"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="8dp"
+          android:text="@string/test_podcast_episode_update_time"
+          android:textSize="16sp"
+          app:layout_constraintBottom_toBottomOf="@+id/Podcast_author"
+          app:layout_constraintStart_toEndOf="@+id/Podcast_author"
+          app:layout_constraintTop_toTopOf="@+id/Podcast_author" />
+
+        <WebView
+          android:id="@+id/ShowNotes"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="24dp"
+          android:layout_marginStart="16dp"
+          android:layout_marginEnd="16dp"
+          app:layout_constraintEnd_toEndOf="parent"
+          app:layout_constraintStart_toStartOf="parent"
+          app:layout_constraintTop_toBottomOf="@+id/Podcast_author" />
+
+        <androidx.constraintlayout.widget.Guideline
+          android:id="@+id/guideline8"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal"
+          app:layout_constraintGuide_percent="0.2" />
+
+
+      </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline6"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_percent="0.28" />
+
+    <com.facebook.drawee.view.SimpleDraweeView
+      android:id="@+id/imageView"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:scaleType="centerInside"
+      app:layout_constraintBottom_toTopOf="@+id/guideline6"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="parent"
+      fresco:actualImageScaleType="centerInside"
+      fresco:placeholderImage="@drawable/test_episode_cover" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</FrameLayout>

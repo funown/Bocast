@@ -39,6 +39,7 @@ import per.funown.bocast.library.constant.ArouterConstant;
 import per.funown.bocast.library.download.BaseDownloadListener;
 import per.funown.bocast.library.download.DownloadFactory;
 import per.funown.bocast.library.download.DownloadStatus;
+import per.funown.bocast.library.utils.FragmentTransitionUtil;
 import per.funown.bocast.modules.listener.R;
 import per.funown.bocast.modules.listener.viewmodel.PlayerViewModel;
 import per.funown.bocast.modules.listener.databinding.FragmentPlayerBinding;
@@ -175,15 +176,6 @@ public class PlayerFragment extends Fragment {
       if (instance.isPlaying()) {
         binding.btnPlayPause.setProgress(0.5f);
       }
-
-      binding.EpisodeTitle.setOnClickListener(new OnClickListener() {
-        @Override
-        public void onClick(View v) {
-          Fragment todetail = (Fragment) ARouter.getInstance()
-              .build(ArouterConstant.FRAGMENT_PODCAST_EPISODE_DETAIL)
-              .withString("feed", songInfo.getDescription()).navigation();
-        }
-      });
     } else {
       binding.progressBar.setProgress(0);
       binding.trackbar.setProgress(0);
@@ -215,7 +207,17 @@ public class PlayerFragment extends Fragment {
         instance.playMusic();
       }
     });
-
+    binding.EpisodeTitle.setOnClickListener(v -> {
+      SongInfo songInfo = instance.getNowPlayingSongInfo();
+      if (songInfo != null) {
+        Fragment todetail = (Fragment) ARouter.getInstance()
+            .build(ArouterConstant.FRAGMENT_PODCAST_EPISODE_DETAIL)
+            .withString("feed", songInfo.getDescription())
+            .withString("guid", songInfo.getSongId()).navigation();
+        FragmentTransitionUtil.getINSTANCE().setManager(getActivity().getSupportFragmentManager());
+        FragmentTransitionUtil.getINSTANCE().transit(todetail);
+      }
+    });
     binding.trackbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
       @Override
       public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {

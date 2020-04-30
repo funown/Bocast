@@ -183,6 +183,7 @@
         android:layout_marginTop="18dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:clickable="true"
         android:fontFamily="@font/noto_sans"
         android:text="@string/test_podcast_episode_title"
         android:textSize="18sp"

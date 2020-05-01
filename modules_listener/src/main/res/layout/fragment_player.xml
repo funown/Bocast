@@ -24,14 +24,6 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="vertical">
-      <SeekBar
-        android:id="@+id/progressBar"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:clickable="false"
-        android:progress="0"
-        android:progressTint="@color/playing"
-        android:thumb="@android:color/transparent" />
       <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -76,6 +68,14 @@
             app:srcCompat="@drawable/ic_play" />
         </androidx.constraintlayout.widget.ConstraintLayout>
       </LinearLayout>
+      <SeekBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:clickable="false"
+        android:progress="0"
+        android:progressTint="@color/playing"
+        android:thumb="@android:color/transparent" />
     </LinearLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/player_content"
@@ -131,17 +131,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/lav_next"
         app:srcCompat="@drawable/ic_download" />
-      <ProgressBar
-        android:id="@+id/download_progress"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginEnd="32dp"
-        android:background="@android:color/transparent"
-        android:progressTint="@color/colorChecked"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/lav_next"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/lav_next" />
       <SeekBar
         android:id="@+id/trackbar"
         android:layout_width="0dp"
@@ -244,6 +233,25 @@
         app:layout_constraintTop_toTopOf="parent"
         fresco:actualImageScaleType="centerInside"
         fresco:placeholderImage="@drawable/test_episode_cover" />
+      <me.tankery.lib.circularseekbar.CircularSeekBar
+        android:id="@+id/download_progress"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="32dp"
+        android:background="@android:color/transparent"
+        android:indeterminateDrawable="@drawable/progressbar"
+        android:visibility="gone"
+        app:cs_circle_progress_color="@color/colorChecked"
+        app:cs_circle_stroke_width="3dp"
+        app:cs_circle_style="round"
+        app:cs_disable_pointer="true"
+        app:cs_end_angle="45"
+        app:cs_maintain_equal_circle="true"
+        app:cs_circle_color = "@color/colorYUNFENGBAI"
+        app:cs_start_angle="-225"
+        app:layout_constraintBottom_toBottomOf="@+id/lav_next"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/lav_next" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
   </com.google.android.material.card.MaterialCardView>

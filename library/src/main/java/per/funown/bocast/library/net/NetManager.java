@@ -2,8 +2,8 @@ package per.funown.bocast.library.net;
 
 import android.util.Log;
 
-import okhttp3.Cache;
-import okhttp3.Dispatcher;
+import com.tickaroo.tikxml.TikXml;
+import com.tickaroo.tikxml.retrofit.TikXmlConverterFactory;
 import okhttp3.OkHttpClient.Builder;
 
 import java.util.concurrent.TimeUnit;
@@ -12,7 +12,11 @@ import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import per.funown.bocast.library.BuildConfig;
 import per.funown.bocast.library.net.service.ItunesApiService;
+import per.funown.bocast.library.net.service.iTunesRssTopPodcastService;
+import per.funown.bocast.library.net.service.RssService;
+import retrofit2.Converter;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -29,7 +33,6 @@ public class NetManager {
   private static NetManager Instance;
 
   private Retrofit retrofit;
-  private Retrofit rssRetrofit;
   private OkHttpClient.Builder builder;
 
   private volatile static NetworkState networkState;
@@ -47,8 +50,6 @@ public class NetManager {
         .client(builder.build())
         .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(ApiConfig.ITUNES_BASE_URL)
-        .build();
-    rssRetrofit = new Retrofit.Builder().baseUrl(ApiConfig.ITUNES_BASE_URL).client(builder.build())
         .build();
     itunesApiService = retrofit.create(ItunesApiService.class);
     networkState = NetworkState.LOADED;
@@ -69,8 +70,19 @@ public class NetManager {
     return retrofit;
   }
 
-  public Retrofit getRssRetrofit() {
+  public Retrofit getRssRetrofit(String baseUrl, Converter.Factory factory) {
+    Retrofit rssRetrofit = new Retrofit.Builder().client(builder.build()).baseUrl(baseUrl)
+        .addConverterFactory(factory)
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        .build();
     return rssRetrofit;
+  }
+
+  public RssService getRssService(String baseUrl) {
+    TikXml build = new TikXml.Builder().exceptionOnUnreadXml(false).build();
+    Retrofit rssRetrofit = getRssRetrofit(baseUrl, TikXmlConverterFactory.create(build));
+    RssService rssService = rssRetrofit.create(RssService.class);
+    return rssService;
   }
 
   public void setNetworkState(NetworkState networkState) {
@@ -83,5 +95,11 @@ public class NetManager {
 
   public ItunesApiService getItunesApiService() {
     return itunesApiService;
+  }
+
+  public iTunesRssTopPodcastService getITunesRssTopPodcastService(int limit, String genre) {
+    Retrofit rssRetrofit = getRssRetrofit(URLConstructUtil.buildTopUrl("cn", limit, genre),
+        GsonConverterFactory.create());
+    return rssRetrofit.create(iTunesRssTopPodcastService.class);
   }
 }

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.widget.Toast;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,6 +38,7 @@ import per.funown.bocast.library.model.ItunesSearchResultList;
 import per.funown.bocast.library.model.RssChannel;
 import per.funown.bocast.library.model.ItunesResponseEntity;
 import per.funown.bocast.library.net.NetManager;
+import per.funown.bocast.library.net.service.iTunesSearchService;
 import per.funown.bocast.library.utils.DateUtils;
 import per.funown.bocast.library.utils.RssFetchUtils;
 import per.funown.bocast.library.constant.ArouterConstant;
@@ -192,6 +194,7 @@ public class PodcastDetailFragment extends Fragment {
         binding.SubscribeCheck.setOnCheckedChangeListener(((buttonView, isChecked) -> {
           List<iTunesCategory> categorys = channel.getCategorys();
           Log.e(TAG, "-->" + categorys.size());
+          // subscribe op
           if (isChecked) {
             SubscribedPodcast podcast = new SubscribedPodcast(
                 channel.getTitle(),
@@ -201,34 +204,31 @@ public class PodcastDetailFragment extends Fragment {
                 channel.getImage().getHref(),
                 DateUtils.stringToDate(channel.getItems().get(0).getPubDate()),
                 new Date());
-            NetManager.getInstance().getItunesApiService().SearchPodcast(podcast.getTitle())
-                .enqueue(
-                    new Callback<ItunesSearchResultList>() {
-                      @Override
-                      public void onResponse(Call<ItunesSearchResultList> call,
-                          Response<ItunesSearchResultList> response) {
-                        if (response.isSuccessful() && response.body().getResultCount() > 0) {
-                          for (ItunesResponseEntity entity : response.body().getResults()) {
-                            if (entity.getFeedUrl().trim().toLowerCase()
-                                .equals(podcast.getRssLink().trim().toLowerCase())) {
-                              Genre[] genres = new Genre[entity.getGenres().length];
-                              for (int i = 0; i < entity.getGenres().length; i++) {
-                                genres[i] = new Genre(entity.getGenres()[i], 1,
-                                    entity.getGenreIds()[i]);
-                              }
-                              addGenre(genres);
-                              return;
-                            }
-                          }
-                        }
-                      }
-
-                      @Override
-                      public void onFailure(Call<ItunesSearchResultList> call, Throwable t) {
-                      }
-                    });
+            List<ItunesResponseEntity> itunesResponseEntities = iTunesSearchService
+                .SearchTerms(podcast.getTitle());
+            if (itunesResponseEntities != null && itunesResponseEntities.size() > 0) {
+              for (ItunesResponseEntity entity : itunesResponseEntities) {
+                if (entity.getFeedUrl().trim().toLowerCase()
+                    .equals(podcast.getRssLink().trim().toLowerCase())) {
+                  Genre[] genres = new Genre[entity.getGenres().length];
+                  for (int i = 0; i < entity.getGenres().length; i++) {
+                    genres[i] = new Genre(entity.getGenres()[i], 1,
+                        entity.getGenreIds()[i]);
+                  }
+                  addGenre(genres);
+                  break;
+                }
+              }
+            } else {
+              Toast.makeText(getContext(), "Subscribe failed" + channel.getTitle(),
+                  Toast.LENGTH_LONG);
+              binding.SubscribeCheck.setChecked(false);
+              return;
+            }
             subscribedPodcastViewModel.subscribe(podcast);
-          } else {
+          }
+          // unsubscribe op
+          else {
             Log.e(TAG, "unsubscribed");
             Iterator<SubscribedPodcast> iterator = subscribedPodcastViewModel.getAllPodcasts()
                 .getValue().iterator();
@@ -237,33 +237,28 @@ public class PodcastDetailFragment extends Fragment {
               if (channel.getAtomLink() != null) {
                 if (subscribedPodcast.getRssLink().equals(channel.getAtomLink().getHref())) {
 
-                  NetManager.getInstance().getItunesApiService()
-                      .SearchPodcast(subscribedPodcast.getTitle()).enqueue(
-                      new Callback<ItunesSearchResultList>() {
-                        @Override
-                        public void onResponse(Call<ItunesSearchResultList> call,
-                            Response<ItunesSearchResultList> response) {
-                          if (response.isSuccessful() && response.body().getResultCount() > 0) {
-                            for (ItunesResponseEntity entity : response.body().getResults()) {
-                              if (entity.getFeedUrl().trim().toLowerCase()
-                                  .equals(subscribedPodcast.getRssLink().trim().toLowerCase())) {
-                                Genre[] genres = new Genre[entity.getGenres().length];
-                                for (int i = 0; i < entity.getGenres().length; i++) {
-                                  genres[i] = new Genre(entity.getGenres()[i], 1,
-                                      entity.getGenreIds()[i]);
-                                }
-                                cutGenre(genres);
-                                return;
-                              }
-                            }
-                          }
+                  List<ItunesResponseEntity> itunesResponseEntities = iTunesSearchService
+                      .SearchTerms(subscribedPodcast.getTitle());
+                  if (itunesResponseEntities != null && itunesResponseEntities.size() > 0) {
+                    for (ItunesResponseEntity entity : itunesResponseEntities) {
+                      if (entity.getFeedUrl().trim().toLowerCase()
+                          .equals(subscribedPodcast.getRssLink().trim().toLowerCase())) {
+                        Genre[] genres = new Genre[entity.getGenres().length];
+                        for (int i = 0; i < entity.getGenres().length; i++) {
+                          genres[i] = new Genre(entity.getGenres()[i], 1,
+                              entity.getGenreIds()[i]);
                         }
-
-                        @Override
-                        public void onFailure(Call<ItunesSearchResultList> call, Throwable t) {
-                        }
-                      });
-
+                        cutGenre(genres);
+                        break;
+                      }
+                    }
+                  }
+                  else{
+                    Toast.makeText(getContext(), "UnSubscribe failed" + channel.getTitle(),
+                        Toast.LENGTH_LONG);
+                    binding.SubscribeCheck.setChecked(true);
+                    return;
+                  }
                   subscribedPodcastViewModel.unsubscribe(subscribedPodcast);
                   return;
                 }
@@ -314,8 +309,16 @@ public class PodcastDetailFragment extends Fragment {
           .subscribeOn(AndroidSchedulers.mainThread())
           .subscribe(aLong -> {
             feed = RssFetchUtils.getFeed(rssLink);
-            episodeViewModel.setCurrentPodcast(feed);
-          }, throwable -> Log.e(TAG, "Throwable " + throwable.getMessage()));
+            if (feed != null) {
+              episodeViewModel.setCurrentPodcast(feed);
+            } else {
+              Toast.makeText(getContext(), "Data fetched failed - " + rssLink, Toast.LENGTH_LONG);
+            }
+          }, throwable -> {
+            Log.e(TAG, "Throwable " + throwable.getMessage());
+            Toast.makeText(getContext(), throwable.getMessage() + " - " + rssLink,
+                Toast.LENGTH_LONG);
+          });
     } else {
       episodeViewModel.setCurrentPodcast(feed);
     }

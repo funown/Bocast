@@ -74,7 +74,7 @@ public class HomePageFragment extends Fragment {
     recommendationSectionAdapter.setContainerId(containerId);
     recommendationSectionAdapter.setManager(requireActivity().getSupportFragmentManager());
     recommendationSectionAdapter.setOwner(getViewLifecycleOwner());
-    recommendationSectionAdapter.setContext(getContext());
+    recommendationSectionAdapter.setContext(requireContext());
     LinearLayoutManager manager = new LinearLayoutManager(requireContext());
     manager.setSmoothScrollbarEnabled(true);
     binding.RecommendationPodcastPanel.setLayoutManager(manager);

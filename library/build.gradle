@@ -126,6 +126,7 @@ dependencies {
     api rootProject.ext.dependencies["Okio"]
     api rootProject.ext.dependencies["Rxandroid"]
     api rootProject.ext.dependencies["SoulPermission"]
+    api rootProject.ext.dependencies["CircularSeekBar"]
 
     api rootProject.ext.dependencies["Fresco"]
     api 'androidx.paging:paging-runtime:2.1.2'

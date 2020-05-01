@@ -1,6 +1,7 @@
 package per.funown.bocast.modules.user.adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.liulishuo.okdownload.DownloadTask;
 import java.util.List;
+import me.tankery.lib.circularseekbar.CircularSeekBar;
 import per.funown.bocast.library.entity.DownloadEpisode;
 import per.funown.bocast.library.download.BaseDownloadListener;
 import per.funown.bocast.library.download.DownloadFactory;
@@ -91,7 +93,7 @@ public class DownloadCellAdapter extends Adapter<DownloadCellHolder> {
 
     private SimpleDraweeView podcastLogo;
     private TextView episodeTitle, author;
-    private ProgressBar progressBar;
+    private CircularSeekBar progressBar;
     private ImageView btn_download;
 
     public DownloadCellHolder(@NonNull View itemView) {

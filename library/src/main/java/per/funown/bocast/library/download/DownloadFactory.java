@@ -130,8 +130,7 @@ public class DownloadFactory {
 
   public void stop(DownloadTask task) {
     Log.i(TAG, "cancel..." + task.getUrl());
-    DownloadEpisode episode = (DownloadEpisode) task.getTag();
-    repository.addDownload(episode);
+    manager.detachListener(task.getId());
     task.cancel();
   }
 

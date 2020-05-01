@@ -32,26 +32,28 @@ public class PodcastFetchSource implements EpisodeSource {
   public Iterator<MediaMetadataCompat> iterator() {
     ArrayList<MediaMetadataCompat> list = new ArrayList<>();
     RssFeed feed = fetchResult();
-    List<RssItem> rssItems = feed.getChannel().getItems();
-    Iterator<RssItem> iterator = rssItems.iterator();
-    while (iterator.hasNext()) {
-      RssItem item = iterator.next();
-      MediaMetadataCompat compat = new Builder()
-          .putLong(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, (long) item.hashCode())
-          .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, item.getTitle())
-          .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, item.getSubtitle())
-          .putString(MediaMetadataCompat.METADATA_KEY_AUTHOR, item.getAuthor())
-          .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION,
-              item.getTitle())
-          .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, item.getEnclosure().getUrl())
-          .putString(CUSTOM_METADATA_TRACK_COVER, item.getImage().getHref())
-          .putString(CUSTOM_METADATA_TRACK_PUBDATE, item.getPubDate())
-          .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, Long.getLong(item.getDuration()))
-          .build();
-      list.add(compat);
+    if (feed != null) {
+      List<RssItem> rssItems = feed.getChannel().getItems();
+      Iterator<RssItem> iterator = rssItems.iterator();
+      while (iterator.hasNext()) {
+        RssItem item = iterator.next();
+        MediaMetadataCompat compat = new Builder()
+            .putLong(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, (long) item.hashCode())
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_TITLE, item.getTitle())
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_SUBTITLE, item.getSubtitle())
+            .putString(MediaMetadataCompat.METADATA_KEY_AUTHOR, item.getAuthor())
+            .putString(MediaMetadataCompat.METADATA_KEY_DISPLAY_DESCRIPTION,
+                item.getTitle())
+            .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_URI, item.getEnclosure().getUrl())
+            .putString(CUSTOM_METADATA_TRACK_COVER, item.getImage().getHref())
+            .putString(CUSTOM_METADATA_TRACK_PUBDATE, item.getPubDate())
+            .putLong(MediaMetadataCompat.METADATA_KEY_DURATION, Long.getLong(item.getDuration()))
+            .build();
+        list.add(compat);
+      }
+      return list.iterator();
     }
-
-    return list.iterator();
+    return null;
   }
 
   public RssFeed fetchResult() {

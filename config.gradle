@@ -41,7 +41,8 @@ ext {
             Starrysky               : "2.2.2",
             SlideupPannel           : "3.4.0",
             ArouterRegister         : "1.0.2",
-            SoulPermission          : "1.3.0"
+            SoulPermission          : "1.3.0",
+            CircularSeekBar         : "1.2.0"
     ]
 
     dependencies = [
@@ -102,7 +103,7 @@ ext {
             "BubbleSeekBar"         : "com.xw.repo:bubbleseekbar:${version.BubbleSeekBar}",
             "CircleImageView"       : "de.hdodenhof:circleimageview:${version.CircleImageView}",
             "PlayPauseButton"       : "com.github.recruit-lifestyle:PlayPauseButton:${version.playPauseButton}",
-
+            "CircularSeekBar"       : "me.tankery.lib:circularSeekBar:${version.CircularSeekBar}",
             "Fresco"                : "com.facebook.fresco:fresco:${version.Fresco}",
             "SoulPermission"        : "com.qw:soulpermission:${version.SoulPermission}"
     ]

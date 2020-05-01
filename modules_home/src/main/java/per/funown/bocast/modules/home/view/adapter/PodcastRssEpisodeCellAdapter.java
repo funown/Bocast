@@ -56,7 +56,6 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
   private FragmentActivity activity;
   private RssFeed feed;
   private int containerId;
-  ItunesApiService apiService;
   MusicService service;
   PlayerControl instance;
   Context context;
@@ -90,7 +89,6 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
     LayoutInflater inflater = LayoutInflater.from(parent.getContext());
     repository = new EpisodesRepository(context);
     View view = inflater.inflate(R.layout.cell_podcast_episode, parent, false);
-    apiService = NetManager.getInstance().getItunesApiService();
     return new PodcastEpisodeCellViewHolder(view);
   }
 
@@ -155,6 +153,7 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
           songInfo.setAlbumArtist(feed.getChannel().getAuthor());
           songInfo.setAlbumCover(feed.getChannel().getImage().getHref());
           songInfo.setAlbumId(feed.getChannel().getLink());
+          songInfo.setTrackNumber(position);
           songInfo.setDescription(feed.getChannel().getAtomLink().getHref());
           String filename = repository.isDownloaded(songInfo.getSongId(), songInfo.getSongUrl());
           if (filename != null && !filename.equals("")) {

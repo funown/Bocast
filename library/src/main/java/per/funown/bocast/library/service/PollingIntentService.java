@@ -6,6 +6,7 @@ import android.app.Notification;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -58,26 +59,30 @@ public class PollingIntentService extends Worker {
     List<SubscribedPodcast> podcasts = allPodcasts.getValue();
     for (SubscribedPodcast podcast : podcasts) {
       RssFeed feed = RssFetchUtils.getFeed(podcast.getRssLink());
-      RssChannel channel = feed.getChannel();
-      if (channel.getItems().size() > podcast.getEpisodes()
-          || DateUtils.stringToDate(channel.getItems().get(0).getPubDate())
-          .after(podcast.getUpdateTime())) {
-        RssCacheUtil.cacheFeed(podcast.getRssLink(), feed);
-        podcast.setTitle(channel.getTitle());
-        podcast.setLogoLink(channel.getImage().getHref());
-        podcast.setAuthor(channel.getAuthor());
-        podcast.setEpisodes(channel.getItems().size());
-        podcast.setUpdateTime(DateUtils.stringToDate(channel.getItems().get(0).getPubDate()));
-        repository.updatePodcast(podcast);
-        isUpdated = true;
+      if (feed != null) {
+        RssChannel channel = feed.getChannel();
+        if (channel.getItems().size() > podcast.getEpisodes()
+            || DateUtils.stringToDate(channel.getItems().get(0).getPubDate())
+            .after(podcast.getUpdateTime())) {
+          RssCacheUtil.cacheFeed(podcast.getRssLink(), feed);
+          podcast.setTitle(channel.getTitle());
+          podcast.setLogoLink(channel.getImage().getHref());
+          podcast.setAuthor(channel.getAuthor());
+          podcast.setEpisodes(channel.getItems().size());
+          podcast.setUpdateTime(DateUtils.stringToDate(channel.getItems().get(0).getPubDate()));
+          repository.updatePodcast(podcast);
+          isUpdated = true;
 
-        Notification newEpisodeNotification =
-            new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setContentTitle(podcast.getTitle())
-                .setContentText(channel.getItems().get(0).getTitle())
-                .setGroup(GROUP_KEY_WORK_PODCAST)
-                .build();
-        newPodcastEpisodesNotifications.add(newEpisodeNotification);
+          Notification newEpisodeNotification =
+              new NotificationCompat.Builder(context, CHANNEL_ID)
+                  .setContentTitle(podcast.getTitle())
+                  .setContentText(channel.getItems().get(0).getTitle())
+                  .setGroup(GROUP_KEY_WORK_PODCAST)
+                  .build();
+          newPodcastEpisodesNotifications.add(newEpisodeNotification);
+        }
+      } else {
+        Toast.makeText(context, "Update fail - " + podcast.getTitle(), Toast.LENGTH_SHORT);
       }
     }
 

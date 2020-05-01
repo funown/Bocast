@@ -8,6 +8,7 @@
   android:foreground="?android:attr/selectableItemBackground">
 
     <com.google.android.material.card.MaterialCardView
+      android:id="@+id/podcast_view"
       android:layout_width="108dp"
       android:layout_height="150dp"
       android:layout_marginTop="16dp"

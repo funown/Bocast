@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.IOException;
 
-import okhttp3.OkHttpClient.Builder;
 import per.funown.bocast.library.entity.Genre;
-import retrofit2.Retrofit;
 import retrofit2.Response;
 
 import com.google.gson.JsonArray;
@@ -20,10 +18,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import per.funown.bocast.library.net.NetManager;
 import per.funown.bocast.library.net.NetworkState;
-import per.funown.bocast.library.net.URLConstructUtil;
 import per.funown.bocast.library.net.service.ItunesApiService;
 import per.funown.bocast.library.net.service.iTunesRssTopPodcastService;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * <pre>
@@ -50,14 +46,6 @@ public class PodcastSource extends AsyncTask<Genre, Void, List<ItunesResponseEnt
     return initState;
   }
 
-  public PodcastSource() {
-  }
-
-
-//  public MutableLiveData<List<ItunesResponseEntity>> fetchTopPodcasts(Genre genre, int limit) {
-//
-//  }
-
   @SuppressLint("WrongThread")
   @Override
   protected List<ItunesResponseEntity> doInBackground(Genre... genres) {
@@ -69,12 +57,8 @@ public class PodcastSource extends AsyncTask<Genre, Void, List<ItunesResponseEnt
     try {
       ItunesApiService itunesApiService = NetManager.getInstance().getRetrofit()
           .create(ItunesApiService.class);
-      Builder builder = NetManager.getInstance().getBuilder();
-      Retrofit retrofit = NetManager.getInstance().getRssRetrofit().newBuilder().client(builder.build())
-          .addConverterFactory(GsonConverterFactory.create())
-          .baseUrl(URLConstructUtil.buildTopUrl("cn", limit, genre.getiTunesId())).build();
-      iTunesRssTopPodcastService iTunesRssTopPodcastService = retrofit
-          .create(iTunesRssTopPodcastService.class);
+      iTunesRssTopPodcastService iTunesRssTopPodcastService = NetManager.getInstance()
+          .getITunesRssTopPodcastService(limit, genre.getiTunesId());
       Response<JsonObject> execute = iTunesRssTopPodcastService.getTopPodcastsInGenre().execute();
       JsonObject body = execute.body();
       if (execute.isSuccessful() && !body.isJsonNull()) {

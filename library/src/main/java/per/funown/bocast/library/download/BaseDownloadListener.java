@@ -20,6 +20,7 @@ import com.liulishuo.okdownload.core.breakpoint.BlockInfo;
 import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
 import com.liulishuo.okdownload.core.listener.DownloadListener4WithSpeed;
 import com.liulishuo.okdownload.core.listener.assist.Listener4SpeedAssistExtend.Listener4SpeedModel;
+import me.tankery.lib.circularseekbar.CircularSeekBar;
 import per.funown.bocast.library.R;
 import per.funown.bocast.library.entity.DownloadEpisode;
 import per.funown.bocast.library.repo.DownloadedEpisodeRepository;
@@ -39,7 +40,7 @@ public class BaseDownloadListener extends DownloadListener4WithSpeed {
   private DownloadEpisode item;
   private long totalLength;
   private String readableTotalLength;
-  private ProgressBar progressBar;
+  private CircularSeekBar progressBar;
   private Context context;
   private ImageView btn_download;
   private DownloadedEpisodeRepository repository;
@@ -48,7 +49,7 @@ public class BaseDownloadListener extends DownloadListener4WithSpeed {
   }
 
   public BaseDownloadListener(DownloadEpisode item, Context context,
-      ProgressBar progressBar, ImageView btn_download) {
+      CircularSeekBar progressBar, ImageView btn_download) {
     this.item = item;
     this.context = context;
     this.progressBar = progressBar;
@@ -69,11 +70,11 @@ public class BaseDownloadListener extends DownloadListener4WithSpeed {
     return readableTotalLength;
   }
 
-  public ProgressBar getProgressBar() {
+  public CircularSeekBar getProgressBar() {
     return progressBar;
   }
 
-  public void setProgressBar(ProgressBar progressBar) {
+  public void setProgressBar(CircularSeekBar progressBar) {
     this.progressBar = progressBar;
   }
 
@@ -87,6 +88,7 @@ public class BaseDownloadListener extends DownloadListener4WithSpeed {
         .format("[%s] : %s Start Downloading, Priority: %d", task.getId(), task.getFilename(),
             task.getPriority()));
     btn_download.setImageDrawable(context.getDrawable(R.drawable.ic_pause));
+    progressBar.setVisibility(View.VISIBLE);
     int checkColor = context.getColor(R.color.colorChecked);
     btn_download.setColorFilter(checkColor);
     item.setStatus(DownloadStatus.DOWNLOADING);
@@ -150,11 +152,13 @@ public class BaseDownloadListener extends DownloadListener4WithSpeed {
       repository.setDownloaded(item);
       progressBar.setVisibility(View.GONE);
       btn_download.setImageDrawable(context.getDrawable(R.drawable.ic_finish));
+      progressBar = null;
     }
     else {
       item.setStatus(DownloadStatus.PAUSE);
-      item.setOffset(progressBar.getProgress());
+      item.setOffset((long) progressBar.getProgress());
       repository.addDownload(item);
+      btn_download.setImageDrawable(context.getDrawable(R.drawable.ic_arrow_down));
     }
   }
 }

@@ -1,5 +1,6 @@
 package per.funown.bocast.modules.listener.fragment;
 
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.util.Log;
 import android.view.View.OnClickListener;
@@ -118,10 +119,11 @@ public class PlayerFragment extends Fragment {
     instance.addPlayerEventListener(new OnPlayerEventListener() {
       @Override
       public void onMusicSwitch(SongInfo songInfo) {
-        binding.podcastTitle.setText(songInfo.getSongName());
         binding.PodcastAuthor.setText(songInfo.getArtist());
         binding.EpisodeTitle.setText(songInfo.getSongName());
+        binding.podcastTitle.setText(songInfo.getSongName());
         binding.EpisodeCover.setImageURI(songInfo.getSongCover());
+        initDownloadButton(songInfo);
       }
 
       @Override
@@ -180,6 +182,7 @@ public class PlayerFragment extends Fragment {
       binding.progressBar.setProgress(0);
       binding.trackbar.setProgress(0);
     }
+
     TimerTaskManager timerTaskManager = service.getManager();
     timerTaskManager.setUpdateProgressTask(() -> {
       long position = instance.getPlayingPosition();
@@ -252,8 +255,27 @@ public class PlayerFragment extends Fragment {
       binding.btnPlayPause.playAnimation();
     });
 
-    if (instance.getNowPlayingSongInfo() != null) {
-      SongInfo songInfo = instance.getNowPlayingSongInfo();
+    initDownloadButton(instance.getNowPlayingSongInfo());
+
+    binding.playlist.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        EpisodeListDialogFragment.newInstance(getContext())
+            .show(requireActivity().getSupportFragmentManager(), "playlist");
+      }
+    });
+
+    bottomSheetBehavior.setSaveFlags(BottomSheetBehavior.SAVE_ALL);
+    if (binding.getRoot().getParent() != null) {
+      ((ViewGroup) binding.getRoot().getParent()).removeView(binding.getRoot());
+    }
+    return binding.getRoot();
+  }
+
+  private void initDownloadButton(SongInfo songInfo) {
+    Log.e(TAG, "initButton");
+    if (songInfo != null) {
+      Log.i(TAG, songInfo.getSongName());
       DownloadTask task = factory.getTask(songInfo.getSongUrl());
       DownloadEpisode downloadEpisode = viewModel
           .getDownloadEpisode(songInfo.getSongId(), songInfo.getSongUrl());
@@ -261,20 +283,26 @@ public class PlayerFragment extends Fragment {
         if (downloadEpisode.getStatus().equals(DownloadStatus.FINISHED.name())) {
           binding.btnDownload.setClickable(false);
           binding.btnDownload.setColorFilter(getContext().getColor(R.color.grey));
+          binding.btnDownload.setImageDrawable(getContext().getDrawable(R.drawable.ic_finish));
         } else {
+
           if (task != null) {
             DownloadEpisode item = (DownloadEpisode) task.getTag();
             downloadListener = new BaseDownloadListener(item, getContext(),
                 binding.downloadProgress,
                 binding.btnDownload);
             factory.changeListener(task, downloadListener);
+
+          } else {
+            binding.btnDownload.setImageDrawable(getContext().getDrawable(R.drawable.ic_download));
+            binding.downloadProgress.setVisibility(View.GONE);
+            downloadListener = null;
           }
         }
       }
     }
 
     binding.btnDownload.setOnClickListener(v -> {
-      SongInfo songInfo = instance.getNowPlayingSongInfo();
       Log.e(TAG, "-->" + (downloadListener != null));
       if (downloadListener != null) {
         String status = downloadListener.getItem().getStatus();
@@ -298,27 +326,13 @@ public class PlayerFragment extends Fragment {
         episode.setImageUri(songInfo.getAlbumCover());
         episode.setGuid(songInfo.getSongId());
         episode.setStatus(DownloadStatus.DOWNLOADING);
-
+        episode.setRssLink(songInfo.getDescription());
         downloadListener = new BaseDownloadListener(episode, getContext(), binding.downloadProgress,
             binding.btnDownload);
         factory.addTask(songInfo.getSongUrl(), filename, episode, downloadListener);
         binding.downloadProgress.setVisibility(View.VISIBLE);
       }
     });
-
-    binding.playlist.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        EpisodeListDialogFragment.newInstance(getContext())
-            .show(requireActivity().getSupportFragmentManager(), "playlist");
-      }
-    });
-
-    bottomSheetBehavior.setSaveFlags(BottomSheetBehavior.SAVE_ALL);
-    if (binding.getRoot().getParent() != null) {
-      ((ViewGroup) binding.getRoot().getParent()).removeView(binding.getRoot());
-    }
-    return binding.getRoot();
   }
 
   public static String convertTimeToString(Long time) {

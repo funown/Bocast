@@ -1,10 +1,14 @@
 package per.funown.bocast.modules.home.view.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.TypedValue;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import com.google.android.material.badge.BadgeDrawable;
+import com.google.android.material.badge.BadgeUtils;
+import com.google.android.material.card.MaterialCardView;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -78,6 +82,7 @@ public class PodcastCellAdapter extends BaseRecyclerViewAdapter<PodcastCellViewH
     return podcastCellViewHolder;
   }
 
+  @SuppressLint("RestrictedApi")
   @Override
   public void onBindViewHolder(@NonNull PodcastCellViewHolder holder, int position) {
     Log.i(TAG, "--> Binding podcast cell ...");
@@ -88,7 +93,10 @@ public class PodcastCellAdapter extends BaseRecyclerViewAdapter<PodcastCellViewH
       holder.podcastAuthor.setText(podcast.getAuthor());
       holder.rssLink = podcast.getRssLink();
       holder.isSubscribed = true;
-
+      Log.e(TAG, "-->"+(context == null));
+//      BadgeDrawable badgeDrawable = BadgeDrawable.create(context);
+//      badgeDrawable.setBadgeGravity(BadgeDrawable.TOP_END);
+//      BadgeUtils.attachBadgeDrawable(badgeDrawable, holder.cardView, null);
     } else if (entities.size() != 0) {
       ItunesResponseEntity entity = entities.get(position);
       holder.podcastLogo.setImageURI(Uri.parse(entity.getArtworkUrl60()));
@@ -121,6 +129,7 @@ public class PodcastCellAdapter extends BaseRecyclerViewAdapter<PodcastCellViewH
    */
   class PodcastCellViewHolder extends RecyclerView.ViewHolder {
 
+    private MaterialCardView cardView;
     private SimpleDraweeView podcastLogo;
     private TextView podcastTitle, podcastAuthor;
     private String rssLink;
@@ -128,6 +137,7 @@ public class PodcastCellAdapter extends BaseRecyclerViewAdapter<PodcastCellViewH
 
     public PodcastCellViewHolder(@NonNull View itemView) {
       super(itemView);
+      cardView = itemView.findViewById(R.id.podcast_view);
       podcastLogo = itemView.findViewById(R.id.podcast_logo);
       podcastTitle = itemView.findViewById(R.id.podcast_title);
       podcastAuthor = itemView.findViewById(R.id.podcast_author);

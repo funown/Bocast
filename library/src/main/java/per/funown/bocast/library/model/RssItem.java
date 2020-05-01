@@ -28,9 +28,6 @@ public class RssItem {
   private String author;
   @Element
   private Enclosure enclosure;
-//  @Path("item/itunes:title")
-//  @Element(name = "itunes:title", required = false)
-//  private String itunesTitle;
   @PropertyElement(name = "itunes:subtitle")
   private String subtitle;
   @PropertyElement(name = "itunes:duration")

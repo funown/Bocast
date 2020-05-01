@@ -121,12 +121,14 @@ public class PodcastEpisodeProvider {
       providerCurrentState = State.INITIALIZING;
 
       Iterator<MediaMetadataCompat> iterator = source.iterator();
-      while (iterator.hasNext()) {
-        MediaMetadataCompat item = iterator.next();
-        String mediaId = item.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
-        mediaListById.put(mediaId, new MutableMediaMetadata(mediaId, item));
+      if (iterator != null) {
+        while (iterator.hasNext()) {
+          MediaMetadataCompat item = iterator.next();
+          String mediaId = item.getString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID);
+          mediaListById.put(mediaId, new MutableMediaMetadata(mediaId, item));
+        }
+        providerCurrentState = State.INITIALIZED;
       }
-      providerCurrentState = State.INITIALIZED;
     }
 
     // fetch fail

@@ -1,6 +1,7 @@
 package per.funown.bocast.modules.home.view.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
@@ -83,9 +84,15 @@ public class RecommendationSectionAdapter extends
     LinearLayoutManager layoutManager
         = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false);
     holder.panel.setLayoutManager(layoutManager);
+    Log.e(TAG, "-->" + (context == null));
+    PodcastCellAdapter adapter = new PodcastCellAdapter();
+    adapter.setManager(manager);
+    adapter.setContext(context);
+    adapter.setContainerId(containerId);
+    holder.panel.setAdapter(adapter);
     topPodcasts.get(genres[position]).observe(owner, itunesResponseEntities -> {
-      holder.adapter.setEntities(itunesResponseEntities);
-      holder.adapter.notifyDataSetChanged();
+      adapter.setEntities(itunesResponseEntities);
+      adapter.notifyDataSetChanged();
     });
   }
 
@@ -98,17 +105,13 @@ public class RecommendationSectionAdapter extends
 
     private TextView title;
     private RecyclerView panel;
-    private PodcastCellAdapter adapter;
+
 
     public RecommendationSectionHolder(@NonNull View itemView) {
       super(itemView);
       title = itemView.findViewById(R.id.section_title);
       panel = itemView.findViewById(R.id.recommendation_podcast_panel);
-      adapter = new PodcastCellAdapter();
-      adapter.setManager(manager);
-      adapter.setContext(context);
-      adapter.setContainerId(containerId);
-      panel.setAdapter(adapter);
+
     }
   }
 }

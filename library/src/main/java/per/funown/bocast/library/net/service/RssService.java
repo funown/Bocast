@@ -1,4 +1,4 @@
-package per.funown.bocast.library.service;
+package per.funown.bocast.library.net.service;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

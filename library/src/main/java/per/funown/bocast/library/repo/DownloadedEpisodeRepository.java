@@ -51,7 +51,15 @@ public class DownloadedEpisodeRepository {
   }
 
   public void addDownload(DownloadEpisode... episodes) {
-    new SetDownloadedAsyncTask(dao).execute(episodes);
+    DownloadEpisode downloadEpisode = getDownloadEpisode(episodes[0].getUrl());
+    if (downloadEpisode == null) {
+      new SetDownloadedAsyncTask(dao).execute(episodes);
+    }
+    else {
+      downloadEpisode.setOffset(episodes[0].getOffset());
+      downloadEpisode.setStatus(episodes[0].getStatus());
+      new UpdateDownloadedAsyncTask(dao).doInBackground(downloadEpisode);
+    }
   }
 
   public void setUnDownloaded(DownloadEpisode... episodes) {
@@ -84,6 +92,26 @@ public class DownloadedEpisodeRepository {
     @Override
     protected Void doInBackground(DownloadEpisode... episodes) {
       dao.addEpisode(episodes);
+      return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void aVoid) {
+      super.onPostExecute(aVoid);
+    }
+  }
+
+  static class UpdateDownloadedAsyncTask extends AsyncTask<DownloadEpisode, Void, Void> {
+
+    private DownloadedEpisodeDao dao;
+
+    public UpdateDownloadedAsyncTask(DownloadedEpisodeDao dao) {
+      this.dao = dao;
+    }
+
+    @Override
+    protected Void doInBackground(DownloadEpisode... episodes) {
+      dao.updateEpisode(episodes);
       return null;
     }
 

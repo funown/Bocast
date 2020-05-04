@@ -2,6 +2,7 @@ package per.funown.bocast.modules.listener.viewmodel.repository;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import androidx.lifecycle.LiveData;
 import java.util.List;
 import per.funown.bocast.library.entity.DownloadEpisode;
@@ -18,16 +19,16 @@ import per.funown.bocast.library.entity.dao.DownloadedEpisodeDatabase;
  */
 public class DownloadedEpisodeRepository {
 
+  private static final String TAG = DownloadedEpisodeRepository.class.getSimpleName();
   private DownloadedEpisodeDao dao;
-  private LiveData<List<DownloadEpisode>> episodes;
 
   public DownloadedEpisodeRepository(Context context) {
     dao = DownloadedEpisodeDatabase.getINSTANCE(context).getDownloadedEpisodeDao();
-    episodes = dao.getAll();
   }
 
   public DownloadEpisode getEpisode(String guid, String podcastId) {
-    List<DownloadEpisode> episodeList = dao.getAll().getValue();
+    List<DownloadEpisode> episodeList = dao.getLiveDataAll().getValue();
+    Log.e(TAG, "-->"+(episodeList != null));
     if (episodeList != null) {
       for (DownloadEpisode episode : episodeList) {
         if (episode.getGuid().equals(guid) && podcastId == episode.getPodcastId()) {

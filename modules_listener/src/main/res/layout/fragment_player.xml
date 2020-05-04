@@ -24,6 +24,14 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:orientation="vertical">
+      <SeekBar
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:clickable="false"
+        android:progress="0"
+        android:progressTint="@color/playing"
+        android:thumb="@android:color/transparent" />
       <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -68,14 +76,6 @@
             app:srcCompat="@drawable/ic_play" />
         </androidx.constraintlayout.widget.ConstraintLayout>
       </LinearLayout>
-      <SeekBar
-        android:id="@+id/progressBar"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:clickable="false"
-        android:progress="0"
-        android:progressTint="@color/playing"
-        android:thumb="@android:color/transparent" />
     </LinearLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
       android:id="@+id/player_content"

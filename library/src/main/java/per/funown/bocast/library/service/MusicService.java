@@ -44,6 +44,11 @@ public class MusicService implements IProvider {
     starrySky.updatePlayList(list);
   }
 
+  public void removeSong(SongInfo info) {
+    list.remove(info);
+    starrySky.updatePlayList(list);
+  }
+
   public void setApplication(String application) {
     this.application = application;
   }
@@ -55,43 +60,6 @@ public class MusicService implements IProvider {
     list = new ArrayList<>();
     starrySky.updatePlayList(list);
     manager = new TimerTaskManager();
-
-    starrySky.addPlayerEventListener(new OnPlayerEventListener() {
-      @Override
-      public void onMusicSwitch(SongInfo songInfo) {
-
-      }
-
-      @Override
-      public void onPlayerStart() {
-
-      }
-
-      @Override
-      public void onPlayerPause() {
-
-      }
-
-      @Override
-      public void onPlayerStop() {
-
-      }
-
-      @Override
-      public void onPlayCompletion(SongInfo songInfo) {
-
-      }
-
-      @Override
-      public void onBuffering() {
-
-      }
-
-      @Override
-      public void onError(int errorCode, String errorMsg) {
-
-      }
-    });
   }
 
   public TimerTaskManager getManager() {
@@ -106,141 +74,4 @@ public class MusicService implements IProvider {
   public void init(Context context) {
     this.context = context;
   }
-
-  //  private MediaSessionCompat mediaSession;
-//  private PlaybackStateCompat.Builder builder;
-//  private ProgressiveMediaSource.Factory mediaSourcefactory;
-//  private SimpleExoPlayer exoPlayer;
-//  private AudioAttributes audioAttributes;
-//  private Token sessionToken;
-//  private Uri oldUri;
-//  private MediaNotificationManager mediaNotificationManager;
-//  private MediaSessionCompat.Callback sessionCallback = new Callback() {
-//    @Override
-//    public void onPlayFromUri(Uri uri, Bundle extras) {
-//      super.onPlayFromUri(uri, extras);
-//
-//      if (uri != null) {
-//        MediaSource mediaSource = extractMediaSourceFromUri(uri);
-//        if (uri != oldUri) {
-//          play(mediaSource);
-//        } else {
-//          play();
-//        }
-//        oldUri = uri;
-//      }
-//    }
-//
-//    @Override
-//    public void onPause() {
-//      super.onPause();
-//      pause();
-//    }
-//
-//    @Override
-//    public void onStop() {
-//      super.onStop();
-//      stop();
-//    }
-//  };
-//
-//  @Override
-//  public void onCreate() {
-//    super.onCreate();
-//    initPlayer();
-//    initMediaSourcefactory();
-//    initAudioAttributes();
-//    mediaSession = new MediaSessionCompat(getApplicationContext(), this.getClass().getSimpleName());
-//    mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
-//        | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-//    builder = new PlaybackStateCompat.Builder()
-//        .setActions(PlaybackStateCompat.ACTION_PLAY | PlaybackStateCompat.ACTION_PLAY_PAUSE);
-//    mediaSession.setPlaybackState(builder.build());
-//    mediaSession.setCallback(sessionCallback);
-//    sessionToken = mediaSession.getSessionToken();
-//    mediaSession.setActive(true);
-//  }
-//
-//  private void initMediaSourcefactory() {
-//    String bocast = Util.getUserAgent(getApplication(), "Bocast");
-//    mediaSourcefactory = new Factory(new DefaultDataSourceFactory(this, bocast),
-//        new DefaultExtractorsFactory());
-//  }
-//
-//  private MediaSource extractMediaSourceFromUri(Uri uri) {
-//    return mediaSourcefactory.createMediaSource(uri);
-//  }
-//
-//  private void play(MediaSource mediaSource) {
-//    if (exoPlayer == null) {
-//      initPlayer();
-//    }
-//    exoPlayer.prepare(mediaSource);
-//    play();
-//  }
-//
-//  private void play() {
-//    exoPlayer.setPlayWhenReady(true);
-//    updatePlaybackState(PlaybackStateCompat.STATE_PLAYING);
-//    mediaSession.setActive(true);
-//  }
-//
-//  private void pause() {
-//    exoPlayer.setPlayWhenReady(false);
-//    updatePlaybackState(PlaybackStateCompat.STATE_PAUSED);
-//  }
-//
-//  private void stop() {
-//    exoPlayer.setPlayWhenReady(false);
-//    exoPlayer.release();
-//    exoPlayer = null;
-//    updatePlaybackState(PlaybackStateCompat.STATE_NONE);
-//    mediaSession.setActive(false);
-//    mediaSession.release();
-//  }
-//
-//  @Override
-//  public void onTaskRemoved(Intent rootIntent) {
-//    super.onTaskRemoved(rootIntent);
-//    stopSelf();
-//  }
-//
-//  @Override
-//  public void onDestroy() {
-//    super.onDestroy();
-//    stop();
-//  }
-//
-//  private void updatePlaybackState(int state) {
-//    mediaSession
-//        .setPlaybackState(new PlaybackStateCompat.Builder()
-//            .setState(state, 0L, 1.0f).build());
-//  }
-//
-//  private void initPlayer() {
-//    exoPlayer = new SimpleExoPlayer.Builder(getApplicationContext(),
-//        new DefaultRenderersFactory(getApplicationContext()))
-//        .setLoadControl(new DefaultLoadControl()).build();
-//    if (audioAttributes == null) {
-//      exoPlayer.setAudioAttributes(audioAttributes, true);
-//    }
-//  }
-//
-//  private void initAudioAttributes() {
-//    audioAttributes = new Builder().setUsage(C.USAGE_MEDIA)
-//        .setContentType(C.CONTENT_TYPE_MUSIC)
-//        .build();
-//  }
-//
-//  @Nullable
-//  @Override
-//  public BrowserRoot onGetRoot(@NonNull String clientPackageName, int clientUid,
-//      @Nullable Bundle rootHints) {
-//    return new BrowserRoot("_ROOT_", null);
-//  }
-//
-//  @Override
-//  public void onLoadChildren(@NonNull String parentId, @NonNull Result<List<MediaItem>> result) {
-//
-//  }
 }

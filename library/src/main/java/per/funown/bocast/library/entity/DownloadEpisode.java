@@ -19,6 +19,8 @@ import per.funown.bocast.library.download.DownloadStatus;
 @Entity
 public class DownloadEpisode implements Serializable {
 
+  private static final long serialVersionUID = -8841776187967078936L;
+
   @PrimaryKey(autoGenerate = true)
   private long id;
 
@@ -48,10 +50,9 @@ public class DownloadEpisode implements Serializable {
 
   private String url;
 
-
+  @Ignore
   public DownloadEpisode() {}
 
-  @Ignore
   public DownloadEpisode(String guid, String podcast, String podcastId, String imageUri,
       String rssLink, String episodeTitle, int episode, String filename, String status, long total,
       long offset, String url) {

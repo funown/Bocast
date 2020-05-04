@@ -26,11 +26,11 @@ public class DownloadedEpisodeRepository {
 
   public DownloadedEpisodeRepository(Context context) {
     dao = DownloadedEpisodeDatabase.getINSTANCE(context).getDownloadedEpisodeDao();
-    episodes = dao.getAll();
+    episodes = dao.getLiveDataAll();
   }
 
   public String isDownloaded(String guid, String podcastId) {
-    List<DownloadEpisode> episodeList = dao.getAll().getValue();
+    List<DownloadEpisode> episodeList = dao.getAll();
     if (episodeList != null) {
       for (DownloadEpisode episode : episodeList) {
         if (episode.getGuid().equals(guid) && podcastId == episode.getPodcastId()) {

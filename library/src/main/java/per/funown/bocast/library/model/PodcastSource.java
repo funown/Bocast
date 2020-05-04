@@ -68,10 +68,10 @@ public class PodcastSource extends AsyncTask<Genre, Void, List<ItunesResponseEnt
           JsonObject element = jsonElement.getAsJsonObject();
           String id = element.get("id").getAsJsonObject().get("attributes").getAsJsonObject()
               .get("im:id").getAsString();
-          Response<iTunesLookupResult> response = itunesApiService.lookupPodcast(id).execute();
-          iTunesLookupResult result = response.body();
+          Response<ItunesSearchResultList> response = itunesApiService.lookupPodcast(id).execute();
+          ItunesSearchResultList result = response.body();
           if (response.isSuccessful() && result != null && result.getResultCount() > 0) {
-            podcastList.add(result.getResults()[0]);
+            podcastList.add(result.getResults().get(0));
           } else {
             retry = () -> doInBackground(genre);
             NetworkState error = new NetworkState(NetworkState.Status.FAILED,

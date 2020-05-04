@@ -16,14 +16,13 @@ import per.funown.bocast.library.entity.DownloadEpisode;
  */
 @Database(entities = DownloadEpisode.class, version = 1, exportSchema = false)
 public abstract class DownloadedEpisodeDatabase extends RoomDatabase {
-
   private static DownloadedEpisodeDatabase INSTANCE;
 
   public synchronized static DownloadedEpisodeDatabase getINSTANCE(Context context) {
     if (INSTANCE == null) {
       INSTANCE = Room
           .databaseBuilder(context.getApplicationContext(), DownloadedEpisodeDatabase.class,
-              "DownloadedEpisode").allowMainThreadQueries().build();
+              "DownloadEpisodes").build();
     }
     return INSTANCE;
   }

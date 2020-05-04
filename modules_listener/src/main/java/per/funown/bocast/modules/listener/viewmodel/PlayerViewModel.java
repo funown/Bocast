@@ -1,18 +1,22 @@
 package per.funown.bocast.modules.listener.viewmodel;
 
-import android.app.Application;
-import android.widget.SeekBar;
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
-import com.lzx.starrysky.provider.SongInfo;
 import java.util.Date;
 import java.util.List;
-import per.funown.bocast.library.entity.DownloadEpisode;
+
+import android.widget.SeekBar;
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.AndroidViewModel;
+
+import com.lzx.starrysky.provider.SongInfo;
+
 import per.funown.bocast.library.entity.HistoryItem;
 import per.funown.bocast.library.entity.CurrentEpisode;
+import per.funown.bocast.library.entity.DownloadEpisode;
+import per.funown.bocast.library.repo.DownloadedEpisodeRepository;
 import per.funown.bocast.modules.listener.utils.PlaySpeed;
-import per.funown.bocast.modules.listener.viewmodel.repository.DownloadedEpisodeRepository;
 import per.funown.bocast.modules.listener.viewmodel.repository.HistoryItemRepository;
 import per.funown.bocast.modules.listener.viewmodel.repository.PlayerViewModelRepository;
 
@@ -36,7 +40,8 @@ public class PlayerViewModel extends AndroidViewModel {
   public PlayerViewModel(@NonNull Application application) {
     super(application);
     playerViewModelRepository = new PlayerViewModelRepository(application);
-    downloadedEpisodeRepository = new DownloadedEpisodeRepository(application);
+    downloadedEpisodeRepository = new DownloadedEpisodeRepository(
+        application);
     historyItemRepository = new HistoryItemRepository(application);
   }
 
@@ -51,8 +56,7 @@ public class PlayerViewModel extends AndroidViewModel {
   public void addPlaySpeed() {
     if (playSpeed + 1 >= PlaySpeed.SPEEDS.length) {
       playSpeed = 0;
-    }
-    else {
+    } else {
       playSpeed += 1;
     }
   }
@@ -85,6 +89,10 @@ public class PlayerViewModel extends AndroidViewModel {
     return downloadedEpisodeRepository.getEpisode(guid, podcastId);
   }
 
+  public void addDownloadEpisode(DownloadEpisode episode) {
+    downloadedEpisodeRepository.addDownload(episode);
+  }
+
   public void addHistory(SongInfo info, SeekBar progressbar) {
     HistoryItem historyItem = new HistoryItem();
     historyItem.setDate(new Date());
@@ -97,4 +105,5 @@ public class PlayerViewModel extends AndroidViewModel {
     historyItem.setTotal(progressbar.getMax());
     historyItemRepository.addHistory(historyItem);
   }
+
 }

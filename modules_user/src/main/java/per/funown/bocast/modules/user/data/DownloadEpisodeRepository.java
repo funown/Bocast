@@ -19,19 +19,17 @@ import per.funown.bocast.library.entity.dao.DownloadedEpisodeDatabase;
 public class DownloadEpisodeRepository {
 
   private DownloadedEpisodeDao dao;
-  private LiveData<List<DownloadEpisode>> episodes;
 
   public DownloadEpisodeRepository(Context context) {
     dao = DownloadedEpisodeDatabase.getINSTANCE(context).getDownloadedEpisodeDao();
-    episodes = dao.getAll();
   }
 
   public LiveData<List<DownloadEpisode>> getEpisodes() {
-    return episodes;
+    return dao.getLiveDataAll();
   }
 
   public String isDownloaded(String guid, String podcastId) {
-    List<DownloadEpisode> episodeList = episodes.getValue();
+    List<DownloadEpisode> episodeList = getEpisodes().getValue();
     for (DownloadEpisode episode : episodeList) {
       if (episode.getGuid().equals(guid) && podcastId == episode.getPodcastId()) {
         return episode.getFilename();

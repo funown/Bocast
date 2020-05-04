@@ -6,9 +6,27 @@ import androidx.room.PrimaryKey;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Objects;
+/**
+ * "wrapperType":"track", "kind":"podcast", "collectionId":1053786200, "trackId":1053786200,
+ * "artistName":"JJ Ying & Leon Gao", "collectionName":"Anyway.FM 设计杂谈", "trackName":"Anyway.FM
+ * 设计杂谈", "collectionCensoredName":"Anyway.FM 设计杂谈", "trackCensoredName":"Anyway.FM 设计杂谈",
+ * "collectionViewUrl":"https://podcasts.apple.com/us/podcast/anyway-fm-%E8%AE%BE%E8%AE%A1%E6%9D%82%E8%B0%88/id1053786200?uo=4",
+ * "feedUrl":"https://Anyway.FM/rss.xml", "trackViewUrl":"https://podcasts.apple.com/us/podcast/anyway-fm-%E8%AE%BE%E8%AE%A1%E6%9D%82%E8%B0%88/id1053786200?uo=4",
+ * "artworkUrl30":"https://is5-ssl.mzstatic.com/image/thumb/Podcasts113/v4/d3/72/25/d37225d8-f656-21eb-f223-e35c9aad8513/mza_9527851597791836093.png/30x30bb.jpg",
+ * "artworkUrl60":"https://is5-ssl.mzstatic.com/image/thumb/Podcasts113/v4/d3/72/25/d37225d8-f656-21eb-f223-e35c9aad8513/mza_9527851597791836093.png/60x60bb.jpg",
+ * "artworkUrl100":"https://is5-ssl.mzstatic.com/image/thumb/Podcasts113/v4/d3/72/25/d37225d8-f656-21eb-f223-e35c9aad8513/mza_9527851597791836093.png/100x100bb.jpg",
+ * "collectionPrice":0.00, "trackPrice":0.00, "trackRentalPrice":0, "collectionHdPrice":0,
+ * "trackHdPrice":0, "trackHdRentalPrice":0, "releaseDate":"2020-02-20T16:15:00Z",
+ * "collectionExplicitness":"cleaned", "trackExplicitness":"cleaned", "trackCount":103,
+ * "country":"USA", "currency":"USD", "primaryGenreName":"Design", "contentAdvisoryRating":"Clean",
+ * "artworkUrl600":"https://is5-ssl.mzstatic.com/image/thumb/Podcasts113/v4/d3/72/25/d37225d8-f656-21eb-f223-e35c9aad8513/mza_9527851597791836093.png/600x600bb.jpg",
+ * "genreIds":["1402", "26", "1301", "1406"], "genres":["Design", "Podcasts", "Arts", "Visual
+ * Arts"]
+ */
 
 /**
  * <pre>
+ *
  *     author : funown
  *     time   : 2020/02/28
  *     desc   :
@@ -18,42 +36,8 @@ import java.util.Objects;
 public class ItunesResponseEntity implements Serializable {
 
   private static final long serialVersionUID = 6213525121345646450L;
-  /**
-   * "wrapperType":"track",
-   * "kind":"podcast",
-   * "collectionId":1053786200,
-   * "trackId":1053786200,
-   * "artistName":"JJ Ying & Leon Gao",
-   * "collectionName":"Anyway.FM 设计杂谈",
-   * "trackName":"Anyway.FM 设计杂谈",
-   * "collectionCensoredName":"Anyway.FM 设计杂谈",
-   * "trackCensoredName":"Anyway.FM 设计杂谈",
-   * "collectionViewUrl":"https://podcasts.apple.com/us/podcast/anyway-fm-%E8%AE%BE%E8%AE%A1%E6%9D%82%E8%B0%88/id1053786200?uo=4",
-   * "feedUrl":"https://Anyway.FM/rss.xml",
-   * "trackViewUrl":"https://podcasts.apple.com/us/podcast/anyway-fm-%E8%AE%BE%E8%AE%A1%E6%9D%82%E8%B0%88/id1053786200?uo=4",
-   * "artworkUrl30":"https://is5-ssl.mzstatic.com/image/thumb/Podcasts113/v4/d3/72/25/d37225d8-f656-21eb-f223-e35c9aad8513/mza_9527851597791836093.png/30x30bb.jpg",
-   * "artworkUrl60":"https://is5-ssl.mzstatic.com/image/thumb/Podcasts113/v4/d3/72/25/d37225d8-f656-21eb-f223-e35c9aad8513/mza_9527851597791836093.png/60x60bb.jpg",
-   * "artworkUrl100":"https://is5-ssl.mzstatic.com/image/thumb/Podcasts113/v4/d3/72/25/d37225d8-f656-21eb-f223-e35c9aad8513/mza_9527851597791836093.png/100x100bb.jpg",
-   * "collectionPrice":0.00,
-   * "trackPrice":0.00,
-   * "trackRentalPrice":0,
-   * "collectionHdPrice":0,
-   * "trackHdPrice":0,
-   * "trackHdRentalPrice":0,
-   * "releaseDate":"2020-02-20T16:15:00Z",
-   * "collectionExplicitness":"cleaned",
-   * "trackExplicitness":"cleaned",
-   * "trackCount":103,
-   * "country":"USA",
-   * "currency":"USD",
-   * "primaryGenreName":"Design",
-   * "contentAdvisoryRating":"Clean",
-   * "artworkUrl600":"https://is5-ssl.mzstatic.com/image/thumb/Podcasts113/v4/d3/72/25/d37225d8-f656-21eb-f223-e35c9aad8513/mza_9527851597791836093.png/600x600bb.jpg",
-   * "genreIds":["1402", "26", "1301", "1406"],
-   * "genres":["Design", "Podcasts", "Arts", "Visual Arts"]
-   */
-  private int id;
 
+  private int id;
   private String wrapperType;
   private String kind;
   private String collectionId;
@@ -85,17 +69,19 @@ public class ItunesResponseEntity implements Serializable {
   private String[] genreIds;
   private String[] genres;
 
-  public ItunesResponseEntity() {}
+  public ItunesResponseEntity() {
+  }
+
   public ItunesResponseEntity(String wrapperType, String kind, String collectionId, String trackId,
-                              String artistName, String trackName, String collectionCensoredName,
-                              String trackCensoredName, String collectionViewUrl, String feedUrl,
-                              String trackViewUrl, String artworkUrl30, String artworkUrl60,
-                              String artworkUrl100, String artworkUrl600, double collectionPrice,
-                              double trackPrice, int trackRentalPrice, int collectionHdPrice,
-                              int trackHdPrice, int trackHdRentalPrice, String releaseDate,
-                              String collectionExplicitness, int trackCount, String country,
-                              String currency, String primaryGenreName, String contentAdvisoryRating,
-                              String[] genreIds, String[] genres) {
+      String artistName, String trackName, String collectionCensoredName,
+      String trackCensoredName, String collectionViewUrl, String feedUrl,
+      String trackViewUrl, String artworkUrl30, String artworkUrl60,
+      String artworkUrl100, String artworkUrl600, double collectionPrice,
+      double trackPrice, int trackRentalPrice, int collectionHdPrice,
+      int trackHdPrice, int trackHdRentalPrice, String releaseDate,
+      String collectionExplicitness, int trackCount, String country,
+      String currency, String primaryGenreName, String contentAdvisoryRating,
+      String[] genreIds, String[] genres) {
     this.wrapperType = wrapperType;
     this.kind = kind;
     this.collectionId = collectionId;
@@ -378,8 +364,12 @@ public class ItunesResponseEntity implements Serializable {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     ItunesResponseEntity that = (ItunesResponseEntity) o;
     return id == that.id &&
         Double.compare(that.collectionPrice, collectionPrice) == 0 &&
@@ -417,7 +407,8 @@ public class ItunesResponseEntity implements Serializable {
   @Override
   public int hashCode() {
     int result = Objects.hash(id, wrapperType, kind, collectionId, trackId, artistName, trackName,
-        collectionCensoredName, trackCensoredName, collectionViewUrl, feedUrl, trackViewUrl, artworkUrl30,
+        collectionCensoredName, trackCensoredName, collectionViewUrl, feedUrl, trackViewUrl,
+        artworkUrl30,
         artworkUrl60, artworkUrl100, artworkUrl600, collectionPrice, trackPrice, trackRentalPrice,
         collectionHdPrice, trackHdPrice, trackHdRentalPrice, releaseDate, collectionExplicitness,
         trackCount, country, currency, primaryGenreName, contentAdvisoryRating);

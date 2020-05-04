@@ -5,6 +5,7 @@ import android.content.Context;
 
 import per.funown.bocast.library.model.RssFeed;
 import per.funown.bocast.library.model.RssItem;
+import per.funown.bocast.library.repo.DownloadedEpisodeRepository;
 import per.funown.bocast.library.utils.RssFetchUtils;
 
 import per.funown.bocast.library.net.RssCacheUtil;

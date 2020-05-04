@@ -8,8 +8,12 @@ import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
+import androidx.core.util.TimeUtils;
 import androidx.lifecycle.ViewModelProvider;
 import com.liulishuo.okdownload.DownloadTask;
+import com.liulishuo.okdownload.StatusUtil;
+import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
+import com.lzx.starrysky.StarrySky;
 import com.lzx.starrysky.control.OnPlayerEventListener;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -17,6 +21,7 @@ import android.widget.ImageView.ScaleType;
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.lzx.starrysky.control.PlayerControl;
 import com.lzx.starrysky.provider.SongInfo;
+import com.lzx.starrysky.utils.StarrySkyUtils;
 import com.lzx.starrysky.utils.TimerTaskManager;
 
 import android.view.View;
@@ -93,6 +98,7 @@ public class PlayerFragment extends Fragment {
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
+    Log.e(TAG, "on Create view...");
     binding.playerContent.setVisibility(View.INVISIBLE);
     bottomSheetBehavior = BottomSheetBehavior.from(binding.mainContent);
     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -123,6 +129,8 @@ public class PlayerFragment extends Fragment {
         binding.EpisodeTitle.setText(songInfo.getSongName());
         binding.podcastTitle.setText(songInfo.getSongName());
         binding.EpisodeCover.setImageURI(songInfo.getSongCover());
+        binding.trackDuration.setText(convertTimeToString(songInfo.getDuration()));
+        downloadListener = null;
         initDownloadButton(songInfo);
       }
 
@@ -255,6 +263,30 @@ public class PlayerFragment extends Fragment {
       binding.btnPlayPause.playAnimation();
     });
 
+    binding.lavNext.setOnClickListener(v -> {
+      PlayerControl instance12 = service.getINSTANCE();
+      if (instance12.getPlayList().size() > 1) {
+        int nowPlayingIndex = instance12.getNowPlayingIndex();
+        if (nowPlayingIndex == instance12.getPlayList().size() - 1) {
+          instance12.playMusicByIndex(0);
+        } else {
+          instance12.playMusicByIndex(nowPlayingIndex + 1);
+        }
+      }
+    });
+
+    binding.lavPrev.setOnClickListener(v -> {
+      PlayerControl instance1 = service.getINSTANCE();
+      if (instance1.getPlayList().size() > 1) {
+        int nowPlayingIndex = instance1.getNowPlayingIndex();
+        if (nowPlayingIndex != 0) {
+          instance1.playMusicByIndex(nowPlayingIndex - 1);
+        } else {
+          Toast.makeText(requireContext(), "There are no more song", Toast.LENGTH_SHORT);
+        }
+      }
+    });
+
     initDownloadButton(instance.getNowPlayingSongInfo());
 
     binding.playlist.setOnClickListener(new OnClickListener() {
@@ -274,43 +306,70 @@ public class PlayerFragment extends Fragment {
 
   private void initDownloadButton(SongInfo songInfo) {
     Log.e(TAG, "initButton");
+    binding.downloadProgress.setProgress(0);
+    binding.downloadProgress.setVisibility(View.GONE);
+    binding.btnDownload.setColorFilter(getContext().getColor(R.color.grey));
+    binding.btnDownload.setImageDrawable(getContext().getDrawable(R.drawable.ic_download));
     if (songInfo != null) {
       Log.i(TAG, songInfo.getSongName());
       DownloadTask task = factory.getTask(songInfo.getSongUrl());
       DownloadEpisode downloadEpisode = viewModel
-          .getDownloadEpisode(songInfo.getSongId(), songInfo.getSongUrl());
+          .getDownloadEpisode(songInfo.getSongId(), songInfo.getAlbumId());
       if (downloadEpisode != null) {
         if (downloadEpisode.getStatus().equals(DownloadStatus.FINISHED.name())) {
           binding.btnDownload.setClickable(false);
-          binding.btnDownload.setColorFilter(getContext().getColor(R.color.grey));
+          binding.btnDownload.setColorFilter(getContext().getColor(R.color.colorChecked));
           binding.btnDownload.setImageDrawable(getContext().getDrawable(R.drawable.ic_finish));
         } else {
-
           if (task != null) {
+            Log.e(TAG, "Not Finished -->" + downloadEpisode);
+            binding.downloadProgress.setVisibility(View.VISIBLE);
+            BreakpointInfo breakpointInfo = factory
+                .getBreakpointInfo(downloadEpisode.getUrl(), downloadEpisode.getFilename());
             DownloadEpisode item = (DownloadEpisode) task.getTag();
+            binding.btnDownload.setColorFilter(getContext().getColor(R.color.colorChecked));
+            if (item.getStatus().equals(DownloadStatus.DOWNLOADING)) {
+              Log.e(TAG, "downloading -->" + downloadEpisode);
+              binding.btnDownload.setImageDrawable(getContext().getDrawable(R.drawable.ic_pause));
+            } else {
+              Log.e(TAG, "pause -->" + downloadEpisode);
+              binding.btnDownload
+                  .setImageDrawable(getContext().getDrawable(R.drawable.ic_arrow_down));
+              binding.downloadProgress.setMax(breakpointInfo.getTotalLength());
+              binding.downloadProgress.setProgress(breakpointInfo.getTotalOffset());
+            }
             downloadListener = new BaseDownloadListener(item, getContext(),
                 binding.downloadProgress,
                 binding.btnDownload);
             factory.changeListener(task, downloadListener);
-
           } else {
-            binding.btnDownload.setImageDrawable(getContext().getDrawable(R.drawable.ic_download));
-            binding.downloadProgress.setVisibility(View.GONE);
-            downloadListener = null;
+            Log.e(TAG, "history -->" + downloadEpisode);
+            BreakpointInfo breakpointInfo = factory
+                .getBreakpointInfo(downloadEpisode.getUrl(), downloadEpisode.getFilename());
+            if (breakpointInfo != null) {
+              downloadEpisode.setOffset(breakpointInfo.getTotalOffset());
+              downloadEpisode.setTotal(breakpointInfo.getTotalLength());
+              binding.btnDownload.setColorFilter(getContext().getColor(R.color.colorChecked));
+              binding.btnDownload
+                  .setImageDrawable(getContext().getDrawable(R.drawable.ic_arrow_down));
+              binding.downloadProgress.setVisibility(View.VISIBLE);
+              binding.downloadProgress.setMax(breakpointInfo.getTotalLength());
+              binding.downloadProgress.setProgress(breakpointInfo.getTotalOffset());
+            }
           }
         }
       }
     }
 
     binding.btnDownload.setOnClickListener(v -> {
-      Log.e(TAG, "-->" + (downloadListener != null));
       if (downloadListener != null) {
         String status = downloadListener.getItem().getStatus();
-        Log.e(TAG, "-->" + status);
         if (status.equals(DownloadStatus.DOWNLOADING.name())) {
           DownloadTask task = factory.getTask(songInfo.getSongUrl());
-          factory.stop(task);
+          factory.stop(task, downloadListener);
+          binding.btnDownload.setColorFilter(getContext().getColor(R.color.colorChecked));
           binding.btnDownload.setImageDrawable(getContext().getDrawable(R.drawable.ic_arrow_down));
+          viewModel.addDownloadEpisode(downloadListener.getItem());
         } else if (!status.equals(DownloadStatus.FINISHED.name())) {
           factory.restart(songInfo.getSongUrl(), downloadListener);
         }
@@ -327,7 +386,9 @@ public class PlayerFragment extends Fragment {
         episode.setGuid(songInfo.getSongId());
         episode.setStatus(DownloadStatus.DOWNLOADING);
         episode.setRssLink(songInfo.getDescription());
-        downloadListener = new BaseDownloadListener(episode, getContext(), binding.downloadProgress,
+        episode.setUrl(songInfo.getSongUrl());
+        downloadListener = new BaseDownloadListener(episode, requireContext(),
+            binding.downloadProgress,
             binding.btnDownload);
         factory.addTask(songInfo.getSongUrl(), filename, episode, downloadListener);
         binding.downloadProgress.setVisibility(View.VISIBLE);

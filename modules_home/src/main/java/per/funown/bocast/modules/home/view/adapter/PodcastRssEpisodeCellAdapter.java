@@ -155,8 +155,9 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
           songInfo.setAlbumId(feed.getChannel().getLink());
           songInfo.setTrackNumber(position);
           songInfo.setDescription(feed.getChannel().getAtomLink().getHref());
-          String filename = repository.isDownloaded(songInfo.getSongId(), songInfo.getSongUrl());
+          String filename = repository.isDownloaded(songInfo.getSongId(), songInfo.getAlbumId());
           if (filename != null && !filename.equals("")) {
+            Log.e(TAG, filename);
             File queueDir = DownloadFactory.getINSTANCE(context).getQueueDir();
             songInfo.setSongUrl(queueDir.getAbsolutePath() + "/" + filename);
           }
@@ -213,8 +214,7 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
           List<SongInfo> playList = service.getINSTANCE().getPlayList();
           for (int i = 0; i < playList.size(); i++) {
             if (playList.get(i).getSongId().equals(item.getGuid().getGuid())) {
-              playList.remove(i);
-              service.getINSTANCE().updatePlayList(playList);
+              service.removeSong(playList.get(i));
               holder.btn_addToList
                   .setImageDrawable(activity.getDrawable(R.drawable.ic_playlist_plus));
               inList.set(false);
@@ -240,6 +240,7 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
           if (filename != null && !filename.equals("")) {
             File queueDir = DownloadFactory.getINSTANCE(context).getQueueDir();
             songInfo.setSongUrl(queueDir.getAbsolutePath() + "/" + filename);
+            Log.e(TAG, songInfo.getSongUrl());
           }
           List<SongInfo> list = service.getINSTANCE().getPlayList();
           list.add(songInfo);

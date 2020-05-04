@@ -147,9 +147,10 @@ public class EpisodeListDialogFragment extends BottomSheetDialogFragment {
 
     private final OnStartDragListener onStartDragListener;
     PlayerControl playerControl;
+    MusicService service;
 
     public episodeAdapter(OnStartDragListener onStartDragListener) {
-      MusicService service = ARouter.getInstance().navigation(MusicService.class);
+      service = ARouter.getInstance().navigation(MusicService.class);
       playerControl = service.getINSTANCE();
       this.onStartDragListener = onStartDragListener;
     }
@@ -170,7 +171,7 @@ public class EpisodeListDialogFragment extends BottomSheetDialogFragment {
         holder.title.setTextColor(getResources().getColor(R.color.playing, null));
       } else {
         holder.title
-            .setTextColor(getResources().getColor(R.color.design_default_color_secondary, null));
+            .setTextColor(getResources().getColor(R.color.grey, null));
       }
       holder.title.setText(songInfo.getSongName());
       holder.author.setText(songInfo.getAlbumName());
@@ -256,36 +257,37 @@ public class EpisodeListDialogFragment extends BottomSheetDialogFragment {
       songInfo.setDescription(info.getDescription());
 
       notifyItemRemoved(adapterPosition);
-      List<SongInfo> playList = playerControl.getPlayList();
-      playList.remove(adapterPosition);
-      playerControl.updatePlayList(playList);
+      Log.e(TAG,  playerControl.getPlayList().size()+ "-->" + adapterPosition);
+
+      service.removeSong(info);
       notifyItemRangeChanged(0, getItemCount());
-      final Snackbar snackbar = Snackbar
-          .make(binding.getRoot(), context.getResources().getString(R.string.item_deleted),
-              Snackbar.LENGTH_LONG)
-          .setActionTextColor(ContextCompat.getColor(context, R.color.white))
-          .setAction(context.getResources().getString(R.string.item_undo), v -> {
-            playList.add(songInfo);
-            playerControl.updatePlayList(playList);
-            notifyItemInserted(adapterPosition);
-          });
-      View snackbarView = snackbar.getView();
-      snackbarView.offsetTopAndBottom(-(int) ScreenUtil.dpToPx(50));
-      snackbarView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
-      TextView snackBarText = (TextView) snackbarView.findViewById(R.id.snackbar_text);
-      TextView snackBarAction = (TextView) snackbar.getView().findViewById(R.id.snackbar_action);
-      snackBarText.setTextColor(Color.WHITE);
-      snackbar.show();
-
-      Runnable runnableUndo = new Runnable() {
-
-        @Override
-        public void run() {
-          snackbar.dismiss();
-        }
-      };
-      Handler handlerUndo = new Handler();
-      handlerUndo.postDelayed(runnableUndo, 2500);
+      notifyDataSetChanged();
+//      final Snackbar snackbar = Snackbar
+//          .make(binding.getRoot(), context.getResources().getString(R.string.item_deleted),
+//              Snackbar.LENGTH_LONG)
+//          .setActionTextColor(ContextCompat.getColor(context, R.color.white))
+//          .setAction(context.getResources().getString(R.string.item_undo), v -> {
+//            playList.add(songInfo);
+//            playerControl.updatePlayList(playList);
+//            notifyItemInserted(adapterPosition);
+//          });
+//      View snackbarView = snackbar.getView();
+//      snackbarView.offsetTopAndBottom(-(int) ScreenUtil.dpToPx(50));
+//      snackbarView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
+//      TextView snackBarText = (TextView) snackbarView.findViewById(R.id.snackbar_text);
+//      TextView snackBarAction = (TextView) snackbar.getView().findViewById(R.id.snackbar_action);
+//      snackBarText.setTextColor(Color.WHITE);
+//      snackbar.show();
+//
+//      Runnable runnableUndo = new Runnable() {
+//
+//        @Override
+//        public void run() {
+//          snackbar.dismiss();
+//        }
+//      };
+//      Handler handlerUndo = new Handler();
+//      handlerUndo.postDelayed(runnableUndo, 2500);
     }
   }
 

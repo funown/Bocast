@@ -33,7 +33,10 @@ public interface DownloadedEpisodeDao {
   void updateEpisode(DownloadEpisode... episodes);
 
   @Query("SELECT * FROM DownloadEpisode")
-  LiveData<List<DownloadEpisode>> getAll();
+  LiveData<List<DownloadEpisode>> getLiveDataAll();
+
+  @Query("SELECT * FROM DownloadEpisode")
+  List<DownloadEpisode> getAll();
 
   @Query("DELETE FROM DownloadEpisode")
   void deleteAll();

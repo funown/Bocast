@@ -91,7 +91,6 @@ public class BaseDownloadListener extends DownloadListener4WithSpeed {
     progressBar.setVisibility(View.VISIBLE);
     int checkColor = context.getColor(R.color.colorChecked);
     btn_download.setColorFilter(checkColor);
-    item.setStatus(DownloadStatus.DOWNLOADING);
   }
 
   @Override
@@ -125,6 +124,7 @@ public class BaseDownloadListener extends DownloadListener4WithSpeed {
   @Override
   public void progress(@NonNull DownloadTask task, long currentOffset,
       @NonNull SpeedCalculator taskSpeed) {
+    item.setStatus(DownloadStatus.DOWNLOADING);
     String readableOffset = Util.humanReadableBytes(currentOffset, true);
     String progressStatus = String.format("%s/%s", readableOffset, readableTotalLength);
     String speed = taskSpeed.speed();
@@ -132,6 +132,7 @@ public class BaseDownloadListener extends DownloadListener4WithSpeed {
         "[" + task.getId() + "] : Progress offset " + currentOffset + "[" + progressStatus
             + "], Speed " + speed + ", progress " + currentOffset + "%");
     progressBar.setProgress((int) currentOffset);
+    item.setOffset(currentOffset);
   }
 
   @Override
@@ -147,18 +148,16 @@ public class BaseDownloadListener extends DownloadListener4WithSpeed {
         (realCause != null ? realCause.getMessage() : "Null Exception")));
     // deal end cause
     if (cause.equals(EndCause.COMPLETED)) {
-      progressBar.setProgress(progressBar.getMax());
       item.setStatus(DownloadStatus.FINISHED);
-      repository.setDownloaded(item);
       progressBar.setVisibility(View.GONE);
       btn_download.setImageDrawable(context.getDrawable(R.drawable.ic_finish));
+      btn_download.setClickable(false);
       progressBar = null;
-    }
-    else {
+    } else {
       item.setStatus(DownloadStatus.PAUSE);
       item.setOffset((long) progressBar.getProgress());
-      repository.addDownload(item);
       btn_download.setImageDrawable(context.getDrawable(R.drawable.ic_arrow_down));
     }
+    repository.addDownload(item);
   }
 }

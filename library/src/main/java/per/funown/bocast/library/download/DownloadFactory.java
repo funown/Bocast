@@ -1,6 +1,8 @@
 package per.funown.bocast.library.download;
 
 import android.os.Environment;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import com.liulishuo.okdownload.StatusUtil;
 import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
@@ -19,6 +21,7 @@ import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.DownloadTask.Builder;
 
 import per.funown.bocast.library.entity.DownloadEpisode;
+import per.funown.bocast.library.net.NetworkState.Status;
 import per.funown.bocast.library.repo.DownloadedEpisodeRepository;
 
 /**
@@ -34,7 +37,6 @@ public class DownloadFactory {
   private static final String TAG = DownloadFactory.class.getSimpleName();
   private static DownloadFactory INSTANCE;
 
-  private static File queueDir;
   private static List<DownloadTask> tasks = new ArrayList<>();
   private UnifiedListenerManager manager;
   private static DownloadedEpisodeRepository repository;
@@ -47,7 +49,6 @@ public class DownloadFactory {
     if (INSTANCE == null) {
       parentDir = new File(context.getExternalFilesDir(Environment.DIRECTORY_PODCASTS),
           "bocast");
-      Log.i(TAG, "--> " + parentDir.getAbsolutePath() + " - " + parentDir.exists());
       if (!parentDir.exists()) {
         parentDir.mkdir();
       }
@@ -58,7 +59,7 @@ public class DownloadFactory {
         undownloadedEpisodes.getValue().forEach(episode -> {
           BreakpointInfo currentInfo = StatusUtil
               .getCurrentInfo(episode.getUrl(), parentDir.getPath(), episode.getFilename());
-          DownloadTask task = new Builder(episode.getUrl(), queueDir)
+          DownloadTask task = new Builder(episode.getUrl(), parentDir)
               .setFilename(episode.getFilename())
               .setMinIntervalMillisCallbackProcess(150)
               .setPassIfAlreadyCompleted(true)
@@ -74,7 +75,6 @@ public class DownloadFactory {
     // TODO: remove this before release
     Util.enableConsoleLog();
     DownloadUtil.getINSTANCE(context);
-    this.queueDir = parentDir;
     manager = new UnifiedListenerManager();
   }
 
@@ -83,7 +83,7 @@ public class DownloadFactory {
   }
 
   public File getQueueDir() {
-    return queueDir;
+    return parentDir;
   }
 
   public List<DownloadTask> getTasks() {
@@ -99,15 +99,25 @@ public class DownloadFactory {
     return null;
   }
 
+  public BreakpointInfo getBreakpointInfo(@NonNull String url,
+      @Nullable String filename) {
+    return StatusUtil.getCurrentInfo(url, parentDir.getPath(), filename);
+  }
+
   public synchronized void addTask(String url, String filename, DownloadEpisode episode,
       DownloadListener listener) {
-    DownloadTask task = new Builder(url, queueDir).setFilename(filename)
+    DownloadTask task = new Builder(url, parentDir).setFilename(filename)
         .setMinIntervalMillisCallbackProcess(150)
         .setPassIfAlreadyCompleted(true)
         .build();
     task.setTag(episode);
     tasks.add(task);
-    manager.addAutoRemoveListenersWhenTaskEnd(task.getId());
+    manager.enqueueTaskWithUnifiedListener(task, listener);
+  }
+
+  public synchronized void addTask(DownloadTask task,
+      DownloadListener listener) {
+    tasks.add(task);
     manager.enqueueTaskWithUnifiedListener(task, listener);
   }
 
@@ -128,10 +138,13 @@ public class DownloadFactory {
     tasks.get(position).cancel();
   }
 
-  public void stop(DownloadTask task) {
+  public void stop(DownloadTask task, BaseDownloadListener listener) {
     Log.i(TAG, "cancel..." + task.getUrl());
     manager.detachListener(task.getId());
     task.cancel();
+    DownloadEpisode item = listener.getItem();
+    item.setStatus(DownloadStatus.PAUSE);
+    listener.setItem(item);
   }
 
   public void restart(String url, BaseDownloadListener listener) {
@@ -141,7 +154,8 @@ public class DownloadFactory {
       manager.enqueueTaskWithUnifiedListener(task, listener);
     } else {
       if (downloadEpisode != null) {
-        DownloadTask newTask = new Builder(url, queueDir).setFilename(downloadEpisode.getFilename())
+        DownloadTask newTask = new Builder(url, parentDir)
+            .setFilename(downloadEpisode.getFilename())
             .setMinIntervalMillisCallbackProcess(150)
             .setPassIfAlreadyCompleted(true)
             .build();

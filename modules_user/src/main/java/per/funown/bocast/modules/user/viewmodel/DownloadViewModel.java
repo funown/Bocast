@@ -11,6 +11,7 @@ import per.funown.bocast.library.entity.DownloadEpisode;
 import per.funown.bocast.library.download.BaseDownloadListener;
 import per.funown.bocast.library.download.DownloadFactory;
 import per.funown.bocast.library.download.DownloadStatus;
+import per.funown.bocast.library.repo.DownloadedEpisodeRepository;
 import per.funown.bocast.modules.user.data.DownloadEpisodeRepository;
 
 /**
@@ -24,9 +25,9 @@ import per.funown.bocast.modules.user.data.DownloadEpisodeRepository;
 public class DownloadViewModel extends AndroidViewModel {
 
   private DownloadFactory factory;
-  private DownloadEpisodeRepository repository;
+  private DownloadedEpisodeRepository repository;
   private MutableLiveData<List<DownloadTask>> tasks;
-  private LiveData<List<DownloadEpisode>> downloadEpisodes;
+  private LiveData<List<DownloadEpisode>> downloadedEpisodes;
 
   public MutableLiveData<List<DownloadTask>> getTasks() {
     return tasks;
@@ -35,11 +36,11 @@ public class DownloadViewModel extends AndroidViewModel {
   public DownloadViewModel(@NonNull Application application) {
     super(application);
     factory = DownloadFactory.getINSTANCE(application);
-    repository = new DownloadEpisodeRepository(application);
-    downloadEpisodes = repository.getEpisodes();
-
-    if (downloadEpisodes != null && downloadEpisodes.getValue() != null) {
-      for (DownloadEpisode episode : downloadEpisodes.getValue()) {
+    repository = new DownloadedEpisodeRepository(application);
+    downloadedEpisodes = repository.getdownloadedEpisodes();
+    List<DownloadEpisode> downloadEpisodes = repository.getAllDownloadEpisodes();
+    if (downloadEpisodes != null && downloadEpisodes.size() != 0) {
+      for (DownloadEpisode episode : downloadEpisodes) {
         if (episode.getStatus().equals(DownloadStatus.PAUSE) || episode.getStatus()
             .equals(DownloadStatus.DOWNLOADING)) {
           factory.addTask(episode.getUrl(), episode.getFilename(), episode,

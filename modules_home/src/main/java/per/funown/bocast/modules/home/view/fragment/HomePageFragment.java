@@ -105,10 +105,6 @@ public class HomePageFragment extends Fragment {
             recommendationSectionAdapter.notifyDataSetChanged();
           }
         });
-//      if (podcastViewModel.isNeedToScrollToTop()) {
-//        binding.RecommendationPodcastPanel.scrollToPosition(0);
-//        podcastViewModel.setNeedToScrollToTop(false);
-//      }
       });
     });
 

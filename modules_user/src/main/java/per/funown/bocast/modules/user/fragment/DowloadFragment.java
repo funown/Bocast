@@ -1,16 +1,16 @@
 package per.funown.bocast.modules.user.fragment;
 
 import android.os.Bundle;
-import android.widget.Adapter;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.alibaba.android.arouter.facade.annotation.Route;
 import per.funown.bocast.library.constant.ArouterConstant;
-import per.funown.bocast.modules.user.R;
+import per.funown.bocast.library.utils.ItemTouchHelperCallback;
 import per.funown.bocast.modules.user.adapter.DownloadCellAdapter;
 import per.funown.bocast.modules.user.databinding.FragmentDowloadBinding;
 import per.funown.bocast.modules.user.viewmodel.DownloadViewModel;
@@ -22,10 +22,9 @@ public class DowloadFragment extends Fragment {
 
   DownloadViewModel downloadViewModel;
   FragmentDowloadBinding binding;
+  private ItemTouchHelper mItemTouchHelper;
 
-  public DowloadFragment() {
-    // Required empty public constructor
-  }
+  public DowloadFragment() {}
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -39,6 +38,13 @@ public class DowloadFragment extends Fragment {
       Bundle savedInstanceState) {
     binding.getRoot().setClickable(true);
     downloadCellAdapter = new DownloadCellAdapter(getContext());
+    downloadCellAdapter.setContainerId(binding.getRoot().getId());
+
+    ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(downloadCellAdapter,
+        this.getContext());
+    mItemTouchHelper = new ItemTouchHelper(callback);
+    mItemTouchHelper.attachToRecyclerView(binding.DownloadItems);
+
     LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
     binding.DownloadItems.setLayoutManager(linearLayoutManager);
     binding.DownloadItems.setAdapter(downloadCellAdapter);

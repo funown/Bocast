@@ -13,6 +13,11 @@ import retrofit2.http.GET;
  * </pre>
  */
 public interface iTunesRssTopPodcastService {
+
+  /**
+   * eg. https://itunes.apple.com/cn/rss/toppodcasts/limit=12/genre=26/json
+   * @return
+   */
   @GET("json")
   Call<JsonObject> getTopPodcastsInGenre();
 }

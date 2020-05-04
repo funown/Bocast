@@ -21,9 +21,4 @@ public class PlayConfig extends StarrySkyConfig {
     super.applyOptions(context, builder);
     builder.setOpenNotification(true);
   }
-
-  @Override
-  public StarrySkyNotificationManager.NotificationFactory getNotificationFactory() {
-    return StarrySkyNotificationManager.CUSTOM_NOTIFICATION_FACTORY;
-  }
 }

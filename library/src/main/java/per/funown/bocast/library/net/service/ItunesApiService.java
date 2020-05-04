@@ -25,6 +25,11 @@ public interface ItunesApiService {
   @GET("search?entity=podcast")
   Call<ItunesSearchResultList> SearchPodcast(@Query("term") String terms);
 
+  /**
+   * eg. https://itunes.apple.com/lookup?id=1053786200
+   * @param id
+   * @return
+   */
   @GET("lookup")
-  Call<iTunesLookupResult> lookupPodcast(@Query("id") String id);
+  Call<ItunesSearchResultList> lookupPodcast(@Query("id") String id);
 }

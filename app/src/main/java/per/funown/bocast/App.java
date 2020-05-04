@@ -10,6 +10,8 @@ import cn.bmob.v3.Bmob;
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.liulishuo.okdownload.core.Util;
+import com.lzx.starrysky.StarrySkyBuilder;
+import com.lzx.starrysky.StarrySkyConfig;
 import java.util.concurrent.TimeUnit;
 import per.funown.bocast.config.PlayConfig;
 import per.funown.bocast.library.service.MusicService;
@@ -38,6 +40,7 @@ public class App extends Application {
     ARouter.openDebug();
     ARouter.init(this);
     MusicService service = ARouter.getInstance().navigation(MusicService.class);
+
     service.initPlayback(this, new PlayConfig());
     service.setApplication("Bocast");
 

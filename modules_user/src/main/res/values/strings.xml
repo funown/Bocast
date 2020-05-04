@@ -27,4 +27,8 @@
   <string name="progress"> 60%</string>
   <string name="item_delete">Delete</string>
   <string name="item_undo">Undo</string>
+  <string name="file_delete">Do you want to go on and delete the audio file?</string>
+  <string name="cancel">CANCEL</string>
+  <string name="dont_delete">Don\'t delete file</string>
+  <string name="YES">YES</string>
 </resources>

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Handler;
+import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -237,6 +238,7 @@ public class HistoryCellAdapter extends Adapter<HistoryItemViewHolder> implement
             items.add(adapterPosition, item);
             notifyItemInserted(adapterPosition);
             viewModel.addHistory(historyItem);
+
           }
         });
     View snackbarView = snackbar.getView();
@@ -277,7 +279,7 @@ public class HistoryCellAdapter extends Adapter<HistoryItemViewHolder> implement
 
     @Override
     public void onItemSelected(Context context) {
-
+      itemView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
     }
 
     @Override

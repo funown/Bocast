@@ -13,6 +13,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.LiveData;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+import com.alibaba.android.arouter.facade.template.IProvider;
 import java.util.ArrayList;
 import java.util.List;
 import per.funown.bocast.library.model.RssChannel;
@@ -31,7 +32,7 @@ import per.funown.bocast.library.utils.RssFetchUtils;
  *     version: 1.0
  * </pre>
  */
-public class PollingIntentService extends Worker {
+public class PollingIntentService extends Worker{
 
   private static final String TAG = PollingIntentService.class.getSimpleName();
   private SubscribedPodcastRepository repository;

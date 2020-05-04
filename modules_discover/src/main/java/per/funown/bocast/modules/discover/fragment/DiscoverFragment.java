@@ -47,18 +47,6 @@ public class DiscoverFragment extends Fragment {
     viewModel = new ViewModelProvider(getActivity()).get(DiscoverViewModel.class);
     binding = FragmentDiscoverBinding.inflate(getLayoutInflater());
 
-//    binding.Searchbar.setOnSearchClickListener(v -> {
-//      Log.e(TAG, "Search...");
-//      String query = String.valueOf(binding.Searchbar.getQuery());
-//      if (Pattern.matches("(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]",
-//          query)) {
-//        viewModel.SearchRss(query);
-//      }
-//      else {
-//        viewModel.SearchTerms(query);
-//      }
-//    });
-
     binding.Searchbar.setOnQueryTextListener(new OnQueryTextListener() {
       @Override
       public boolean onQueryTextSubmit(String query) {

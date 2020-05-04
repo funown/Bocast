@@ -2,6 +2,7 @@ package per.funown.bocast.modules.home.view.fragment;
 
 import android.annotation.SuppressLint;
 import android.net.Uri;
+import android.os.Looper;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View.OnClickListener;
@@ -173,7 +174,10 @@ public class PodcastDetailFragment extends Fragment {
     });
 
     episodeViewModel.getCurrentPodcast().observe(this.getViewLifecycleOwner(), currentPodcast -> {
-      if (currentPodcast != null) {
+      if (currentPodcast != null && feed != null && currentPodcast.getChannel().getTitle()
+          .equals(feed.getChannel().getTitle())) {
+        binding.loadingPage.setVisibility(View.GONE);
+        binding.mainContent.setVisibility(View.VISIBLE);
         isSubscribed = subscribedPodcastViewModel.isSubscribed(currentPodcast);
         episodeCellAdapter.setFeed(currentPodcast);
         RssChannel channel = currentPodcast.getChannel();
@@ -219,12 +223,13 @@ public class PodcastDetailFragment extends Fragment {
                   break;
                 }
               }
-            } else {
-              Toast.makeText(getContext(), "Subscribe failed" + channel.getTitle(),
-                  Toast.LENGTH_LONG);
-              binding.SubscribeCheck.setChecked(false);
-              return;
             }
+//            else {
+//              Toast.makeText(getContext(), "Subscribe failed" + channel.getTitle(),
+//                  Toast.LENGTH_LONG);
+//              binding.SubscribeCheck.setChecked(false);
+//              return;
+//            }
             subscribedPodcastViewModel.subscribe(podcast);
           }
           // unsubscribe op
@@ -253,12 +258,12 @@ public class PodcastDetailFragment extends Fragment {
                       }
                     }
                   }
-                  else{
-                    Toast.makeText(getContext(), "UnSubscribe failed" + channel.getTitle(),
-                        Toast.LENGTH_LONG);
-                    binding.SubscribeCheck.setChecked(true);
-                    return;
-                  }
+//                  else {
+//                    Toast.makeText(getContext(), "UnSubscribe failed" + channel.getTitle(),
+//                        Toast.LENGTH_LONG);
+//                    binding.SubscribeCheck.setChecked(true);
+//                    return;
+//                  }
                   subscribedPodcastViewModel.unsubscribe(subscribedPodcast);
                   return;
                 }
@@ -266,6 +271,10 @@ public class PodcastDetailFragment extends Fragment {
             }
           }
         }));
+      }
+      else {
+        binding.loadingPage.setVisibility(View.VISIBLE);
+        binding.mainContent.setVisibility(View.GONE);
       }
     });
   }
@@ -312,12 +321,16 @@ public class PodcastDetailFragment extends Fragment {
             if (feed != null) {
               episodeViewModel.setCurrentPodcast(feed);
             } else {
+              Looper.prepare();
               Toast.makeText(getContext(), "Data fetched failed - " + rssLink, Toast.LENGTH_LONG);
+              Looper.loop();
             }
           }, throwable -> {
             Log.e(TAG, "Throwable " + throwable.getMessage());
+            Looper.prepare();
             Toast.makeText(getContext(), throwable.getMessage() + " - " + rssLink,
                 Toast.LENGTH_LONG);
+            Looper.loop();
           });
     } else {
       episodeViewModel.setCurrentPodcast(feed);

@@ -42,17 +42,11 @@ import per.funown.bocast.library.service.PlayService;
 import per.funown.bocast.library.utils.ItemTouchHelperAdapter;
 import per.funown.bocast.library.utils.ItemTouchHelperCallback;
 import per.funown.bocast.library.utils.ItemTouchHelperViewHolder;
+import per.funown.bocast.library.utils.OnStartDragListener;
 import per.funown.bocast.library.utils.ScreenUtil;
 import per.funown.bocast.modules.listener.R;
 import per.funown.bocast.modules.listener.databinding.FragmentEpisodeListDialogListDialogBinding;
 
-/**
- * <p>A fragment that shows a list of items as a modal bottom sheet.</p>
- * <p>You can show this modal bottom sheet from your activity like this:</p>
- * <pre>
- *     EpisodeListDialogFragment.newInstance(30).show(getSupportFragmentManager(), "dialog");
- * </pre>
- */
 public class EpisodeListDialogFragment extends BottomSheetDialogFragment {
 
 
@@ -62,7 +56,8 @@ public class EpisodeListDialogFragment extends BottomSheetDialogFragment {
   episodeAdapter adapter;
   private ItemTouchHelper mItemTouchHelper;
 
-  private EpisodeListDialogFragment.OnStartDragListener onStartDragListener = new OnStartDragListener() {
+
+  private OnStartDragListener onStartDragListener = new OnStartDragListener() {
 
     @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
@@ -262,39 +257,9 @@ public class EpisodeListDialogFragment extends BottomSheetDialogFragment {
       service.removeSong(info);
       notifyItemRangeChanged(0, getItemCount());
       notifyDataSetChanged();
-//      final Snackbar snackbar = Snackbar
-//          .make(binding.getRoot(), context.getResources().getString(R.string.item_deleted),
-//              Snackbar.LENGTH_LONG)
-//          .setActionTextColor(ContextCompat.getColor(context, R.color.white))
-//          .setAction(context.getResources().getString(R.string.item_undo), v -> {
-//            playList.add(songInfo);
-//            playerControl.updatePlayList(playList);
-//            notifyItemInserted(adapterPosition);
-//          });
-//      View snackbarView = snackbar.getView();
-//      snackbarView.offsetTopAndBottom(-(int) ScreenUtil.dpToPx(50));
-//      snackbarView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent));
-//      TextView snackBarText = (TextView) snackbarView.findViewById(R.id.snackbar_text);
-//      TextView snackBarAction = (TextView) snackbar.getView().findViewById(R.id.snackbar_action);
-//      snackBarText.setTextColor(Color.WHITE);
-//      snackbar.show();
-//
-//      Runnable runnableUndo = new Runnable() {
-//
-//        @Override
-//        public void run() {
-//          snackbar.dismiss();
-//        }
-//      };
-//      Handler handlerUndo = new Handler();
-//      handlerUndo.postDelayed(runnableUndo, 2500);
     }
   }
 
-  public interface OnStartDragListener {
-
-    void onStartDrag(RecyclerView.ViewHolder viewHolder);
-  }
 
 
 }

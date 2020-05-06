@@ -1,35 +1,30 @@
 package per.funown.bocast.modules.listener.fragment;
 
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.util.Log;
-import android.view.View.OnClickListener;
-import android.widget.FrameLayout;
-import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.Toast;
-import androidx.core.util.TimeUtils;
-import androidx.lifecycle.ViewModelProvider;
-import com.liulishuo.okdownload.DownloadTask;
-import com.liulishuo.okdownload.StatusUtil;
-import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
-import com.lzx.starrysky.StarrySky;
-import com.lzx.starrysky.control.OnPlayerEventListener;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
-import android.widget.ImageView.ScaleType;
-import com.alibaba.android.arouter.launcher.ARouter;
-import com.lzx.starrysky.control.PlayerControl;
-import com.lzx.starrysky.provider.SongInfo;
-import com.lzx.starrysky.utils.StarrySkyUtils;
-import com.lzx.starrysky.utils.TimerTaskManager;
-
-import android.view.View;
 import android.os.Bundle;
+import android.content.res.Resources;
+import android.widget.Toast;
+import android.widget.SeekBar;
+import android.widget.FrameLayout;
+import android.widget.ImageView.ScaleType;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import com.liulishuo.okdownload.DownloadTask;
+import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.LayoutInflater;
+import android.view.View.OnClickListener;
+import com.alibaba.android.arouter.launcher.ARouter;
+import com.lzx.starrysky.provider.SongInfo;
+import com.lzx.starrysky.control.PlayerControl;
+import com.lzx.starrysky.utils.TimerTaskManager;
+import com.lzx.starrysky.control.OnPlayerEventListener;
+
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;

@@ -1,15 +1,20 @@
 package per.funown.bocast.library.net;
 
+import android.os.Environment;
 import android.util.Log;
 
+import androidx.core.os.EnvironmentCompat;
 import com.tickaroo.tikxml.TikXml;
 import com.tickaroo.tikxml.retrofit.TikXmlConverterFactory;
+import java.io.File;
+import okhttp3.Cache;
 import okhttp3.OkHttpClient.Builder;
 
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
+import org.simpleframework.xml.filter.EnvironmentFilter;
 import per.funown.bocast.library.BuildConfig;
 import per.funown.bocast.library.net.service.ItunesApiService;
 import per.funown.bocast.library.net.service.iTunesRssTopPodcastService;
@@ -31,6 +36,7 @@ public class NetManager {
 
   public static final String TAG = NetManager.class.getSimpleName();
   private static NetManager Instance;
+  private static Cache cache;
 
   private Retrofit retrofit;
   private OkHttpClient.Builder builder;
@@ -40,9 +46,16 @@ public class NetManager {
 
   private static final int DEFAULT_TIME_OUT = 10;
 
+  public static void setCache(File file) {
+    cache =  new Cache(file, 1024 * 1024 * 10); //10Mb;
+  }
+
   private NetManager() {
+
     builder = new OkHttpClient.Builder()
-        .connectTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS).addInterceptor(new NetInterceptor());
+        .connectTimeout(DEFAULT_TIME_OUT, TimeUnit.SECONDS)
+        .cache(cache)
+        .addInterceptor(new NetInterceptor());
     if (BuildConfig.DEBUG) {
       builder.addInterceptor(new HttpLoggingInterceptor(s -> Log.d(TAG, s)));
     }

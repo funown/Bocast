@@ -10,4 +10,5 @@
   <string name="Home_panel_Subscribed_Section">Subscribed Podcasts</string>
   <string name="Home_panel_Recommend_Section">Recommendation</string>
   <string name="Recommendation_section_title">Podcasts in </string>
+  <string name="Loaing_message">Loading...</string>
 </resources>

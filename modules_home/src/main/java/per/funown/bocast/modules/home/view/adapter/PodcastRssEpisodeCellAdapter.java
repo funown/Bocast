@@ -28,16 +28,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import per.funown.bocast.library.constant.ArouterConstant;
+import per.funown.bocast.library.entity.Episode;
+import per.funown.bocast.library.entity.Podcast;
 import per.funown.bocast.library.model.RssFeed;
 import per.funown.bocast.library.model.RssItem;
 import per.funown.bocast.library.download.DownloadFactory;
-import per.funown.bocast.library.net.NetManager;
-import per.funown.bocast.library.net.service.ItunesApiService;
 import per.funown.bocast.library.service.MusicService;
 import per.funown.bocast.library.utils.DateUtils;
 import per.funown.bocast.library.utils.DateUtils.DatePattern;
 import per.funown.bocast.modules.home.R;
-import per.funown.bocast.modules.home.model.EpisodesRepository;
+import per.funown.bocast.modules.home.model.EpisodesViewModel;
+import per.funown.bocast.modules.home.model.SubscribedPodcastViewModel;
 import per.funown.bocast.modules.home.view.adapter.PodcastRssEpisodeCellAdapter.PodcastEpisodeCellViewHolder;
 
 /**
@@ -56,12 +57,18 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
   private FragmentActivity activity;
   private RssFeed feed;
   private int containerId;
+  private long podcastId;
   MusicService service;
   PlayerControl instance;
   Context context;
-  EpisodesRepository repository;
+  EpisodesViewModel episodesViewModel;
+  SubscribedPodcastViewModel viewModel;
 
   private boolean isPlaying;
+
+  public void setPodcastId(long podcastId) {
+    this.podcastId = podcastId;
+  }
 
   public void setItems(List<RssItem> items) {
     this.items = items;
@@ -79,15 +86,17 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
     this.feed = feed;
   }
 
-  public PodcastRssEpisodeCellAdapter(Context context) {
+  public PodcastRssEpisodeCellAdapter(Context context, EpisodesViewModel episodesViewModel,
+      SubscribedPodcastViewModel viewModel) {
     this.context = context;
+    this.viewModel = viewModel;
+    this.episodesViewModel = episodesViewModel;
   }
 
   @NonNull
   @Override
   public PodcastEpisodeCellViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-    repository = new EpisodesRepository(context);
     View view = inflater.inflate(R.layout.cell_podcast_episode, parent, false);
     return new PodcastEpisodeCellViewHolder(view);
   }
@@ -98,7 +107,7 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
     instance = service.getINSTANCE();
     RssItem item = items.get(position);
     isPlaying = instance.isCurrMusicIsPlaying(item.getGuid().getGuid());
-
+    Podcast podcast = viewModel.getPodcast(podcastId);
     holder.episodeTitle.setText(item.getTitle());
     Date date = DateUtils
         .stringToDate(item.getPubDate().trim(), DatePattern.RSS_DATE, Locale.ENGLISH);
@@ -140,8 +149,37 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
           }
         }
         if (songInfo == null) {
+          Podcast newPodcast = podcast;
+          if (newPodcast == null) {
+            newPodcast = new Podcast(feed.getChannel().getTitle(),
+                feed.getChannel().getOwner().getName() == null ? feed.getChannel().getOwner()
+                    .getName() : feed.getChannel().getAuthor(),
+                feed.getChannel().getItems().size(),
+                feed.getChannel().getAtomLink().getHref(),
+                feed.getChannel().getImage().getHref());
+            long id = viewModel.addPodcast(podcast);
+            newPodcast.setId(id);
+          }
+
+          Episode episode = episodesViewModel.getEpisode(item.getTitle());
+          if (episode == null) {
+            episode = new Episode(newPodcast.getId(),
+                item.getGuid().getGuid(),
+                item.getTitle(),
+                item.getSubtitle(),
+                item.getPubDate(),
+                item.getDuration(),
+                item.getLink(),
+                item.getEnclosure().getUrl(),
+                item.getImage() == null ? feed.getChannel().getImage().getHref()
+                    : item.getImage().getHref(),
+                item.getDescription());
+            episode.setId(episodesViewModel.insertEpisode(episode));
+          }
+          long episodeId = episode.getId();
+
           songInfo = new SongInfo();
-          songInfo.setSongId(item.getGuid().getGuid());
+          songInfo.setSongId(String.valueOf(episodeId));
           songInfo.setSongName(item.getTitle());
           songInfo.setSongCover(
               item.getImage() == null ? feed.getChannel().getImage().getHref()
@@ -152,15 +190,18 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
           songInfo.setAlbumName(feed.getChannel().getTitle());
           songInfo.setAlbumArtist(feed.getChannel().getAuthor());
           songInfo.setAlbumCover(feed.getChannel().getImage().getHref());
-          songInfo.setAlbumId(feed.getChannel().getLink());
+          songInfo.setAlbumId(String.valueOf(newPodcast.getId()));
           songInfo.setTrackNumber(position);
           songInfo.setDescription(feed.getChannel().getAtomLink().getHref());
-          String filename = repository.isDownloaded(songInfo.getSongId(), songInfo.getAlbumId());
-          if (filename != null && !filename.equals("")) {
-            Log.e(TAG, filename);
-            File queueDir = DownloadFactory.getINSTANCE(context).getQueueDir();
-            songInfo.setSongUrl(queueDir.getAbsolutePath() + "/" + filename);
+          if (newPodcast != null) {
+            String filename = episodesViewModel.isDownloaded(episodeId);
+            if (filename != null && !filename.equals("")) {
+              Log.e(TAG, filename);
+              File queueDir = DownloadFactory.getINSTANCE(context).getQueueDir();
+              songInfo.setSongUrl(queueDir.getAbsolutePath() + "/" + filename);
+            }
           }
+          Log.e(TAG, "-->" + songInfo.getSongUrl());
           service.addSong(songInfo);
           instance.playMusicByInfo(songInfo);
         }
@@ -185,7 +226,7 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
             if (songInfo.getSongId().equals(item.getGuid().getGuid())) {
               switch (playbackStage.getStage()) {
                 case PlaybackStage.SWITCH:
-                case PlaybackStage.START :
+                case PlaybackStage.START:
                   holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_pause));
                   break;
                 case PlaybackStage.PAUSE:
@@ -221,9 +262,21 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
             }
           }
         } else {
+          Episode episode = new Episode(podcast.getId(),
+              item.getGuid().getGuid(),
+              item.getTitle(),
+              item.getSubtitle(),
+              item.getPubDate(),
+              item.getDuration(),
+              item.getLink(),
+              item.getEnclosure().getUrl(),
+              item.getImage().getHref(),
+              item.getDescription());
+          long episodeId = episodesViewModel.insertEpisode(episode);
+
           SongInfo songInfo = new SongInfo();
           Log.i(TAG, item.toString());
-          songInfo.setSongId(item.getGuid().getGuid());
+          songInfo.setSongId(String.valueOf(episodeId));
           songInfo.setSongName(item.getTitle());
           songInfo.setSongCover(
               item.getImage() == null ? feed.getChannel().getImage().getHref()
@@ -236,11 +289,13 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
           songInfo.setAlbumCover(feed.getChannel().getImage().getHref());
           songInfo.setAlbumId(feed.getChannel().getLink());
           songInfo.setDescription(feed.getChannel().getAtomLink().getHref());
-          String filename = repository.isDownloaded(songInfo.getSongId(), songInfo.getSongUrl());
-          if (filename != null && !filename.equals("")) {
-            File queueDir = DownloadFactory.getINSTANCE(context).getQueueDir();
-            songInfo.setSongUrl(queueDir.getAbsolutePath() + "/" + filename);
-            Log.e(TAG, songInfo.getSongUrl());
+          if (podcast != null) {
+            String filename = episodesViewModel.isDownloaded(episodeId);
+            if (filename != null && !filename.equals("")) {
+              File queueDir = DownloadFactory.getINSTANCE(context).getQueueDir();
+              songInfo.setSongUrl(queueDir.getAbsolutePath() + "/" + filename);
+              Log.e(TAG, songInfo.getSongUrl());
+            }
           }
           List<SongInfo> list = service.getINSTANCE().getPlayList();
           list.add(songInfo);

@@ -2,9 +2,12 @@ package per.funown.bocast.library.entity;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * <pre>
@@ -16,30 +19,16 @@ import java.util.Date;
  */
 @Entity
 public class SubscribedPodcast implements Serializable {
+
   @PrimaryKey(autoGenerate = true)
   private long id;
-  @ColumnInfo(name = "Podcast's name")
-  private String title;
-  @ColumnInfo(name = "author")
-  private String author;
-  @ColumnInfo(name = "the number of the podcast")
-  private int episodes;
-  @ColumnInfo(name = "the rss link of the podcast")
-  private String rssLink;
-  @ColumnInfo(name = "the link of the podcast's logo")
-  private String logoLink;
-
+  @ColumnInfo
+  private long podcastId;
   private Date updateTime;
-
   private Date subscribedTime;
 
-  public SubscribedPodcast(String title, String author, int episodes, String rssLink,
-      String logoLink, Date updateTime, Date subscribedTime) {
-    this.title = title;
-    this.author = author;
-    this.episodes = episodes;
-    this.rssLink = rssLink;
-    this.logoLink = logoLink;
+  public SubscribedPodcast(long podcastId, Date updateTime, Date subscribedTime) {
+    this.podcastId = podcastId;
     this.updateTime = updateTime;
     this.subscribedTime = subscribedTime;
   }
@@ -52,44 +41,12 @@ public class SubscribedPodcast implements Serializable {
     this.id = id;
   }
 
-  public String getTitle() {
-    return title;
+  public long getPodcastId() {
+    return podcastId;
   }
 
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public int getEpisodes() {
-    return episodes;
-  }
-
-  public void setEpisodes(int episodes) {
-    this.episodes = episodes;
-  }
-
-  public String getRssLink() {
-    return rssLink;
-  }
-
-  public void setRssLink(String rssLink) {
-    this.rssLink = rssLink;
-  }
-
-  public String getLogoLink() {
-    return logoLink;
-  }
-
-  public void setLogoLink(String logoLink) {
-    this.logoLink = logoLink;
-  }
-
-  public String getAuthor() {
-    return author;
-  }
-
-  public void setAuthor(String author) {
-    this.author = author;
+  public void setPodcastId(long podcastId) {
+    this.podcastId = podcastId;
   }
 
   public Date getUpdateTime() {
@@ -109,16 +66,22 @@ public class SubscribedPodcast implements Serializable {
   }
 
   @Override
-  public String toString() {
-    return "SubscribedPodcast{" +
-        "id=" + id +
-        ", title='" + title + '\'' +
-        ", author='" + author + '\'' +
-        ", episodes=" + episodes +
-        ", rssLink='" + rssLink + '\'' +
-        ", logoLink='" + logoLink + '\'' +
-        ", updateTime=" + updateTime +
-        ", subscribedTime=" + subscribedTime +
-        '}';
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    SubscribedPodcast that = (SubscribedPodcast) o;
+    return id == that.id &&
+        podcastId == that.podcastId &&
+        Objects.equals(updateTime, that.updateTime) &&
+        Objects.equals(subscribedTime, that.subscribedTime);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, podcastId, updateTime, subscribedTime);
   }
 }

@@ -38,7 +38,7 @@ public class SubscribedPodcastFragment extends Fragment {
     binding = FragmentSubscribedPodcastBinding.inflate(getLayoutInflater());
     binding.getRoot().setClickable(true);
     adapter = new SubscribedPodcastCellAdapter();
-    adapter.setRepository(viewModel.getSubscribedPodcastRepository());
+    adapter.setViewModel(viewModel);
     adapter.setPodcasts(new ArrayList<>());
     FragmentTransitionUtil.getINSTANCE().setManager(requireActivity().getSupportFragmentManager());
     adapter.setContainerId(binding.getRoot().getId());

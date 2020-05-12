@@ -2,13 +2,17 @@ package per.funown.bocast.modules.home.view.adapter;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.ImageView;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import com.alibaba.android.arouter.launcher.ARouter;
 import java.util.List;
 
 import java.util.Map;
+import per.funown.bocast.library.constant.ArouterConstant;
 import per.funown.bocast.library.model.ItunesResponseEntity;
 
 import android.view.View;
@@ -21,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import per.funown.bocast.library.utils.FragmentTransitionUtil;
 import per.funown.bocast.modules.home.R;
 import per.funown.bocast.library.entity.Genre;
 
@@ -94,6 +99,13 @@ public class RecommendationSectionAdapter extends
       adapter.setEntities(itunesResponseEntities);
       adapter.notifyDataSetChanged();
     });
+    holder.btn_more.setOnClickListener(v -> {
+      FragmentTransitionUtil instance = FragmentTransitionUtil.getINSTANCE();
+      instance.setManager(manager);
+      Fragment podcasts = (Fragment) ARouter.getInstance().build(ArouterConstant.FRAGMENT_PODCASTS)
+          .withString("genreId", genres[position].getItunesid()).navigation();
+      instance.transit(podcasts, containerId);
+    });
   }
 
   @Override
@@ -104,14 +116,15 @@ public class RecommendationSectionAdapter extends
   class RecommendationSectionHolder extends ViewHolder {
 
     private TextView title;
+    private ImageView btn_more;
     private RecyclerView panel;
 
 
     public RecommendationSectionHolder(@NonNull View itemView) {
       super(itemView);
+      btn_more = itemView.findViewById(R.id.btn_more);
       title = itemView.findViewById(R.id.section_title);
       panel = itemView.findViewById(R.id.recommendation_podcast_panel);
-
     }
   }
 }

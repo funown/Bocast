@@ -13,13 +13,14 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.lifecycle.LiveData;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
-import com.alibaba.android.arouter.facade.template.IProvider;
 import java.util.ArrayList;
 import java.util.List;
+import per.funown.bocast.library.entity.Podcast;
 import per.funown.bocast.library.model.RssChannel;
 import per.funown.bocast.library.model.RssFeed;
 import per.funown.bocast.library.entity.SubscribedPodcast;
 import per.funown.bocast.library.net.RssCacheUtil;
+import per.funown.bocast.library.repo.PodcastRepository;
 import per.funown.bocast.library.repo.SubscribedPodcastRepository;
 import per.funown.bocast.library.utils.DateUtils;
 import per.funown.bocast.library.utils.RssFetchUtils;
@@ -32,10 +33,11 @@ import per.funown.bocast.library.utils.RssFetchUtils;
  *     version: 1.0
  * </pre>
  */
-public class PollingIntentService extends Worker{
+public class PollingIntentService extends Worker {
 
   private static final String TAG = PollingIntentService.class.getSimpleName();
-  private SubscribedPodcastRepository repository;
+  private SubscribedPodcastRepository subscribedPodcastRepository;
+  private PodcastRepository podcastRepository;
   private LiveData<List<SubscribedPodcast>> allPodcasts;
   String GROUP_KEY_WORK_PODCAST = "per.bocast.UPDATE_PODCAST";
   private volatile List<Notification> newPodcastEpisodesNotifications = new ArrayList<>();
@@ -45,8 +47,9 @@ public class PollingIntentService extends Worker{
   public PollingIntentService(@NonNull Context context, @NonNull WorkerParameters workerParams) {
     super(context, workerParams);
     this.context = context;
-    repository = new SubscribedPodcastRepository(context);
-    allPodcasts = repository.getAllPodcasts();
+    subscribedPodcastRepository = new SubscribedPodcastRepository(context);
+    podcastRepository = new PodcastRepository(context);
+    allPodcasts = subscribedPodcastRepository.getAllPodcasts();
   }
 
   @NonNull
@@ -58,20 +61,23 @@ public class PollingIntentService extends Worker{
 
   private void polling() {
     List<SubscribedPodcast> podcasts = allPodcasts.getValue();
-    for (SubscribedPodcast podcast : podcasts) {
+
+    for (SubscribedPodcast subscribedPodcast : podcasts) {
+      Podcast podcast = podcastRepository.getPodcastById(subscribedPodcast.getPodcastId());
       RssFeed feed = RssFetchUtils.getFeed(podcast.getRssLink());
       if (feed != null) {
         RssChannel channel = feed.getChannel();
         if (channel.getItems().size() > podcast.getEpisodes()
             || DateUtils.stringToDate(channel.getItems().get(0).getPubDate())
-            .after(podcast.getUpdateTime())) {
+            .after(subscribedPodcast.getUpdateTime())) {
           RssCacheUtil.cacheFeed(podcast.getRssLink(), feed);
           podcast.setTitle(channel.getTitle());
           podcast.setLogoLink(channel.getImage().getHref());
           podcast.setAuthor(channel.getAuthor());
           podcast.setEpisodes(channel.getItems().size());
-          podcast.setUpdateTime(DateUtils.stringToDate(channel.getItems().get(0).getPubDate()));
-          repository.updatePodcast(podcast);
+          subscribedPodcast
+              .setUpdateTime(DateUtils.stringToDate(channel.getItems().get(0).getPubDate()));
+          subscribedPodcastRepository.updatePodcast(subscribedPodcast);
           isUpdated = true;
 
           Notification newEpisodeNotification =

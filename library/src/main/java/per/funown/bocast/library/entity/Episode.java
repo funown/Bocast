@@ -2,6 +2,7 @@ package per.funown.bocast.library.entity;
 
 import androidx.room.Entity;
 import androidx.room.ColumnInfo;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.Date;
@@ -20,60 +21,76 @@ import java.util.List;
 public class Episode implements Serializable {
 
   @PrimaryKey(autoGenerate = true)
-  private int id;
+  private long id;
+
+  private long podcastId;
 
   private String guid;
 
-  @ColumnInfo(name = "Episode_title")
+  @ColumnInfo
   private String title;
 
-  @ColumnInfo(name = "Subtitle")
+  @ColumnInfo
   private String subtitle;
 
-  @ColumnInfo(name = "Publish_date")
-  private Date pubDate;
+  @ColumnInfo
+  private String pubDate;
 
-  @ColumnInfo(name = "Author")
-  private String author;
+  @ColumnInfo
+  private String duration;
 
-  @ColumnInfo(name = "Duration")
-  private Double duration;
-
-  @ColumnInfo(name = "link")
+  @ColumnInfo
   private String link;
 
-  @ColumnInfo(name = "Music_source_url")
+  @ColumnInfo
   private String enclosure;
 
-  @ColumnInfo(name = "Image_source_url")
+  @ColumnInfo
   private String image;
 
-  @ColumnInfo(name = "ShowNotes")
+  @ColumnInfo
   private String showNotes;
-
-  @ColumnInfo(name = "tags")
-  private List<String> tags;
 
   public Episode() {}
 
-  public Episode(String guid, String title, String subtitle, Date pubDate, String author,
-      Double duration, String link, String enclosure, String image, String showNotes,
-      List<String> tags) {
+  @Ignore
+  public Episode(long podcastId, String guid, String title, String subtitle, String pubDate,
+      String duration, String link, String enclosure, String image,
+      String showNotes) {
+    this.podcastId = podcastId;
     this.guid = guid;
     this.title = title;
     this.subtitle = subtitle;
     this.pubDate = pubDate;
-    this.author = author;
     this.duration = duration;
     this.link = link;
     this.enclosure = enclosure;
     this.image = image;
     this.showNotes = showNotes;
-    this.tags = tags;
   }
 
-  public int getId() {
+  public long getId() {
     return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public long getPodcastId() {
+    return podcastId;
+  }
+
+  public void setPodcastId(long podcastId) {
+    this.podcastId = podcastId;
+  }
+
+  public String getGuid() {
+    return guid;
+  }
+
+  public void setGuid(String guid) {
+    this.guid = guid;
   }
 
   public String getTitle() {
@@ -88,31 +105,24 @@ public class Episode implements Serializable {
     return subtitle;
   }
 
-  public void setSubtitle(String subTitle) {
-    this.subtitle = subTitle;
+  public void setSubtitle(String subtitle) {
+    this.subtitle = subtitle;
   }
 
-  public Date getPubDate() {
+  public String getPubDate() {
     return pubDate;
   }
 
-  public void setPubDate(Date pubDate) {
+  public void setPubDate(String pubDate) {
     this.pubDate = pubDate;
   }
 
-  public String getAuthor() {
-    return author;
-  }
 
-  public void setAuthor(String author) {
-    this.author = author;
-  }
-
-  public Double getDuration() {
+  public String getDuration() {
     return duration;
   }
 
-  public void setDuration(Double duration) {
+  public void setDuration(String duration) {
     this.duration = duration;
   }
 
@@ -128,16 +138,16 @@ public class Episode implements Serializable {
     return enclosure;
   }
 
-  public void setEnclosure(String musicSrcUrl) {
-    this.enclosure = musicSrcUrl;
+  public void setEnclosure(String enclosure) {
+    this.enclosure = enclosure;
   }
 
   public String getImage() {
     return image;
   }
 
-  public void setImage(String imgSrcUrl) {
-    this.image = imgSrcUrl;
+  public void setImage(String image) {
+    this.image = image;
   }
 
   public String getShowNotes() {
@@ -146,40 +156,5 @@ public class Episode implements Serializable {
 
   public void setShowNotes(String showNotes) {
     this.showNotes = showNotes;
-  }
-
-  public List<String> getTags() {
-    return tags;
-  }
-
-  public void setTags(List<String> tags) {
-    this.tags = tags;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  public String getGuid() {
-    return guid;
-  }
-
-  public void setGuid(String guid) {
-    this.guid = guid;
-  }
-
-  public Episode clone() {
-    Episode episode = new Episode();
-    episode.setGuid(this.guid);
-    episode.setTags(this.tags);
-    episode.setLink(this.link);
-    episode.setTitle(this.title);
-    episode.setAuthor(this.author);
-    episode.setPubDate(this.pubDate);
-    episode.setDuration(this.duration);
-    episode.setShowNotes(this.showNotes);
-    episode.setImage(this.image);
-    episode.setEnclosure(this.enclosure);
-    return episode;
   }
 }

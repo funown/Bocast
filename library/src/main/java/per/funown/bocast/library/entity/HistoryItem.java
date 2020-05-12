@@ -2,6 +2,7 @@ package per.funown.bocast.library.entity;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -13,18 +14,14 @@ import java.util.Date;
  * </pre>
  */
 @Entity
-public class HistoryItem {
+public class HistoryItem implements Serializable {
 
+  private static final long serialVersionUID = -917402937706644024L;
   @PrimaryKey(autoGenerate = true)
   private long id;
-  private String podcast;
-  private String episodeId;
-  private String episode;
-  private String kind;
-  private String rssLink;
+  private long episodeId;
   private float percent;
   private float total;
-  private String imageUrl;
   private Date date;
 
   public HistoryItem() {
@@ -38,37 +35,15 @@ public class HistoryItem {
     this.total = total;
   }
 
-  public String getPodcast() {
-    return podcast;
-  }
-
-  public void setPodcast(String podcast) {
-    this.podcast = podcast;
-  }
-
-  public String getEpisodeId() {
+  public long getEpisodeId() {
     return episodeId;
   }
 
-  public void setEpisodeId(String episodeId) {
+  public void setEpisodeId(long episodeId) {
     this.episodeId = episodeId;
   }
 
-  public String getEpisode() {
-    return episode;
-  }
 
-  public void setEpisode(String episode) {
-    this.episode = episode;
-  }
-
-  public String getKind() {
-    return kind;
-  }
-
-  public void setKind(String kind) {
-    this.kind = kind;
-  }
 
   public float getPercent() {
     return percent;
@@ -94,19 +69,4 @@ public class HistoryItem {
     this.id = id;
   }
 
-  public String getRssLink() {
-    return rssLink;
-  }
-
-  public void setRssLink(String rssLink) {
-    this.rssLink = rssLink;
-  }
-
-  public String getImageUrl() {
-    return imageUrl;
-  }
-
-  public void setImageUrl(String imageUrl) {
-    this.imageUrl = imageUrl;
-  }
 }

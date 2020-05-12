@@ -8,9 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.AndroidViewModel;
 
-import per.funown.bocast.library.model.AtomLink;
 import per.funown.bocast.library.model.RssFeed;
+import per.funown.bocast.library.entity.Podcast;
 import per.funown.bocast.library.entity.SubscribedPodcast;
+import per.funown.bocast.library.repo.PodcastRepository;
 import per.funown.bocast.library.repo.SubscribedPodcastRepository;
 
 /**
@@ -24,40 +25,50 @@ import per.funown.bocast.library.repo.SubscribedPodcastRepository;
 public class SubscribedPodcastViewModel extends AndroidViewModel {
 
   private SubscribedPodcastRepository repository;
+  private PodcastRepository podcastRepository;
 
   public SubscribedPodcastViewModel(@NonNull Application application) {
     super(application);
     repository = new SubscribedPodcastRepository(application);
+    podcastRepository = new PodcastRepository(application);
   }
 
   public LiveData<List<SubscribedPodcast>> getAllPodcasts() {
     return repository.getAllPodcasts();
   }
 
-  public void subscribe(SubscribedPodcast podcast) {
+  public Podcast getPodcast(long podcastId) {
+    return podcastRepository.getPodcastById(podcastId);
+  }
+
+  public SubscribedPodcast getSubscribedPodcast(long podcastId) {
+    return repository.getPodcast(podcastId);
+  }
+
+  public void subscribe(Podcast podcast) {
+    long podcastId = podcastRepository.addPodcast(podcast);
+    podcast.setId(podcastId);
     repository.subscribe(podcast);
   }
 
   public void unsubscribe(SubscribedPodcast podcast) {
+    podcastRepository.deletePodcast(podcastRepository.getPodcastById(podcast.getPodcastId()));
     repository.unsubscribe(podcast);
   }
 
-  public boolean isSubscribed(RssFeed item) {
-    LiveData<List<SubscribedPodcast>> allPodcasts = getAllPodcasts();
-    List<SubscribedPodcast> value = allPodcasts.getValue();
-    if (value != null && value.size() > 0) {
-      for (SubscribedPodcast podcast : value) {
-        AtomLink atomLink = item.getChannel().getAtomLink();
-        if (atomLink != null) {
-          if (podcast.getRssLink().equals(atomLink.getHref())) {
-            return true;
-          }
-        }
-        else if (podcast.getTitle().equals(item.getChannel().getTitle())) {
-          return true;
-        }
+  public long isSubscribed(RssFeed item) {
+    Podcast podcast = podcastRepository
+        .getPodcastByRss(item.getChannel().getAtomLink().getHref());
+    if (podcast != null) {
+      SubscribedPodcast subscribedPodcast = repository.getPodcast(podcast.getId());
+      if (subscribedPodcast != null) {
+        return subscribedPodcast.getPodcastId();
       }
     }
-    return false;
+    return 0;
+  }
+
+  public long addPodcast(Podcast podcast) {
+    return podcastRepository.addPodcast(podcast);
   }
 }

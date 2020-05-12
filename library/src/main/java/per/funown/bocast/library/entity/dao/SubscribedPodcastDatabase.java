@@ -6,6 +6,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverters;
 import per.funown.bocast.library.R;
+import per.funown.bocast.library.entity.Podcast;
 import per.funown.bocast.library.entity.SubscribedPodcast;
 import per.funown.bocast.library.utils.Converters;
 
@@ -17,7 +18,7 @@ import per.funown.bocast.library.utils.Converters;
  *     version: 1.0
  * </pre>
  */
-@Database(entities = SubscribedPodcast.class, version = 1, exportSchema = false)
+@Database(entities = {SubscribedPodcast.class}, version = 1, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class SubscribedPodcastDatabase extends RoomDatabase {
   private static SubscribedPodcastDatabase INSTANCE;

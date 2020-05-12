@@ -3,14 +3,11 @@ package per.funown.bocast.modules.user.adapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
-import android.content.res.ColorStateList;
-import android.os.FileUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -22,28 +19,26 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.liulishuo.filedownloader.util.FileDownloadUtils;
-import com.liulishuo.okdownload.DownloadListener;
 import com.liulishuo.okdownload.DownloadTask;
 import com.liulishuo.okdownload.DownloadTask.Builder;
-import com.liulishuo.okdownload.OkDownload;
 import com.liulishuo.okdownload.StatusUtil;
 import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
 import com.lzx.starrysky.provider.SongInfo;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 import me.tankery.lib.circularseekbar.CircularSeekBar;
 import per.funown.bocast.library.constant.ArouterConstant;
 import per.funown.bocast.library.entity.DownloadEpisode;
 import per.funown.bocast.library.download.BaseDownloadListener;
 import per.funown.bocast.library.download.DownloadFactory;
 import per.funown.bocast.library.download.DownloadStatus;
+import per.funown.bocast.library.entity.Episode;
+import per.funown.bocast.library.entity.Podcast;
 import per.funown.bocast.library.model.RssFeed;
 import per.funown.bocast.library.model.RssItem;
 import per.funown.bocast.library.repo.DownloadedEpisodeRepository;
-import per.funown.bocast.library.service.MusicService;
+import per.funown.bocast.library.repo.EpisodeRepository;
+import per.funown.bocast.library.repo.PodcastRepository;
 import per.funown.bocast.library.utils.FileUtil;
 import per.funown.bocast.library.utils.FragmentTransitionUtil;
 import per.funown.bocast.library.utils.ItemTouchHelperAdapter;
@@ -66,7 +61,9 @@ public class DownloadCellAdapter extends Adapter<DownloadCellHolder> implements
   private static final String TAG = DownloadCellAdapter.class.getSimpleName();
   private List<DownloadTask> tasks;
   private List<BaseDownloadListener> listeners = new ArrayList<>();
-  private DownloadedEpisodeRepository repository;
+  private DownloadedEpisodeRepository downloadedEpisodeRepository;
+  private PodcastRepository podcastRepository;
+  private EpisodeRepository episodeRepository;
   boolean isDownloading;
   DownloadFactory instance;
   Context context;
@@ -80,8 +77,8 @@ public class DownloadCellAdapter extends Adapter<DownloadCellHolder> implements
     this.context = context;
     tasks = new ArrayList<>();
     instance = DownloadFactory.getINSTANCE(context);
-    repository = new DownloadedEpisodeRepository(context);
-    List<DownloadEpisode> allDownloadEpisodes = repository.getAllDownloadEpisodes();
+    downloadedEpisodeRepository = new DownloadedEpisodeRepository(context);
+    List<DownloadEpisode> allDownloadEpisodes = downloadedEpisodeRepository.getAllDownloadEpisodes();
     for (DownloadEpisode episode : allDownloadEpisodes) {
       DownloadTask task = new Builder(episode.getUrl(), instance.getQueueDir())
           .setFilename(episode.getFilename())
@@ -119,12 +116,14 @@ public class DownloadCellAdapter extends Adapter<DownloadCellHolder> implements
   @Override
   public void onBindViewHolder(@NonNull DownloadCellHolder holder, int position) {
     DownloadTask task = tasks.get(position);
-    DownloadEpisode item = (DownloadEpisode) task.getTag();
-    holder.podcastLogo.setImageURI(item.getImageUri());
-    holder.episodeTitle.setText(item.getEpisodeTitle());
-    holder.author.setText(item.getPodcast());
+    DownloadEpisode downloadEpisode = (DownloadEpisode) task.getTag();
+    Episode item = episodeRepository.getEpisodeById(downloadEpisode.getEpisodeId());
+    Podcast podcast = podcastRepository.getPodcastById(item.getPodcastId());
+    holder.podcastLogo.setImageURI(item.getImage());
+    holder.episodeTitle.setText(item.getTitle());
+    holder.author.setText(podcast.getTitle());
     BreakpointInfo currentInfo = StatusUtil.getCurrentInfo(task);
-    BaseDownloadListener baseDownloadListener = new BaseDownloadListener(item, context,
+    BaseDownloadListener baseDownloadListener = new BaseDownloadListener(downloadEpisode, context,
         holder.progressBar, holder.btn_download);
     instance.changeListener(task, baseDownloadListener);
     listeners.add(baseDownloadListener);
@@ -133,8 +132,8 @@ public class DownloadCellAdapter extends Adapter<DownloadCellHolder> implements
       holder.progressBar.setMax(currentInfo.getTotalLength());
       holder.progressBar.setProgress(currentInfo.getTotalOffset());
     } else {
-      holder.progressBar.setMax(item.getTotal());
-      holder.progressBar.setProgress(item.getOffset());
+      holder.progressBar.setMax(downloadEpisode.getTotal());
+      holder.progressBar.setProgress(downloadEpisode.getOffset());
     }
     holder.progressBar.setVisibility(View.VISIBLE);
     isDownloading = baseDownloadListener.getItem().getStatus()
@@ -156,7 +155,7 @@ public class DownloadCellAdapter extends Adapter<DownloadCellHolder> implements
       Log.e(TAG, baseDownloadListener.getItem().getStatus());
       if (baseDownloadListener.getItem().getStatus().equals(DownloadStatus.DOWNLOADING.name())) {
         instance.stop(task, baseDownloadListener);
-        repository.addDownload(baseDownloadListener.getItem());
+        downloadedEpisodeRepository.addDownload(baseDownloadListener.getItem());
       } else if (baseDownloadListener.getItem().getStatus().equals(DownloadStatus.PAUSE.name())) {
         Log.e(TAG, "restart");
         instance.restart(task.getUrl(), baseDownloadListener);
@@ -166,14 +165,14 @@ public class DownloadCellAdapter extends Adapter<DownloadCellHolder> implements
     holder.episodeTitle.setOnClickListener(v -> {
       Fragment fragment = (Fragment) ARouter.getInstance()
           .build(ArouterConstant.FRAGMENT_PODCAST_EPISODE_DETAIL)
-          .withString("feed", item.getRssLink())
+          .withString("feed", podcast.getRssLink())
           .withString("guid", item.getGuid()).navigation();
       FragmentTransitionUtil.getINSTANCE().transit(fragment, containerId);
     });
 
     holder.itemView.setOnClickListener(v -> {
       if (baseDownloadListener.getItem().getStatus().equals(DownloadStatus.FINISHED.name())) {
-        RssFeed feed = RssFetchUtils.fetchRss(item.getRssLink());
+        RssFeed feed = RssFetchUtils.fetchRss(podcast.getRssLink());
         List<RssItem> items = feed.getChannel().getItems();
         for (RssItem rssItem : items) {
           if (rssItem.getGuid().getGuid().equals(item.getGuid())) {
@@ -215,9 +214,9 @@ public class DownloadCellAdapter extends Adapter<DownloadCellHolder> implements
     tasks.remove(task);
     listeners.remove(downloadListener);
     instance.stop(task, downloadListener);
-    DownloadEpisode downloadEpisode = repository.getDownloadEpisode(task.getUrl());
+    DownloadEpisode downloadEpisode = downloadedEpisodeRepository.getDownloadEpisode(task.getUrl());
     if (downloadEpisode != null) {
-      repository.setUnDownloaded(downloadEpisode);
+      downloadedEpisodeRepository.setUnDownloaded(downloadEpisode);
     }
     AlertDialog alertDialog = new MaterialAlertDialogBuilder(context)
         .setMessage(context.getString(R.string.file_delete))
@@ -229,7 +228,7 @@ public class DownloadCellAdapter extends Adapter<DownloadCellHolder> implements
             notifyItemInserted(adapterPosition);
             if (item.getStatus().equals(DownloadStatus.FINISHED.name())
                 || item.getStatus().equals(DownloadStatus.PAUSE.name())) {
-              repository.addDownload(downloadEpisode);
+              downloadedEpisodeRepository.addDownload(downloadEpisode);
             } else if (item.getStatus().equals(DownloadStatus.DOWNLOADING)) {
               instance.addTask(task, downloadListener);
             }

@@ -27,7 +27,7 @@ public abstract class PodcastDatabase extends RoomDatabase {
   public static synchronized PodcastDatabase getInstance(Context context) {
     if (INSTANCE == null) {
       INSTANCE = Room.databaseBuilder(context.getApplicationContext(), PodcastDatabase.class,
-          context.getString(R.string.Podcast_database_name))
+          context.getString(R.string.Podcast_database_name)).allowMainThreadQueries()
           .build();
     }
     return INSTANCE;

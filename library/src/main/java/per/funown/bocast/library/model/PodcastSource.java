@@ -58,7 +58,7 @@ public class PodcastSource extends AsyncTask<Genre, Void, List<ItunesResponseEnt
       ItunesApiService itunesApiService = NetManager.getInstance().getRetrofit()
           .create(ItunesApiService.class);
       iTunesRssTopPodcastService iTunesRssTopPodcastService = NetManager.getInstance()
-          .getITunesRssTopPodcastService(limit, genre.getiTunesId());
+          .getITunesRssTopPodcastService(limit, genre.getItunesid());
       Response<JsonObject> execute = iTunesRssTopPodcastService.getTopPodcastsInGenre().execute();
       JsonObject body = execute.body();
       if (execute.isSuccessful() && !body.isJsonNull()) {

@@ -20,18 +20,19 @@ public class Genre {
   @PrimaryKey(autoGenerate = true)
   private int id;
 
-  @ColumnInfo(name = "the name of genre")
+  @ColumnInfo
   private String genre;
 
-  @ColumnInfo(name = "the id of genre in iTunes")
-  public String iTunesId;
+  @ColumnInfo
+  private String itunesid;
 
+  @ColumnInfo
   private int weight;
 
-  public Genre(String genre, int weight, String iTunesId) {
+  public Genre(String genre, int weight, String itunesid) {
     this.genre = genre;
     this.weight = weight;
-    this.iTunesId = iTunesId;
+    this.itunesid = itunesid;
   }
 
   public int getId() {
@@ -58,12 +59,12 @@ public class Genre {
     this.weight = weight;
   }
 
-  public String getiTunesId() {
-    return iTunesId;
+  public String getItunesid() {
+    return itunesid;
   }
 
-  public void setiTunesId(String iTunesId) {
-    this.iTunesId = iTunesId;
+  public void setItunesid(String itunesid) {
+    this.itunesid = itunesid;
   }
 
   @Override
@@ -71,7 +72,7 @@ public class Genre {
     return "Genre{" +
         "id=" + id +
         ", genre='" + genre + '\'' +
-        ", iTunesId='" + iTunesId + '\'' +
+        ", iTunesId='" + itunesid + '\'' +
         ", weight=" + weight +
         '}';
   }
@@ -88,11 +89,11 @@ public class Genre {
     return id == genre1.id &&
         weight == genre1.weight &&
         Objects.equals(genre, genre1.genre) &&
-        Objects.equals(iTunesId, genre1.iTunesId);
+        Objects.equals(itunesid, genre1.itunesid);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, genre, iTunesId, weight);
+    return Objects.hash(id, genre, itunesid, weight);
   }
 }

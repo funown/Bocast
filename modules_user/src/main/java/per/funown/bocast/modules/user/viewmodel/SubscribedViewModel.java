@@ -5,7 +5,9 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import java.util.List;
+import per.funown.bocast.library.entity.Podcast;
 import per.funown.bocast.library.entity.SubscribedPodcast;
+import per.funown.bocast.library.repo.PodcastRepository;
 import per.funown.bocast.library.repo.SubscribedPodcastRepository;
 
 /**
@@ -19,10 +21,12 @@ import per.funown.bocast.library.repo.SubscribedPodcastRepository;
 public class SubscribedViewModel extends AndroidViewModel {
 
   private SubscribedPodcastRepository subscribedPodcastRepository;
+  private PodcastRepository podcastRepository;
 
   public SubscribedViewModel(@NonNull Application application) {
     super(application);
     subscribedPodcastRepository = new SubscribedPodcastRepository(application);
+    podcastRepository = new PodcastRepository(application);
   }
 
   public LiveData<List<SubscribedPodcast>> getSubscribedPodcastList() {
@@ -31,5 +35,23 @@ public class SubscribedViewModel extends AndroidViewModel {
 
   public SubscribedPodcastRepository getSubscribedPodcastRepository() {
     return subscribedPodcastRepository;
+  }
+
+  public Podcast getPodcast(long podcastId) {
+    return podcastRepository.getPodcastById(podcastId);
+  }
+
+  public SubscribedPodcast getSubscribedPodcast(long podcastId) {
+    return subscribedPodcastRepository.getPodcast(podcastId);
+  }
+
+  public void subscribe(Podcast podcast) {
+    podcastRepository.addPodcast(podcast);
+    subscribedPodcastRepository.subscribe(podcast);
+  }
+
+  public void unsubscribe(SubscribedPodcast podcast) {
+    podcastRepository.deletePodcast(podcastRepository.getPodcastById(podcast.getPodcastId()));
+    subscribedPodcastRepository.unsubscribe(podcast);
   }
 }

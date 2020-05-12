@@ -5,7 +5,11 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import java.util.List;
+import per.funown.bocast.library.entity.Episode;
 import per.funown.bocast.library.entity.HistoryItem;
+import per.funown.bocast.library.entity.Podcast;
+import per.funown.bocast.library.repo.EpisodeRepository;
+import per.funown.bocast.library.repo.PodcastRepository;
 
 /**
  * <pre>
@@ -17,13 +21,17 @@ import per.funown.bocast.library.entity.HistoryItem;
  */
 public class HistoryViewModel extends AndroidViewModel {
 
-  private HistoryItemRepository repository;
+  private HistoryItemRepository historyItemRepository;
+  private EpisodeRepository episodeRepository;
+  private PodcastRepository podcastRepository;
   private LiveData<List<HistoryItem>> items;
 
   public HistoryViewModel(@NonNull Application application) {
     super(application);
-    repository = new HistoryItemRepository(application);
-    items = repository.getItems();
+    historyItemRepository = new HistoryItemRepository(application);
+    episodeRepository = new EpisodeRepository(application);
+    podcastRepository = new PodcastRepository(application);
+    items = historyItemRepository.getItems();
   }
 
   public LiveData<List<HistoryItem>> getItems() {
@@ -31,18 +39,26 @@ public class HistoryViewModel extends AndroidViewModel {
   }
 
   public void addHistory(HistoryItem... items) {
-    repository.addHistory(items);
+    historyItemRepository.addHistory(items);
   }
 
   public void updateHistory(HistoryItem... items) {
-    repository.updateHistory(items);
+    historyItemRepository.updateHistory(items);
   }
 
   public void deleteHistory(HistoryItem... items) {
-    repository.deleteHistory(items);
+    historyItemRepository.deleteHistory(items);
   }
 
   public void deleteAll() {
-    repository.deleteAllHistory();
+    historyItemRepository.deleteAllHistory();
+  }
+
+  public Episode getEpisode(long episodeId) {
+    return episodeRepository.getEpisodeById(episodeId);
+  }
+
+  public Podcast getPodcast(long podcastId) {
+    return podcastRepository.getPodcastById(podcastId);
   }
 }

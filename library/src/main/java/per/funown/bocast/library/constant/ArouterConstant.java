@@ -11,8 +11,9 @@ package per.funown.bocast.library.constant;
 public class ArouterConstant {
 
   public static final String FRAGMENT_HOME = "/home/home";
-  public static final String FRAGMENT_PODCAST_DETAIL = "/home/podcast";
+  public static final String FRAGMENT_PODCAST_DETAIL = "/home/podcasts/podcast";
   public static final String FRAGMENT_PODCAST_EPISODE_DETAIL = "/home/podcast/episode";
+  public static final String FRAGMENT_PODCASTS = "/home/podcasts";
 
   public static final String FRAGMENT_LOGIN = "/login/login";
   public static final String FRAGMENT_SIGNUP = "/login/signup";

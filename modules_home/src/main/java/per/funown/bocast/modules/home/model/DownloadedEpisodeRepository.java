@@ -29,11 +29,11 @@ public class DownloadedEpisodeRepository {
     episodes = dao.getLiveDataAll();
   }
 
-  public String isDownloaded(String guid, String podcastId) {
+  public String isDownloaded(long episodeId) {
     List<DownloadEpisode> episodeList = dao.getAll();
     if (episodeList != null) {
       for (DownloadEpisode episode : episodeList) {
-        if (episode.getGuid().equals(guid) && podcastId == episode.getPodcastId()) {
+        if (episode.getEpisodeId() == episodeId) {
           return episode.getFilename();
         }
       }

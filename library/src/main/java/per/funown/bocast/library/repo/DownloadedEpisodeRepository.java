@@ -29,7 +29,7 @@ public class DownloadedEpisodeRepository {
     episodes = dao.getLiveDataAll();
   }
 
-  public String isDownloaded(String guid, String podcastId) {
+  public String isDownloaded(long episodeId) {
     List<DownloadEpisode> episodeList = null;
     try {
       episodeList = new GetAllAsyncTask(dao).execute().get();
@@ -40,7 +40,7 @@ public class DownloadedEpisodeRepository {
     }
     if (episodeList != null) {
       for (DownloadEpisode episode : episodeList) {
-        if (episode.getGuid().equals(guid) && episode.getPodcastId().equals(podcastId)) {
+        if (episode.getEpisodeId() == episodeId) {
           return episode.getFilename();
         }
       }
@@ -48,7 +48,7 @@ public class DownloadedEpisodeRepository {
     return null;
   }
 
-  public DownloadEpisode getEpisode(String guid, String podcastId) {
+  public DownloadEpisode getEpisode(long episodeId) {
     List<DownloadEpisode> episodeList = null;
     try {
       episodeList = new GetAllAsyncTask(dao).execute().get();
@@ -57,11 +57,9 @@ public class DownloadedEpisodeRepository {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    Log.e(TAG, podcastId + "-->"+guid);
     if (episodeList != null) {
       for (DownloadEpisode episode : episodeList) {
-        Log.e(TAG, episode.getPodcastId() + "-->"+episode.getGuid());
-        if (episode.getGuid().equals(guid) && episode.getPodcastId().equals(podcastId)) {
+        if (episode.getEpisodeId() == episodeId) {
           return episode;
         }
       }

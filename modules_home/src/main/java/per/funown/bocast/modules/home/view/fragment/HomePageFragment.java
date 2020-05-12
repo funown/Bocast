@@ -23,6 +23,7 @@ import per.funown.bocast.modules.home.databinding.FragmentHomePageBinding;
 import per.funown.bocast.modules.home.model.PodcastViewModel;
 import per.funown.bocast.modules.home.model.SubscribedPodcastViewModel;
 import per.funown.bocast.modules.home.view.adapter.PodcastCellAdapter;
+import per.funown.bocast.modules.home.view.adapter.PodcastRssCellAdapter;
 import per.funown.bocast.modules.home.view.adapter.RecommendationSectionAdapter;
 
 /**
@@ -35,6 +36,7 @@ public class HomePageFragment extends Fragment {
   FragmentHomePageBinding binding;
 
   PodcastCellAdapter podcastCellAdapter;
+  PodcastRssCellAdapter podcastRssCellAdapter;
   RecommendationSectionAdapter recommendationSectionAdapter;
 
   PodcastViewModel podcastViewModel;
@@ -65,10 +67,13 @@ public class HomePageFragment extends Fragment {
     LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
     layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
     binding.SubscribedPodcastPanel.setLayoutManager(layoutManager);
-    podcastCellAdapter = new PodcastCellAdapter();
-    podcastCellAdapter.setManager(requireActivity().getSupportFragmentManager());
-    podcastCellAdapter.setContainerId(containerId);
-    binding.SubscribedPodcastPanel.setAdapter(podcastCellAdapter);
+    podcastRssCellAdapter = new PodcastRssCellAdapter();
+    podcastRssCellAdapter.setContainerId(containerId);
+    podcastRssCellAdapter.setManager(requireActivity().getSupportFragmentManager());
+//    podcastCellAdapter = new PodcastCellAdapter();
+//    podcastCellAdapter.setManager(requireActivity().getSupportFragmentManager());
+//    podcastCellAdapter.setContainerId(containerId);
+    binding.SubscribedPodcastPanel.setAdapter(podcastRssCellAdapter);
 
     recommendationSectionAdapter = new RecommendationSectionAdapter();
     recommendationSectionAdapter.setContainerId(containerId);
@@ -84,8 +89,8 @@ public class HomePageFragment extends Fragment {
     if (subscribedPodcastViewModel.getAllPodcasts() != null) {
       subscribedPodcastViewModel.getAllPodcasts()
           .observe(getViewLifecycleOwner(), subscribedPodcasts -> {
-            podcastCellAdapter.setSubscribedPodcasts(subscribedPodcasts);
-            podcastCellAdapter.notifyDataSetChanged();
+            podcastRssCellAdapter.setSubscribedPodcasts(subscribedPodcasts, subscribedPodcastViewModel);
+            podcastRssCellAdapter.notifyDataSetChanged();
           });
     }
 

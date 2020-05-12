@@ -306,10 +306,9 @@ public class PlayerFragment extends Fragment {
     binding.btnDownload.setColorFilter(getContext().getColor(R.color.grey));
     binding.btnDownload.setImageDrawable(getContext().getDrawable(R.drawable.ic_download));
     if (songInfo != null) {
-      Log.i(TAG, songInfo.getSongName());
       DownloadTask task = factory.getTask(songInfo.getSongUrl());
       DownloadEpisode downloadEpisode = viewModel
-          .getDownloadEpisode(songInfo.getSongId(), songInfo.getAlbumId());
+          .getDownloadEpisode(Long.valueOf(songInfo.getSongId()));
       if (downloadEpisode != null) {
         if (downloadEpisode.getStatus().equals(DownloadStatus.FINISHED.name())) {
           binding.btnDownload.setClickable(false);
@@ -370,17 +369,12 @@ public class PlayerFragment extends Fragment {
         }
       } else {
         int i = songInfo.getSongUrl().lastIndexOf("/");
+
         String filename = songInfo.getSongUrl().substring(i + 1);
         DownloadEpisode episode = new DownloadEpisode();
-        episode.setEpisode(songInfo.getTrackNumber());
         episode.setFilename(filename);
-        episode.setEpisodeTitle(songInfo.getSongName());
-        episode.setPodcast(songInfo.getAlbumName());
-        episode.setPodcastId(songInfo.getAlbumId());
-        episode.setImageUri(songInfo.getAlbumCover());
-        episode.setGuid(songInfo.getSongId());
+        episode.setEpisodeId(Long.valueOf(songInfo.getSongId()));
         episode.setStatus(DownloadStatus.DOWNLOADING);
-        episode.setRssLink(songInfo.getDescription());
         episode.setUrl(songInfo.getSongUrl());
         downloadListener = new BaseDownloadListener(episode, requireContext(),
             binding.downloadProgress,

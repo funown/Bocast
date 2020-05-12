@@ -38,6 +38,6 @@ public interface HistoryItemDao {
   @Query("DELETE FROM HistoryItem")
   void dropTable();
 
-  @Query("SELECT * FROM HistoryItem WHERE episodeId LIKE :episodeId")
-  HistoryItem getById(String episodeId);
+  @Query("SELECT * FROM HistoryItem WHERE episodeId=:episodeId")
+  HistoryItem getById(long episodeId);
 }

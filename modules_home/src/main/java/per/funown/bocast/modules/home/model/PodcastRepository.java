@@ -11,7 +11,7 @@ import java.util.Set;
 import per.funown.bocast.library.net.NetworkState;
 import per.funown.bocast.library.entity.Genre;
 import per.funown.bocast.library.model.ItunesResponseEntity;
-import per.funown.bocast.library.utils.TopPodcastSourceFactory;
+import per.funown.bocast.library.dataSource.TopPodcastSourceFactory;
 
 /**
  * <pre>

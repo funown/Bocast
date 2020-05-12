@@ -12,11 +12,13 @@ import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import com.alibaba.android.arouter.launcher.ARouter;
 import per.funown.bocast.library.constant.ArouterConstant;
+import per.funown.bocast.library.entity.Podcast;
 import per.funown.bocast.library.entity.SubscribedPodcast;
 import per.funown.bocast.library.repo.SubscribedPodcastRepository;
 import per.funown.bocast.library.utils.FragmentTransitionUtil;
 import per.funown.bocast.modules.user.R;
 import per.funown.bocast.modules.user.adapter.SubscribedPodcastCellAdapter.SubscribedPodcastCellHolder;
+import per.funown.bocast.modules.user.viewmodel.SubscribedViewModel;
 
 /**
  * <pre>
@@ -29,7 +31,7 @@ import per.funown.bocast.modules.user.adapter.SubscribedPodcastCellAdapter.Subsc
 public class SubscribedPodcastCellAdapter extends Adapter<SubscribedPodcastCellHolder> {
 
   private static final String TAG = SubscribedPodcastCellAdapter.class.getSimpleName();
-  private SubscribedPodcastRepository repository;
+  private SubscribedViewModel viewModel;
   private List<SubscribedPodcast> podcasts;
   private int containerId;
 
@@ -37,8 +39,8 @@ public class SubscribedPodcastCellAdapter extends Adapter<SubscribedPodcastCellH
     this.podcasts = podcasts;
   }
 
-  public void setRepository(SubscribedPodcastRepository repository) {
-    this.repository = repository;
+  public void setViewModel(SubscribedViewModel viewModel) {
+    this.viewModel = viewModel;
   }
 
   public void setContainerId(int containerId) {
@@ -55,7 +57,8 @@ public class SubscribedPodcastCellAdapter extends Adapter<SubscribedPodcastCellH
 
   @Override
   public void onBindViewHolder(@NonNull SubscribedPodcastCellHolder holder, int position) {
-    SubscribedPodcast podcast = podcasts.get(position);
+    SubscribedPodcast subscribedPodcast = podcasts.get(position);
+    Podcast podcast = viewModel.getPodcast(subscribedPodcast.getPodcastId());
     holder.author.setText(podcast.getAuthor());
     holder.podcastTitle.setText(podcast.getTitle());
     holder.logo.setImageURI(podcast.getLogoLink());
@@ -68,7 +71,7 @@ public class SubscribedPodcastCellAdapter extends Adapter<SubscribedPodcastCellH
       FragmentTransitionUtil.getINSTANCE().transit(podcastFragment, containerId);
     });
     holder.itemView.findViewById(R.id.delete).setOnClickListener(v -> {
-      repository.unsubscribe(podcast);
+      viewModel.unsubscribe(subscribedPodcast);
     });
   }
 

@@ -1,15 +1,20 @@
 package per.funown.bocast.library.repo;
 
 import android.os.AsyncTask;
+import android.util.Log;
+import java.util.Date;
 import java.util.List;
 
 import android.content.Context;
 
 import androidx.lifecycle.LiveData;
 
+import java.util.concurrent.ExecutionException;
+import per.funown.bocast.library.entity.Podcast;
 import per.funown.bocast.library.entity.SubscribedPodcast;
 import per.funown.bocast.library.entity.dao.SubscribedPodcastDatabase;
 import per.funown.bocast.library.entity.dao.SubscribedPodcastsDao;
+import per.funown.bocast.library.repo.PodcastRepository.GetPodcastByIdAsyncTask;
 
 /**
  * <pre>
@@ -21,6 +26,7 @@ import per.funown.bocast.library.entity.dao.SubscribedPodcastsDao;
  */
 public class SubscribedPodcastRepository {
 
+  private static final String TAG = SubscribedPodcastRepository.class.getSimpleName();
   private SubscribedPodcastsDao dao;
   private LiveData<List<SubscribedPodcast>> allSubscribedPodcasts;
 
@@ -35,8 +41,11 @@ public class SubscribedPodcastRepository {
     return allSubscribedPodcasts;
   }
 
-  public void subscribe(SubscribedPodcast podcast) {
-    new SubscribePodcastAsyncTask(dao).execute(podcast);
+  public void subscribe(Podcast podcast) {
+    Log.e(TAG, podcast.toString());
+    SubscribedPodcast subscribedPodcast = new SubscribedPodcast(podcast.getId(), new Date(),
+        new Date());
+    new SubscribePodcastAsyncTask(dao).execute(subscribedPodcast);
   }
 
   public void unsubscribe(SubscribedPodcast podcast) {
@@ -45,6 +54,17 @@ public class SubscribedPodcastRepository {
 
   public void updatePodcast(SubscribedPodcast... podcasts) {
     new UpdateSubscribedPodcastsAsyncTask(dao).execute(podcasts);
+  }
+
+  public SubscribedPodcast getPodcast(long podcastId) {
+    try {
+      return new GetSubscribedPodcastsAsyncTask(dao).execute(podcastId).get();
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   // 订阅
@@ -103,6 +123,24 @@ public class SubscribedPodcastRepository {
     protected Void doInBackground(SubscribedPodcast... podcasts) {
       dao.deleteAll();
       return null;
+    }
+  }
+
+  static class GetSubscribedPodcastsAsyncTask extends AsyncTask<Long, Void, SubscribedPodcast> {
+    private SubscribedPodcastsDao dao;
+
+    public GetSubscribedPodcastsAsyncTask(SubscribedPodcastsDao dao) {
+      this.dao = dao;
+    }
+
+    @Override
+    protected SubscribedPodcast doInBackground(Long... longs) {
+      return dao.getPodcastByPodcastId(longs[0]);
+    }
+
+    @Override
+    protected void onPostExecute(SubscribedPodcast subscribedPodcast) {
+      super.onPostExecute(subscribedPodcast);
     }
   }
 

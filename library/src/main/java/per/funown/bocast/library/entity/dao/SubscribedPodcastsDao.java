@@ -1,5 +1,7 @@
 package per.funown.bocast.library.entity.dao;
 
+import static androidx.room.OnConflictStrategy.REPLACE;
+
 import java.util.List;
 
 import androidx.room.Dao;
@@ -21,7 +23,7 @@ import per.funown.bocast.library.entity.SubscribedPodcast;
  */
 @Dao
 public interface SubscribedPodcastsDao {
-  @Insert
+  @Insert(onConflict = REPLACE)
   void insertPodcast(SubscribedPodcast... podcasts);
   @Delete
   void deletePodcast(SubscribedPodcast... podcasts);
@@ -31,4 +33,7 @@ public interface SubscribedPodcastsDao {
   LiveData<List<SubscribedPodcast>> getAll();
   @Query("DELETE FROM SubscribedPodcast")
   void deleteAll();
+  @Query("SELECT * FROM SubscribedPodcast WHERE podcastId == :podcastId LIMIT 1")
+  SubscribedPodcast getPodcastByPodcastId(long podcastId);
+
 }

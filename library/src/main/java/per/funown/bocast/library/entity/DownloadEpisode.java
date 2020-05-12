@@ -1,5 +1,6 @@
 package per.funown.bocast.library.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import java.io.Serializable;
@@ -24,21 +25,7 @@ public class DownloadEpisode implements Serializable {
   @PrimaryKey(autoGenerate = true)
   private long id;
 
-  @ColumnInfo(name = "Episode's key")
-  private String guid;
-
-  @ColumnInfo(name = "podcast's name")
-  private String podcast;
-
-  private String podcastId;
-
-  private String imageUri;
-
-  private String rssLink;
-
-  private String episodeTitle;
-
-  private int episode;
+  private long EpisodeId;
 
   private String filename;
 
@@ -50,40 +37,17 @@ public class DownloadEpisode implements Serializable {
 
   private String url;
 
-  @Ignore
   public DownloadEpisode() {}
 
-  public DownloadEpisode(String guid, String podcast, String podcastId, String imageUri,
-      String rssLink, String episodeTitle, int episode, String filename, String status, long total,
-      long offset, String url) {
-    this.guid = guid;
-    this.podcast = podcast;
-    this.podcastId = podcastId;
-    this.imageUri = imageUri;
-    this.rssLink = rssLink;
-    this.episodeTitle = episodeTitle;
-    this.episode = episode;
+  @Ignore
+  public DownloadEpisode(long episodeId, String filename, String status, long total, long offset,
+      String url) {
+    EpisodeId = episodeId;
     this.filename = filename;
     this.status = status;
     this.total = total;
     this.offset = offset;
     this.url = url;
-  }
-
-  public String getImageUri() {
-    return imageUri;
-  }
-
-  public void setImageUri(String imageUri) {
-    this.imageUri = imageUri;
-  }
-
-  public String getRssLink() {
-    return rssLink;
-  }
-
-  public void setRssLink(String rssLink) {
-    this.rssLink = rssLink;
   }
 
   public String getFilename() {
@@ -102,36 +66,12 @@ public class DownloadEpisode implements Serializable {
     this.id = id;
   }
 
-  public String getGuid() {
-    return guid;
+  public void setEpisodeId(long episodeId) {
+    EpisodeId = episodeId;
   }
 
-  public void setGuid(String guid) {
-    this.guid = guid;
-  }
-
-  public String getPodcast() {
-    return podcast;
-  }
-
-  public void setPodcast(String podcast) {
-    this.podcast = podcast;
-  }
-
-  public int getEpisode() {
-    return episode;
-  }
-
-  public void setEpisode(int episode) {
-    this.episode = episode;
-  }
-
-  public String getPodcastId() {
-    return podcastId;
-  }
-
-  public void setPodcastId(String podcastId) {
-    this.podcastId = podcastId;
+  public long getEpisodeId() {
+    return EpisodeId;
   }
 
   public DownloadStatus getDownloadStatus() {
@@ -150,13 +90,6 @@ public class DownloadEpisode implements Serializable {
     return status;
   }
 
-  public String getEpisodeTitle() {
-    return episodeTitle;
-  }
-
-  public void setEpisodeTitle(String episodeTitle) {
-    this.episodeTitle = episodeTitle;
-  }
 
   public long getTotal() {
     return total;
@@ -180,5 +113,11 @@ public class DownloadEpisode implements Serializable {
 
   public void setUrl(String url) {
     this.url = url;
+  }
+
+  @NonNull
+  @Override
+  public String toString() {
+    return super.toString();
   }
 }

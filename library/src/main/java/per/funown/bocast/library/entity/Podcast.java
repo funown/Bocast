@@ -21,42 +21,31 @@ import java.util.Objects;
 public class Podcast implements Serializable {
 
   @PrimaryKey(autoGenerate = true)
-  private int id;
-
-  @ColumnInfo(name = "Podcast_title")
+  private long id;
+  @ColumnInfo
   private String title;
-
-  @ColumnInfo(name = "Podcast_author")
+  @ColumnInfo
   private String author;
-
-  @ColumnInfo(name = "Podcast_logo_src")
-  private String imgLogoSrc;
-
-  @ColumnInfo(name = "Podcast_rss_link")
+  @ColumnInfo
+  private int episodes;
+  @ColumnInfo
   private String rssLink;
+  @ColumnInfo
+  private String logoLink;
 
-  @Ignore
-  public Podcast() {}
-  public Podcast(String title, String author, String imgLogoSrc, String rssLink) {
+  public Podcast(String title, String author, int episodes, String rssLink, String logoLink) {
     this.title = title;
     this.author = author;
-    this.imgLogoSrc = imgLogoSrc;
+    this.episodes = episodes;
     this.rssLink = rssLink;
-  }
-  @Ignore
-  public Podcast(int id, String title, String author, String imgLogoSrc, String rssLink) {
-    this.id = id;
-    this.title = title;
-    this.author = author;
-    this.imgLogoSrc = imgLogoSrc;
-    this.rssLink = rssLink;
+    this.logoLink = logoLink;
   }
 
-  public int getId() {
+  public long getId() {
     return id;
   }
 
-  public void setId(int id) {
+  public void setId(long id) {
     this.id = id;
   }
 
@@ -76,12 +65,12 @@ public class Podcast implements Serializable {
     this.author = author;
   }
 
-  public String getImgLogoSrc() {
-    return imgLogoSrc;
+  public int getEpisodes() {
+    return episodes;
   }
 
-  public void setImgLogoSrc(String imgLogoSrc) {
-    this.imgLogoSrc = imgLogoSrc;
+  public void setEpisodes(int episodes) {
+    this.episodes = episodes;
   }
 
   public String getRssLink() {
@@ -92,28 +81,23 @@ public class Podcast implements Serializable {
     this.rssLink = rssLink;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Podcast podcast = (Podcast) o;
-    return id == podcast.id &&
-        Objects.equals(title, podcast.title) &&
-        Objects.equals(author, podcast.author) &&
-        Objects.equals(imgLogoSrc, podcast.imgLogoSrc) &&
-        Objects.equals(rssLink, podcast.rssLink);
+  public String getLogoLink() {
+    return logoLink;
+  }
+
+  public void setLogoLink(String logoLink) {
+    this.logoLink = logoLink;
   }
 
   @Override
-  public int hashCode() {
-    return Objects.hash(id, title, author, imgLogoSrc, rssLink);
-  }
-
-  /**
-   * clone the podcast object
-   * @return a new podcast object
-   */
-  public Podcast clone() {
-    return new Podcast(this.title, this.title, this.imgLogoSrc, this.rssLink);
+  public String toString() {
+    return "Podcast{" +
+        "id=" + id +
+        ", title='" + title + '\'' +
+        ", author='" + author + '\'' +
+        ", episodes=" + episodes +
+        ", rssLink='" + rssLink + '\'' +
+        ", logoLink='" + logoLink + '\'' +
+        '}';
   }
 }

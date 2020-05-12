@@ -24,7 +24,7 @@ import per.funown.bocast.library.model.RssItem;
 import per.funown.bocast.library.utils.DateUtils;
 import per.funown.bocast.library.utils.DateUtils.DatePattern;
 import per.funown.bocast.library.utils.FragmentTransitionUtil;
-import per.funown.bocast.modules.home.model.EpisodeViewModel;
+import per.funown.bocast.modules.home.model.CurrentPodcastViewModel;
 import per.funown.bocast.modules.home.databinding.FragmentEpisodeDetailBinding;
 
 /**
@@ -35,7 +35,6 @@ public class EpisodeDetailFragment extends Fragment {
 
   private static final String TAG = EpisodeDetailFragment.class.getSimpleName();
   FragmentEpisodeDetailBinding binding;
-  EpisodeViewModel viewModel;
 
   @Autowired(name = "item", required = false)
   RssItem item;
@@ -60,11 +59,7 @@ public class EpisodeDetailFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     if (item == null) {
-      viewModel = new ViewModelProvider(getActivity()).get(EpisodeViewModel.class);
-      item = viewModel.getCurrentEpisode(feed, guid);
-      if (item == null) {
-        Toast.makeText(getContext(), "Fetch Data Error", Toast.LENGTH_LONG);
-      }
+      Toast.makeText(getContext(), "Fetch Data Error", Toast.LENGTH_LONG);
     }
     binding = FragmentEpisodeDetailBinding.inflate(getLayoutInflater());
     binding.EpisodeTitle.setText(item.getTitle());

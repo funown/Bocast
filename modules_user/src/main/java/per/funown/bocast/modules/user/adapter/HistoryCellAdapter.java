@@ -29,6 +29,8 @@ import com.lzx.starrysky.provider.SongInfo;
 import java.util.Collections;
 import java.util.List;
 import per.funown.bocast.library.constant.ArouterConstant;
+import per.funown.bocast.library.entity.Episode;
+import per.funown.bocast.library.entity.Podcast;
 import per.funown.bocast.library.model.RssFeed;
 import per.funown.bocast.library.model.RssItem;
 import per.funown.bocast.library.entity.HistoryItem;
@@ -101,14 +103,15 @@ public class HistoryCellAdapter extends Adapter<HistoryItemViewHolder> implement
   @Override
   public void onBindViewHolder(@NonNull HistoryItemViewHolder holder, int position) {
     HistoryItem historyItem = items.get(position);
+    Episode episode = viewModel.getEpisode(historyItem.getEpisodeId());
+    Podcast podcast = viewModel.getPodcast(episode.getPodcastId());
+    isPlaying = instance.isCurrMusicIsPlaying(String.valueOf(historyItem.getEpisodeId()));
 
-    isPlaying = instance.isCurrMusicIsPlaying(historyItem.getEpisodeId());
-
-    holder.episodeTitle.setText(historyItem.getEpisode());
+    holder.episodeTitle.setText(episode.getTitle());
     holder.date.setText(DateUtils.dateToString(historyItem.getDate(), DatePattern.RSS_DATE));
     float percent = (historyItem.getPercent() / historyItem.getTotal()) * 100;
     holder.percent.setText(String.format("%.1f", percent) + "%");
-    holder.logo.setImageURI(Uri.parse(historyItem.getImageUrl()));
+    holder.logo.setImageURI(Uri.parse(episode.getImage()));
     if (isPlaying) {
       holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_pause));
     }
@@ -117,8 +120,8 @@ public class HistoryCellAdapter extends Adapter<HistoryItemViewHolder> implement
       public void onClick(View v) {
         Fragment fragment = (Fragment) ARouter.getInstance()
             .build(ArouterConstant.FRAGMENT_PODCAST_EPISODE_DETAIL)
-            .withString("feed", historyItem.getRssLink())
-            .withString("guid", historyItem.getEpisodeId()).navigation();
+            .withString("feed", podcast.getRssLink())
+            .withString("guid", episode.getGuid()).navigation();
         FragmentTransitionUtil.getINSTANCE().transit(fragment, containerId);
       }
     });
@@ -128,7 +131,7 @@ public class HistoryCellAdapter extends Adapter<HistoryItemViewHolder> implement
         if (!isPlaying) {
           List<SongInfo> playList = instance.getPlayList();
           for (SongInfo info : playList) {
-            if (info.getSongId().equals(historyItem.getEpisodeId())) {
+            if (info.getSongId().equals(String.valueOf(historyItem.getEpisodeId()))) {
               instance.playMusicById(info.getSongId());
               holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_pause));
               notifyDataSetChanged();
@@ -136,9 +139,9 @@ public class HistoryCellAdapter extends Adapter<HistoryItemViewHolder> implement
             }
           }
 
-          RssFeed feed = RssCacheUtil.getFeed(historyItem.getRssLink());
+          RssFeed feed = RssCacheUtil.getFeed(podcast.getRssLink());
           if (feed == null) {
-            feed = RssFetchUtils.fetchRss(historyItem.getRssLink());
+            feed = RssFetchUtils.fetchRss(podcast.getRssLink());
           }
           if (feed == null) {
             Toast.makeText(activity.getApplicationContext(), "Data fetch error", Toast.LENGTH_LONG)
@@ -214,15 +217,10 @@ public class HistoryCellAdapter extends Adapter<HistoryItemViewHolder> implement
     final HistoryItem item = new HistoryItem();
     HistoryItem historyItem = items.get(adapterPosition);
     item.setId(historyItem.getId());
-    item.setPodcast(historyItem.getPodcast());
     item.setTotal(historyItem.getTotal());
     item.setPercent(historyItem.getPercent());
-    item.setImageUrl(historyItem.getImageUrl());
-    item.setRssLink(historyItem.getRssLink());
     item.setDate(historyItem.getDate());
     item.setEpisodeId(historyItem.getEpisodeId());
-    item.setEpisode(historyItem.getEpisode());
-    item.setKind(historyItem.getKind());
 
     notifyItemRemoved(adapterPosition);
     items.remove(adapterPosition);

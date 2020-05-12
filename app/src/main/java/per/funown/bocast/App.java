@@ -12,8 +12,10 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.liulishuo.okdownload.core.Util;
 import com.lzx.starrysky.StarrySkyBuilder;
 import com.lzx.starrysky.StarrySkyConfig;
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 import per.funown.bocast.config.PlayConfig;
+import per.funown.bocast.library.net.NetManager;
 import per.funown.bocast.library.service.MusicService;
 import per.funown.bocast.library.service.PollingIntentService;
 
@@ -44,7 +46,8 @@ public class App extends Application {
     service.initPlayback(this, new PlayConfig());
     service.setApplication("Bocast");
 
-
+    File cache = new File(getCacheDir(), "cache");
+    NetManager.setCache(cache);
 
     try {
       Bmob.initialize(this, this.getPackageManager()

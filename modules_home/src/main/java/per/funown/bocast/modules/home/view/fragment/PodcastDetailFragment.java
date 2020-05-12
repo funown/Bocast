@@ -17,7 +17,6 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Iterator;
 
@@ -35,12 +34,11 @@ import com.alibaba.android.arouter.facade.annotation.Route;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import per.funown.bocast.library.model.ItunesSearchResultList;
+import java.util.function.Consumer;
+import per.funown.bocast.library.entity.Podcast;
 import per.funown.bocast.library.model.RssChannel;
 import per.funown.bocast.library.model.ItunesResponseEntity;
-import per.funown.bocast.library.net.NetManager;
 import per.funown.bocast.library.net.service.iTunesSearchService;
-import per.funown.bocast.library.utils.DateUtils;
 import per.funown.bocast.library.utils.RssFetchUtils;
 import per.funown.bocast.library.constant.ArouterConstant;
 import per.funown.bocast.library.model.RssFeed;
@@ -48,14 +46,12 @@ import per.funown.bocast.library.model.iTunesCategory;
 import per.funown.bocast.library.model.MediaBrowserProvider;
 import per.funown.bocast.library.entity.Genre;
 import per.funown.bocast.library.entity.SubscribedPodcast;
-import per.funown.bocast.modules.home.model.EpisodeViewModel;
+import per.funown.bocast.modules.home.model.CurrentPodcastViewModel;
+import per.funown.bocast.modules.home.model.EpisodesViewModel;
 import per.funown.bocast.modules.home.model.PodcastViewModel;
 import per.funown.bocast.modules.home.model.SubscribedPodcastViewModel;
 import per.funown.bocast.modules.home.databinding.FragmentPodcastDetailBinding;
 import per.funown.bocast.modules.home.view.adapter.PodcastRssEpisodeCellAdapter;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  *
@@ -79,7 +75,8 @@ public class PodcastDetailFragment extends Fragment {
   private PodcastRssEpisodeCellAdapter episodeCellAdapter;
 
   private PodcastViewModel podcastViewModel;
-  private EpisodeViewModel episodeViewModel;
+  private EpisodesViewModel episodesViewModel;
+  private CurrentPodcastViewModel currentPodcastViewModel;
   private SubscribedPodcastViewModel subscribedPodcastViewModel;
 
   private boolean isFirstLoad = true;
@@ -98,11 +95,13 @@ public class PodcastDetailFragment extends Fragment {
     Log.e(TAG, "on creating...");
     ARouter.getInstance().inject(this);
     podcastViewModel = new ViewModelProvider(requireActivity()).get(PodcastViewModel.class);
-    episodeViewModel = new ViewModelProvider(requireActivity()).get(EpisodeViewModel.class);
+    currentPodcastViewModel = new ViewModelProvider(requireActivity())
+        .get(CurrentPodcastViewModel.class);
     subscribedPodcastViewModel = new ViewModelProvider(getActivity())
         .get(SubscribedPodcastViewModel.class);
+    episodesViewModel = new ViewModelProvider(requireActivity()).get(EpisodesViewModel.class);
     binding = FragmentPodcastDetailBinding.inflate(getLayoutInflater());
-    getLifecycle().addObserver(episodeViewModel);
+    getLifecycle().addObserver(currentPodcastViewModel);
     initData();
     initEvent();
   }
@@ -146,12 +145,13 @@ public class PodcastDetailFragment extends Fragment {
 
   @Override
   public void onDestroy() {
-    episodeViewModel.setCurrentPodcast((RssFeed) null);
+    currentPodcastViewModel.setCurrentPodcast((RssFeed) null);
     super.onDestroy();
   }
 
   private void initView() {
-    episodeCellAdapter = new PodcastRssEpisodeCellAdapter(getContext());
+    episodeCellAdapter = new PodcastRssEpisodeCellAdapter(getContext(), episodesViewModel,
+        subscribedPodcastViewModel);
     episodeCellAdapter.setActivity(requireActivity());
     episodeCellAdapter.setItems(new ArrayList<>());
     episodeCellAdapter.setContainerId(binding.getRoot().getId());
@@ -173,122 +173,89 @@ public class PodcastDetailFragment extends Fragment {
       }
     });
 
-    episodeViewModel.getCurrentPodcast().observe(this.getViewLifecycleOwner(), currentPodcast -> {
-      if (currentPodcast != null && feed != null && currentPodcast.getChannel().getTitle()
-          .equals(feed.getChannel().getTitle())) {
-        binding.loadingPage.setVisibility(View.GONE);
-        binding.mainContent.setVisibility(View.VISIBLE);
-        isSubscribed = subscribedPodcastViewModel.isSubscribed(currentPodcast);
-        episodeCellAdapter.setFeed(currentPodcast);
-        RssChannel channel = currentPodcast.getChannel();
-        binding.PodcastAuthor.setText(
-            channel.getOwner() == null ? channel.getAuthor() : channel.getOwner().getName());
-        binding.PodcastTitle.setText(channel.getTitle());
-        binding.PodcastIntro.setText(channel.getDescription());
-        binding.PodcastLogo.setImageURI(Uri.parse(channel.getImage().getHref()));
-        binding.SubscribeCheck.setChecked(isSubscribed);
-        episodeCellAdapter.setItems(channel.getItems());
-        episodeCellAdapter.notifyDataSetChanged();
-
-        for (SubscribedPodcast podcast : subscribedPodcastViewModel.getAllPodcasts().getValue()) {
-          if (podcast.getRssLink() == channel.getLink()) {
-            binding.SubscribeCheck.setChecked(true);
-          }
-        }
-        binding.SubscribeCheck.setOnCheckedChangeListener(((buttonView, isChecked) -> {
-          List<iTunesCategory> categorys = channel.getCategorys();
-          Log.e(TAG, "-->" + categorys.size());
-          // subscribe op
-          if (isChecked) {
-            SubscribedPodcast podcast = new SubscribedPodcast(
-                channel.getTitle(),
-                channel.getOwner() == null ? channel.getAuthor() : channel.getOwner().getName(),
-                channel.getItems().size(),
-                channel.getAtomLink() == null ? channel.getLink() : channel.getAtomLink().getHref(),
-                channel.getImage().getHref(),
-                DateUtils.stringToDate(channel.getItems().get(0).getPubDate()),
-                new Date());
-            List<ItunesResponseEntity> itunesResponseEntities = iTunesSearchService
-                .SearchTerms(podcast.getTitle());
-            if (itunesResponseEntities != null && itunesResponseEntities.size() > 0) {
-              for (ItunesResponseEntity entity : itunesResponseEntities) {
-                if (entity.getFeedUrl().trim().toLowerCase()
-                    .equals(podcast.getRssLink().trim().toLowerCase())) {
-                  Genre[] genres = new Genre[entity.getGenres().length];
-                  for (int i = 0; i < entity.getGenres().length; i++) {
-                    genres[i] = new Genre(entity.getGenres()[i], 1,
-                        entity.getGenreIds()[i]);
-                  }
-                  addGenre(genres);
-                  break;
-                }
-              }
+    currentPodcastViewModel.getCurrentPodcast()
+        .observe(this.getViewLifecycleOwner(), currentPodcast -> {
+          if (currentPodcast != null && feed != null && currentPodcast.getChannel().getTitle()
+              .equals(feed.getChannel().getTitle())) {
+            binding.loadingPage.setVisibility(View.GONE);
+            binding.mainContent.setVisibility(View.VISIBLE);
+            episodeCellAdapter.setFeed(currentPodcast);
+            RssChannel channel = currentPodcast.getChannel();
+            binding.PodcastAuthor.setText(
+                channel.getOwner() == null ? channel.getAuthor() : channel.getOwner().getName());
+            binding.PodcastTitle.setText(channel.getTitle());
+            binding.PodcastIntro.setText(channel.getDescription());
+            binding.PodcastLogo.setImageURI(Uri.parse(channel.getImage().getHref()));
+            binding.SubscribeCheck.setChecked(isSubscribed);
+            episodeCellAdapter.setItems(channel.getItems());
+            episodeCellAdapter.notifyDataSetChanged();
+            long podcastId = subscribedPodcastViewModel.isSubscribed(currentPodcast);
+            if (podcastId == 0) {
+              binding.SubscribeCheck.setChecked(false);
+              isSubscribed = false;
+            } else {
+              episodeCellAdapter.setPodcastId(podcastId);
             }
-//            else {
-//              Toast.makeText(getContext(), "Subscribe failed" + channel.getTitle(),
-//                  Toast.LENGTH_LONG);
-//              binding.SubscribeCheck.setChecked(false);
-//              return;
-//            }
-            subscribedPodcastViewModel.subscribe(podcast);
-          }
-          // unsubscribe op
-          else {
-            Log.e(TAG, "unsubscribed");
-            Iterator<SubscribedPodcast> iterator = subscribedPodcastViewModel.getAllPodcasts()
-                .getValue().iterator();
-            while (iterator.hasNext()) {
-              SubscribedPodcast subscribedPodcast = iterator.next();
-              if (channel.getAtomLink() != null) {
-                if (subscribedPodcast.getRssLink().equals(channel.getAtomLink().getHref())) {
-
-                  List<ItunesResponseEntity> itunesResponseEntities = iTunesSearchService
-                      .SearchTerms(subscribedPodcast.getTitle());
-                  if (itunesResponseEntities != null && itunesResponseEntities.size() > 0) {
-                    for (ItunesResponseEntity entity : itunesResponseEntities) {
-                      if (entity.getFeedUrl().trim().toLowerCase()
-                          .equals(subscribedPodcast.getRssLink().trim().toLowerCase())) {
-                        Genre[] genres = new Genre[entity.getGenres().length];
-                        for (int i = 0; i < entity.getGenres().length; i++) {
-                          genres[i] = new Genre(entity.getGenres()[i], 1,
-                              entity.getGenreIds()[i]);
-                        }
-                        cutGenre(genres);
-                        break;
+            binding.SubscribeCheck.setOnCheckedChangeListener(((buttonView, isChecked) -> {
+              List<iTunesCategory> categorys = channel.getCategorys();
+              Log.e(TAG, "-->" + categorys.size());
+              // subscribe op
+              if (isChecked) {
+                Podcast podcast = new Podcast(
+                    channel.getTitle(),
+                    channel.getOwner() == null ? channel.getAuthor() : channel.getOwner().getName(),
+                    channel.getItems().size(),
+                    channel.getAtomLink() == null ? channel.getLink()
+                        : channel.getAtomLink().getHref(),
+                    channel.getImage().getHref());
+                List<ItunesResponseEntity> itunesResponseEntities = iTunesSearchService
+                    .SearchTerms(podcast.getTitle());
+                if (itunesResponseEntities != null && itunesResponseEntities.size() > 0) {
+                  for (ItunesResponseEntity entity : itunesResponseEntities) {
+                    if (entity.getFeedUrl().trim().toLowerCase()
+                        .equals(podcast.getRssLink().trim().toLowerCase())) {
+                      Genre[] genres = new Genre[entity.getGenres().length];
+                      for (int i = 0; i < entity.getGenres().length; i++) {
+                        genres[i] = new Genre(entity.getGenres()[i], 1,
+                            entity.getGenreIds()[i]);
                       }
+                      addGenre(genres);
+                      break;
                     }
                   }
-//                  else {
-//                    Toast.makeText(getContext(), "UnSubscribe failed" + channel.getTitle(),
-//                        Toast.LENGTH_LONG);
-//                    binding.SubscribeCheck.setChecked(true);
-//                    return;
-//                  }
+                }
+                subscribedPodcastViewModel.subscribe(podcast);
+              }
+              // unsubscribe op
+              else {
+                Log.e(TAG, "unsubscribed");
+                SubscribedPodcast subscribedPodcast = subscribedPodcastViewModel
+                    .getSubscribedPodcast(podcastId);
+                if (subscribedPodcast != null) {
+                  List<ItunesResponseEntity> itunesResponseEntities = iTunesSearchService
+                      .SearchTerms(currentPodcast.getChannel().getTitle());
+                  itunesResponseEntities.forEach(entity -> {
+                    if (entity.getFeedUrl()
+                        .equals(currentPodcast.getChannel().getAtomLink().getHref())) {
+                      Genre[] genres = new Genre[entity.getGenres().length];
+                      for (int i = 0; i < entity.getGenres().length; i++) {
+                        genres[i] = new Genre(entity.getGenres()[i], 1,
+                            entity.getGenreIds()[i]);
+                      }
+                      cutGenre(genres);
+                      return;
+                    }
+                  });
                   subscribedPodcastViewModel.unsubscribe(subscribedPodcast);
-                  return;
                 }
               }
-            }
+            }));
+          } else {
+            binding.loadingPage.setVisibility(View.VISIBLE);
+            binding.mainContent.setVisibility(View.GONE);
           }
-        }));
-      }
-      else {
-        binding.loadingPage.setVisibility(View.VISIBLE);
-        binding.mainContent.setVisibility(View.GONE);
-      }
-    });
+        });
   }
-
-  private void initPlayer() {
-    FragmentManager supportFragmentManager = getActivity().getSupportFragmentManager();
-    Fragment player = (Fragment) ARouter.getInstance().build(ArouterConstant.FRAGMENT_LISTENER)
-        .navigation(getContext());
-    FragmentTransaction transaction = supportFragmentManager.beginTransaction();
-    transaction.replace(binding.getRoot().getId(), player);
-    transaction.addToBackStack(null);
-    transaction.commit();
-  }
-
 
   private void addGenre(Genre... genres) {
     Map<String, Genre> mapGenres = podcastViewModel.getMapGenres();
@@ -319,7 +286,7 @@ public class PodcastDetailFragment extends Fragment {
           .subscribe(aLong -> {
             feed = RssFetchUtils.getFeed(rssLink);
             if (feed != null) {
-              episodeViewModel.setCurrentPodcast(feed);
+              currentPodcastViewModel.setCurrentPodcast(feed);
             } else {
               Looper.prepare();
               Toast.makeText(getContext(), "Data fetched failed - " + rssLink, Toast.LENGTH_LONG);
@@ -333,7 +300,7 @@ public class PodcastDetailFragment extends Fragment {
             Looper.loop();
           });
     } else {
-      episodeViewModel.setCurrentPodcast(feed);
+      currentPodcastViewModel.setCurrentPodcast(feed);
     }
   }
 

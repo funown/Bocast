@@ -11,11 +11,13 @@ package per.funown.bocast.library.net;
 public class NetworkState {
 
   public enum Status {
+    INITIAL_LOADING,
     LOADING,
     SUCCESS,
-    FAILED
+    FAILED,
   }
 
+  public static final NetworkState INITIAL_LOADING = new NetworkState(Status.INITIAL_LOADING, "Initial");
   public static final NetworkState LOADED = new NetworkState(Status.SUCCESS, "Success");
   public static final NetworkState LOADING = new NetworkState(Status.LOADING, "Loading");
   public static final NetworkState FAILED = new NetworkState(Status.FAILED, "Loading");

@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
   ActivityMainBinding binding;
 
   ViewPagerFragmentAdapter adapter;
-  private boolean playInited = false;
+  private static boolean PLAYERINIT = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
       }
     })).attach();
 
-    if (!playInited) {
+    if (!PLAYERINIT) {
       initPlayer();
     }
   }
@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void initPlayer() {
+    Log.i(TAG, "init Player -- " + PLAYERINIT);
     FragmentManager supportFragmentManager = getSupportFragmentManager();
     Fragment player = (Fragment) ARouter.getInstance().build(ArouterConstant.FRAGMENT_LISTENER)
         .navigation();
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     transaction.add(binding.getRoot().getId(), player);
     transaction.addToBackStack(null);
     transaction.commit();
-    playInited = true;
+    PLAYERINIT = true;
     setVolumeControlStream(AudioManager.STREAM_MUSIC);
   }
 
@@ -87,19 +88,6 @@ public class MainActivity extends AppCompatActivity {
     super.onPause();
     Log.e(TAG, "pause");
   }
-
-//  @Override
-//  public void onBackPressed() {
-//    super.onBackPressed();
-//    if (binding.viewpager.getCurrentItem() == 0) {
-//      // If the user is currently looking at the first step, allow the system to handle the
-//      // Back button. This calls finish() on this activity and pops the back stack.
-//      super.onBackPressed();
-//    } else {
-//      // Otherwise, select the previous step.
-//      binding.viewpager.setCurrentItem(binding.viewpager.getCurrentItem() - 1);
-//    }
-//  }
 
   private ArrayList<Fragment> initFragment() {
     Fragment homeFragment = (Fragment) ARouter.getInstance().build(ArouterConstant.FRAGMENT_HOME)

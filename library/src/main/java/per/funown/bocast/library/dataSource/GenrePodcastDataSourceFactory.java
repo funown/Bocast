@@ -34,17 +34,6 @@ public class GenrePodcastDataSourceFactory extends DataSource.Factory<Integer, I
     this.limit = limit;
   }
 
-
-//  public void setGenreId(String genreId) {
-//    this.genreId = genreId;
-//    getGenrePodcastDataSource().getValue().setGenreId(genreId);
-//  }
-//
-//  public void setLimit(int limit) {
-//    this.limit = limit;
-//    getGenrePodcastDataSource().getValue().setLIMIT(limit);
-//  }
-
   @NonNull
   @Override
   public DataSource<Integer, ItunesResponseEntity> create() {

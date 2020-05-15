@@ -1,6 +1,8 @@
 package per.funown.bocast.modules.home.view.adapter;
 
 import android.content.Context;
+import android.media.session.PlaybackState;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,12 +29,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.jetbrains.annotations.NotNull;
 import per.funown.bocast.library.constant.ArouterConstant;
 import per.funown.bocast.library.entity.Episode;
 import per.funown.bocast.library.entity.Podcast;
 import per.funown.bocast.library.model.RssFeed;
 import per.funown.bocast.library.model.RssItem;
 import per.funown.bocast.library.download.DownloadFactory;
+import per.funown.bocast.library.playback.Playback;
 import per.funown.bocast.library.service.MusicService;
 import per.funown.bocast.library.utils.DateUtils;
 import per.funown.bocast.library.utils.DateUtils.DatePattern;
@@ -63,8 +67,6 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
   Context context;
   EpisodesViewModel episodesViewModel;
   SubscribedPodcastViewModel viewModel;
-
-  private boolean isPlaying;
 
   public void setPodcastId(long podcastId) {
     this.podcastId = podcastId;
@@ -106,8 +108,9 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
     service = ARouter.getInstance().navigation(MusicService.class);
     instance = service.getINSTANCE();
     RssItem item = items.get(position);
-    isPlaying = instance.isCurrMusicIsPlaying(item.getGuid().getGuid());
     Podcast podcast = viewModel.getPodcast(podcastId);
+    AtomicBoolean isPlaying = new AtomicBoolean(false);
+
     holder.episodeTitle.setText(item.getTitle());
     Date date = DateUtils
         .stringToDate(item.getPubDate().trim(), DatePattern.RSS_DATE, Locale.ENGLISH);
@@ -134,10 +137,8 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
       transaction.addToBackStack(null);
       transaction.commit();
     });
-    holder.btn_play.setImageDrawable(
-        activity.getDrawable(isPlaying ? R.drawable.ic_pause : R.drawable.ic_play));
     holder.btn_play.setOnClickListener(v -> {
-      if (!isPlaying) {
+      if (!isPlaying.get()) {
         List<SongInfo> playList = instance.getPlayList();
         SongInfo songInfo = null;
         for (int i = 0; i < playList.size(); i++) {
@@ -157,8 +158,9 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
                 feed.getChannel().getItems().size(),
                 feed.getChannel().getAtomLink().getHref(),
                 feed.getChannel().getImage().getHref());
-            long id = viewModel.addPodcast(podcast);
+            long id = viewModel.addPodcast(newPodcast);
             newPodcast.setId(id);
+            Log.e(TAG, String.valueOf(id));
           }
 
           Episode episode = episodesViewModel.getEpisode(item.getTitle());
@@ -178,62 +180,38 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
           }
           long episodeId = episode.getId();
 
-          songInfo = new SongInfo();
-          songInfo.setSongId(String.valueOf(episodeId));
-          songInfo.setSongName(item.getTitle());
-          songInfo.setSongCover(
-              item.getImage() == null ? feed.getChannel().getImage().getHref()
-                  : item.getImage().getHref());
-          songInfo.setArtist(item.getAuthor());
-          songInfo.setPublishTime(item.getPubDate());
-          songInfo.setSongUrl(item.getEnclosure().getUrl());
-          songInfo.setAlbumName(feed.getChannel().getTitle());
-          songInfo.setAlbumArtist(feed.getChannel().getAuthor());
-          songInfo.setAlbumCover(feed.getChannel().getImage().getHref());
-          songInfo.setAlbumId(String.valueOf(newPodcast.getId()));
-          songInfo.setTrackNumber(position);
-          songInfo.setDescription(feed.getChannel().getAtomLink().getHref());
-          if (newPodcast != null) {
-            String filename = episodesViewModel.isDownloaded(episodeId);
-            if (filename != null && !filename.equals("")) {
-              Log.e(TAG, filename);
-              File queueDir = DownloadFactory.getINSTANCE(context).getQueueDir();
-              songInfo.setSongUrl(queueDir.getAbsolutePath() + "/" + filename);
-            }
-          }
-          Log.e(TAG, "-->" + songInfo.getSongUrl());
+          songInfo = buildSongInfo(item, newPodcast, episodeId);
           service.addSong(songInfo);
           instance.playMusicByInfo(songInfo);
+          instance.playMusic();
         }
-        isPlaying = true;
+        isPlaying.set(true);
         service.getManager().startToUpdateProgress();
-        holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_pause));
       } else {
         instance.pauseMusic();
-        isPlaying = false;
+        isPlaying.set(false);
         service.getManager().stopToUpdateProgress();
-        holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_play));
       }
 
-      instance.playbackState().observe(activity, new Observer<PlaybackStage>() {
-        @Override
-        public void onChanged(PlaybackStage playbackStage) {
-          if (playbackStage == null) {
-            return;
-          }
-          if (playbackStage.getStage() != PlaybackStage.NONE) {
-            SongInfo songInfo = playbackStage.getSongInfo();
-            if (songInfo.getSongId().equals(item.getGuid().getGuid())) {
-              switch (playbackStage.getStage()) {
-                case PlaybackStage.SWITCH:
-                case PlaybackStage.START:
-                  holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_pause));
-                  break;
-                case PlaybackStage.PAUSE:
-                  holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_play));
-                  break;
-              }
+      instance.playbackState().observe(activity, playbackStage -> {
+        if (playbackStage == null) {
+          return;
+        }
+        Log.e(TAG, playbackStage.getStage());
+        if (playbackStage.getStage() != PlaybackStage.NONE) {
+          SongInfo songInfo = playbackStage.getSongInfo();
+          if (songInfo.getSongUrl().equals(item.getEnclosure().getUrl())) {
+
+            if (instance.getState() == PlaybackStateCompat.STATE_PLAYING) {
+              holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_pause));
+              isPlaying.set(true);
+            } else {
+              holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_play));
+              isPlaying.set(false);
             }
+          } else {
+            holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_play));
+            isPlaying.set(false);
           }
         }
       });
@@ -247,69 +225,71 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
         inList.set(true);
       }
     });
-    holder.btn_addToList.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        Log.e(TAG, "add to list..." + inList.get());
-        if (inList.get()) {
-          List<SongInfo> playList = service.getINSTANCE().getPlayList();
-          for (int i = 0; i < playList.size(); i++) {
-            if (playList.get(i).getSongId().equals(item.getGuid().getGuid())) {
-              service.removeSong(playList.get(i));
-              holder.btn_addToList
-                  .setImageDrawable(activity.getDrawable(R.drawable.ic_playlist_plus));
-              inList.set(false);
-            }
+    holder.btn_addToList.setOnClickListener(v -> {
+      if (inList.get()) {
+        List<SongInfo> playList = service.getINSTANCE().getPlayList();
+        for (int i = 0; i < playList.size(); i++) {
+          if (playList.get(i).getSongId().equals(item.getGuid().getGuid())) {
+            service.removeSong(playList.get(i));
+            holder.btn_addToList
+                .setImageDrawable(activity.getDrawable(R.drawable.ic_playlist_plus));
+            inList.set(false);
           }
-        } else {
-          Episode episode = new Episode(podcast.getId(),
-              item.getGuid().getGuid(),
-              item.getTitle(),
-              item.getSubtitle(),
-              item.getPubDate(),
-              item.getDuration(),
-              item.getLink(),
-              item.getEnclosure().getUrl(),
-              item.getImage().getHref(),
-              item.getDescription());
-          long episodeId = episodesViewModel.insertEpisode(episode);
-
-          SongInfo songInfo = new SongInfo();
-          Log.i(TAG, item.toString());
-          songInfo.setSongId(String.valueOf(episodeId));
-          songInfo.setSongName(item.getTitle());
-          songInfo.setSongCover(
-              item.getImage() == null ? feed.getChannel().getImage().getHref()
-                  : item.getImage().getHref());
-          songInfo.setArtist(item.getAuthor());
-          songInfo.setPublishTime(item.getPubDate());
-          songInfo.setSongUrl(item.getEnclosure().getUrl());
-          songInfo.setAlbumName(feed.getChannel().getTitle());
-          songInfo.setAlbumArtist(feed.getChannel().getAuthor());
-          songInfo.setAlbumCover(feed.getChannel().getImage().getHref());
-          songInfo.setAlbumId(feed.getChannel().getLink());
-          songInfo.setDescription(feed.getChannel().getAtomLink().getHref());
-          if (podcast != null) {
-            String filename = episodesViewModel.isDownloaded(episodeId);
-            if (filename != null && !filename.equals("")) {
-              File queueDir = DownloadFactory.getINSTANCE(context).getQueueDir();
-              songInfo.setSongUrl(queueDir.getAbsolutePath() + "/" + filename);
-              Log.e(TAG, songInfo.getSongUrl());
-            }
-          }
-          List<SongInfo> list = service.getINSTANCE().getPlayList();
-          list.add(songInfo);
-          service.getINSTANCE().updatePlayList(list);
-          service.addSong(songInfo);
-          inList.set(true);
-          holder.btn_addToList
-              .setImageDrawable(activity.getDrawable(R.drawable.ic_playlist_add_check));
-          Toast.makeText(activity.getApplicationContext(),
-              songInfo.getSongName() + "had been added to playlist" + service.getINSTANCE()
-                  .getPlayList().size(), Toast.LENGTH_LONG).show();
         }
+      } else {
+        Episode episode = new Episode(podcast.getId(),
+            item.getGuid().getGuid(),
+            item.getTitle(),
+            item.getSubtitle(),
+            item.getPubDate(),
+            item.getDuration(),
+            item.getLink(),
+            item.getEnclosure().getUrl(),
+            item.getImage().getHref(),
+            item.getDescription());
+        long episodeId = episodesViewModel.insertEpisode(episode);
+
+        SongInfo songInfo = buildSongInfo(item, podcast, episodeId);
+        List<SongInfo> list = service.getINSTANCE().getPlayList();
+        list.add(songInfo);
+        service.getINSTANCE().updatePlayList(list);
+        service.addSong(songInfo);
+        inList.set(true);
+        holder.btn_addToList
+            .setImageDrawable(activity.getDrawable(R.drawable.ic_playlist_add_check));
+        Toast.makeText(activity.getApplicationContext(),
+            songInfo.getSongName() + "had been added to playlist" + service.getINSTANCE()
+                .getPlayList().size(), Toast.LENGTH_LONG).show();
       }
     });
+  }
+
+  @NotNull
+  private SongInfo buildSongInfo(RssItem item, Podcast podcast, long episodeId) {
+    SongInfo songInfo = new SongInfo();
+    Log.i(TAG, item.toString());
+    songInfo.setSongId(String.valueOf(episodeId));
+    songInfo.setSongName(item.getTitle());
+    songInfo.setSongCover(
+        item.getImage() == null ? feed.getChannel().getImage().getHref()
+            : item.getImage().getHref());
+    songInfo.setArtist(item.getAuthor());
+    songInfo.setPublishTime(item.getPubDate());
+    songInfo.setSongUrl(item.getEnclosure().getUrl());
+    songInfo.setAlbumName(feed.getChannel().getTitle());
+    songInfo.setAlbumArtist(feed.getChannel().getAuthor());
+    songInfo.setAlbumCover(feed.getChannel().getImage().getHref());
+    songInfo.setAlbumId(feed.getChannel().getLink());
+    songInfo.setDescription(feed.getChannel().getAtomLink().getHref());
+    if (podcast != null) {
+      String filename = episodesViewModel.isDownloaded(episodeId);
+      if (filename != null && !filename.equals("")) {
+        File queueDir = DownloadFactory.getINSTANCE(context).getQueueDir();
+        songInfo.setSongUrl(queueDir.getAbsolutePath() + "/" + filename);
+        Log.e(TAG, songInfo.getSongUrl());
+      }
+    }
+    return songInfo;
   }
 
   @Override

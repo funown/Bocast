@@ -146,6 +146,17 @@
           fresco:layout_constraintEnd_toEndOf="parent"
           fresco:layout_constraintStart_toStartOf="parent"
           fresco:layout_constraintTop_toTopOf="parent" />
+        <TextView
+          android:id="@+id/Loading_message"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="16dp"
+          android:fontFamily="@font/noto_sans"
+          android:text="@string/Loaing_message"
+          android:textSize="18sp"
+          fresco:layout_constraintEnd_toEndOf="parent"
+          fresco:layout_constraintStart_toStartOf="parent"
+          fresco:layout_constraintTop_toBottomOf="@+id/loading" />
       </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
   </androidx.core.widget.NestedScrollView>

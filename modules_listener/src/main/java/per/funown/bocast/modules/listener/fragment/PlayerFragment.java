@@ -13,7 +13,6 @@ import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.LayoutInflater;
-import android.view.View.OnClickListener;
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.lzx.starrysky.provider.SongInfo;
 import com.lzx.starrysky.control.PlayerControl;
@@ -49,7 +48,7 @@ import per.funown.bocast.modules.listener.databinding.FragmentPlayerBinding;
  * A simple {@link Fragment} subclass.
  */
 @Route(path = ArouterConstant.FRAGMENT_LISTENER)
-public class PlayerFragment extends Fragment {
+public class PlayerFragment extends Fragment implements OnPlayerEventListener{
 
   private static final String TAG = PlayerFragment.class.getSimpleName();
 
@@ -59,7 +58,6 @@ public class PlayerFragment extends Fragment {
   BaseDownloadListener downloadListener;
   DownloadFactory factory;
   private BottomSheetBehavior bottomSheetBehavior;
-
 
   public PlayerFragment() {
     // Required empty public constructor
@@ -74,11 +72,13 @@ public class PlayerFragment extends Fragment {
     service = ARouter.getInstance().navigation(MusicService.class);
     viewModel = new ViewModelProvider(requireActivity()).get(PlayerViewModel.class);
     factory = DownloadFactory.getINSTANCE(getContext());
+
   }
 
   @Override
   public void onResume() {
     super.onResume();
+    Log.i(TAG, "on Resume...");
     ViewGroup viewGroup = (ViewGroup) getActivity().getWindow().getDecorView();
     if (binding.getRoot().getParent() != null) {
       ((ViewGroup) binding.getRoot().getParent()).removeView(binding.getRoot());
@@ -87,6 +87,9 @@ public class PlayerFragment extends Fragment {
         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     layoutParams.bottomMargin = getNavigationBarHeight();
     viewGroup.addView(binding.getRoot(), layoutParams);
+
+    binding.lavPrev.setColorFilter(getContext().getColor(R.color.grey));
+    binding.lavNext.setColorFilter(getContext().getColor(R.color.grey));
   }
 
   @Nullable
@@ -117,57 +120,7 @@ public class PlayerFragment extends Fragment {
     });
 
     PlayerControl instance = service.getINSTANCE();
-    instance.addPlayerEventListener(new OnPlayerEventListener() {
-      @Override
-      public void onMusicSwitch(SongInfo songInfo) {
-        binding.PodcastAuthor.setText(songInfo.getArtist());
-        binding.EpisodeTitle.setText(songInfo.getSongName());
-        binding.podcastTitle.setText(songInfo.getSongName());
-        binding.EpisodeCover.setImageURI(songInfo.getSongCover());
-        binding.trackDuration.setText(convertTimeToString(songInfo.getDuration()));
-        downloadListener = null;
-        initDownloadButton(songInfo);
-      }
-
-      @Override
-      public void onPlayerStart() {
-        instance.setVolume(1f);
-        binding.barBtnPlay.setImageDrawable(getActivity().getDrawable(R.drawable.ic_pause));
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-          binding.btnPlayPause.setFrame(63);
-        }
-      }
-
-      @Override
-      public void onPlayerPause() {
-        binding.barBtnPlay.setImageDrawable(getActivity().getDrawable(R.drawable.ic_play));
-        if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-          binding.btnPlayPause.setProgress(0f);
-        }
-        SongInfo songInfo = instance.getNowPlayingSongInfo();
-        viewModel.addHistory(songInfo, binding.trackbar);
-      }
-
-      @Override
-      public void onPlayerStop() {
-        SongInfo songInfo = instance.getNowPlayingSongInfo();
-        viewModel.addHistory(songInfo, binding.trackbar);
-      }
-
-      @Override
-      public void onPlayCompletion(SongInfo songInfo) {
-        viewModel.addHistory(songInfo, binding.trackbar);
-      }
-
-      @Override
-      public void onBuffering() {
-      }
-
-      @Override
-      public void onError(int errorCode, String errorMsg) {
-        Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
-      }
-    });
+    instance.addPlayerEventListener(this);
 
     if (instance.getNowPlayingSongInfo() != null) {
       SongInfo songInfo = instance.getNowPlayingSongInfo();
@@ -258,6 +211,8 @@ public class PlayerFragment extends Fragment {
       binding.btnPlayPause.playAnimation();
     });
 
+    binding.lavPrev.setColorFilter(getContext().getColor(R.color.grey));
+    binding.lavNext.setColorFilter(getContext().getColor(R.color.grey));
     binding.lavNext.setOnClickListener(v -> {
       PlayerControl instance12 = service.getINSTANCE();
       if (instance12.getPlayList().size() > 1) {
@@ -284,13 +239,8 @@ public class PlayerFragment extends Fragment {
 
     initDownloadButton(instance.getNowPlayingSongInfo());
 
-    binding.playlist.setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        EpisodeListDialogFragment.newInstance(getContext())
-            .show(requireActivity().getSupportFragmentManager(), "playlist");
-      }
-    });
+    binding.playlist.setOnClickListener(v -> EpisodeListDialogFragment.newInstance(getContext())
+        .show(getActivity().getSupportFragmentManager(), "playlist"));
 
     bottomSheetBehavior.setSaveFlags(BottomSheetBehavior.SAVE_ALL);
     if (binding.getRoot().getParent() != null) {
@@ -397,4 +347,54 @@ public class PlayerFragment extends Fragment {
     return height;
   }
 
+  @Override
+  public void onMusicSwitch(SongInfo songInfo) {
+    binding.PodcastAuthor.setText(songInfo.getArtist());
+    binding.EpisodeTitle.setText(songInfo.getSongName());
+    binding.podcastTitle.setText(songInfo.getSongName());
+    binding.EpisodeCover.setImageURI(songInfo.getSongCover());
+    binding.trackDuration.setText(convertTimeToString(songInfo.getDuration()));
+    downloadListener = null;
+    initDownloadButton(songInfo);
+  }
+
+  @Override
+  public void onPlayerStart() {
+    binding.barBtnPlay.setImageDrawable(getActivity().getDrawable(R.drawable.ic_pause));
+    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+      binding.btnPlayPause.setProgress(0.5f);
+    }
+  }
+
+  @Override
+  public void onPlayerPause() {
+    PlayerControl instance = service.getINSTANCE();
+    binding.barBtnPlay.setImageDrawable(getActivity().getDrawable(R.drawable.ic_play));
+    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+      binding.btnPlayPause.setProgress(0f);
+    }
+    SongInfo songInfo = instance.getNowPlayingSongInfo();
+    viewModel.addHistory(songInfo, binding.trackbar);
+  }
+
+  @Override
+  public void onPlayerStop() {
+    PlayerControl instance = service.getINSTANCE();
+    SongInfo songInfo = instance.getNowPlayingSongInfo();
+    viewModel.addHistory(songInfo, binding.trackbar);
+  }
+
+  @Override
+  public void onPlayCompletion(SongInfo songInfo) {
+    viewModel.addHistory(songInfo, binding.trackbar);
+  }
+
+  @Override
+  public void onBuffering() {
+  }
+
+  @Override
+  public void onError(int errorCode, String errorMsg) {
+    Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
+  }
 }

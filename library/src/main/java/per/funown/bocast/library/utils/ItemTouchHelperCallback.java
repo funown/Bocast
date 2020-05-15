@@ -122,9 +122,6 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
     }
 
     super.onSelectedChanged(viewHolder, actionState);
-
-       /* final boolean swiping = actionState == ItemTouchHelper.ACTION_STATE_SWIPE;
-        swipeRefreshLayout.setEnabled(!swiping);*/
   }
 
   @Override

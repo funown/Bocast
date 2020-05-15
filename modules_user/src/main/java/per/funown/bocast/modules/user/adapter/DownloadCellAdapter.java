@@ -78,6 +78,8 @@ public class DownloadCellAdapter extends Adapter<DownloadCellHolder> implements
     tasks = new ArrayList<>();
     instance = DownloadFactory.getINSTANCE(context);
     downloadedEpisodeRepository = new DownloadedEpisodeRepository(context);
+    episodeRepository = new EpisodeRepository(context);
+    podcastRepository = new PodcastRepository(context);
     List<DownloadEpisode> allDownloadEpisodes = downloadedEpisodeRepository.getAllDownloadEpisodes();
     for (DownloadEpisode episode : allDownloadEpisodes) {
       DownloadTask task = new Builder(episode.getUrl(), instance.getQueueDir())
@@ -117,6 +119,7 @@ public class DownloadCellAdapter extends Adapter<DownloadCellHolder> implements
   public void onBindViewHolder(@NonNull DownloadCellHolder holder, int position) {
     DownloadTask task = tasks.get(position);
     DownloadEpisode downloadEpisode = (DownloadEpisode) task.getTag();
+    Log.e(TAG, String.valueOf(downloadEpisode.getEpisodeId()));
     Episode item = episodeRepository.getEpisodeById(downloadEpisode.getEpisodeId());
     Podcast podcast = podcastRepository.getPodcastById(item.getPodcastId());
     holder.podcastLogo.setImageURI(item.getImage());

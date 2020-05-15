@@ -2,6 +2,7 @@ package per.funown.bocast.modules.home.view.adapter;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,6 +32,7 @@ import per.funown.bocast.modules.home.model.SubscribedPodcastViewModel;
  */
 public class PodcastRssCellAdapter extends BaseRecyclerViewAdapter<PodcastCellViewHolder> {
 
+  private static final String TAG = PodcastRssCellAdapter.class.getSimpleName();
   List<SubscribedPodcast> subscribedPodcasts = new ArrayList<>();
   SubscribedPodcastViewModel subscribedPodcastViewModel;
   FragmentManager manager;
@@ -67,6 +69,7 @@ public class PodcastRssCellAdapter extends BaseRecyclerViewAdapter<PodcastCellVi
   @Override
   public void onBindViewHolder(@NonNull PodcastCellViewHolder holder, int position) {
     SubscribedPodcast subscribedPodcast = subscribedPodcasts.get(position);
+    Log.e(TAG, String.valueOf(subscribedPodcast.getId()));
     Podcast podcast = subscribedPodcastViewModel.getPodcast(subscribedPodcast.getPodcastId());
     if (podcast != null) {
       holder.getPodcastLogo().setImageURI(Uri.parse(podcast.getLogoLink()));
@@ -77,11 +80,8 @@ public class PodcastRssCellAdapter extends BaseRecyclerViewAdapter<PodcastCellVi
             .build(ArouterConstant.FRAGMENT_PODCAST_DETAIL)
             .withSerializable("rssLink", podcast.getRssLink()).withBoolean("isSubscribed", true)
             .navigation();
+        FragmentTransitionUtil.getINSTANCE().setManager(manager);
         FragmentTransitionUtil.getINSTANCE().transit(podcastFragment, containerId);
-//        FragmentTransaction transaction = manager.beginTransaction();
-//        transaction.replace(containerId, podcastFragment);
-//        transaction.addToBackStack(null);
-//        transaction.commit();
       });
     }
 

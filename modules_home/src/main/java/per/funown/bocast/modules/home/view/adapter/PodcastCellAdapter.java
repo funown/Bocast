@@ -12,23 +12,11 @@ import androidx.recyclerview.widget.ListAdapter;
 import java.util.List;
 import java.util.ArrayList;
 
-import android.net.Uri;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.LayoutInflater;
-
 import androidx.annotation.NonNull;
-
-import com.alibaba.android.arouter.launcher.ARouter;
-
-import per.funown.bocast.library.model.RssFeed;
-import per.funown.bocast.library.net.NetworkState;
-import per.funown.bocast.modules.home.R;
-import per.funown.bocast.library.constant.ArouterConstant;
 import per.funown.bocast.library.model.ItunesResponseEntity;
 import per.funown.bocast.library.base.BaseRecyclerViewAdapter;
-import per.funown.bocast.modules.home.callback.DiffCallBack;
 
 /**
  * <pre>
@@ -74,25 +62,6 @@ public class PodcastCellAdapter extends BaseRecyclerViewAdapter< PodcastCellView
   public void onBindViewHolder(@NonNull PodcastCellViewHolder holder, int position) {
     Log.i(TAG, "--> Binding podcast cell ...");
     holder.onBindViewHolder(entities.get(position), containerId, manager);
-//    ItunesResponseEntity entity = entities.get(position);
-//    holder.getPodcastLogo().setImageURI(Uri.parse(entity.getArtworkUrl60()));
-//    holder.getPodcastTitle().setText(entity.getTrackName());
-//    holder.getPodcastAuthor().setText(entity.getArtistName());
-//    holder.getPodcastCard().setOnClickListener(v -> {
-//      Fragment podcastFragment = (Fragment) ARouter.getInstance()
-//          .build(ArouterConstant.FRAGMENT_PODCAST_DETAIL)
-//          .withSerializable("rssLink", entity.getFeedUrl()).withBoolean("isSubscribed", false)
-//          .navigation();
-//      FragmentTransaction transaction = manager.beginTransaction();
-//      transaction.replace(containerId, podcastFragment);
-//      transaction.addToBackStack(null);
-//      transaction.commit();
-//    });
-//
-//    if (holder.getPodcastTitle().getLineCount() >= 2) {
-//      holder.getPodcastTitle().setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
-//    }
-
   }
 
   @Override

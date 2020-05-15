@@ -10,6 +10,7 @@ import android.view.View.OnKeyListener;
 import android.widget.Toast;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.alibaba.android.arouter.facade.annotation.Autowired;
 import com.alibaba.android.arouter.launcher.ARouter;
@@ -38,6 +39,7 @@ import java.util.function.Consumer;
 import per.funown.bocast.library.entity.Podcast;
 import per.funown.bocast.library.model.RssChannel;
 import per.funown.bocast.library.model.ItunesResponseEntity;
+import per.funown.bocast.library.net.NetworkState;
 import per.funown.bocast.library.net.service.iTunesSearchService;
 import per.funown.bocast.library.utils.RssFetchUtils;
 import per.funown.bocast.library.constant.ArouterConstant;
@@ -46,6 +48,7 @@ import per.funown.bocast.library.model.iTunesCategory;
 import per.funown.bocast.library.model.MediaBrowserProvider;
 import per.funown.bocast.library.entity.Genre;
 import per.funown.bocast.library.entity.SubscribedPodcast;
+import per.funown.bocast.modules.home.R;
 import per.funown.bocast.modules.home.model.CurrentPodcastViewModel;
 import per.funown.bocast.modules.home.model.EpisodesViewModel;
 import per.funown.bocast.modules.home.model.PodcastViewModel;
@@ -101,7 +104,8 @@ public class PodcastDetailFragment extends Fragment {
         .get(SubscribedPodcastViewModel.class);
     episodesViewModel = new ViewModelProvider(requireActivity()).get(EpisodesViewModel.class);
     binding = FragmentPodcastDetailBinding.inflate(getLayoutInflater());
-    getLifecycle().addObserver(currentPodcastViewModel);
+//    getLifecycle().addObserver(currentPodcastViewModel);
+    currentPodcastViewModel.setContext(requireContext());
     initData();
     initEvent();
   }
@@ -177,8 +181,6 @@ public class PodcastDetailFragment extends Fragment {
         .observe(this.getViewLifecycleOwner(), currentPodcast -> {
           if (currentPodcast != null && feed != null && currentPodcast.getChannel().getTitle()
               .equals(feed.getChannel().getTitle())) {
-            binding.loadingPage.setVisibility(View.GONE);
-            binding.mainContent.setVisibility(View.VISIBLE);
             episodeCellAdapter.setFeed(currentPodcast);
             RssChannel channel = currentPodcast.getChannel();
             binding.PodcastAuthor.setText(
@@ -250,11 +252,34 @@ public class PodcastDetailFragment extends Fragment {
                 }
               }
             }));
-          } else {
-            binding.loadingPage.setVisibility(View.VISIBLE);
-            binding.mainContent.setVisibility(View.GONE);
           }
         });
+
+    currentPodcastViewModel.getNetworkStatus().observe(getViewLifecycleOwner(),
+        networkState -> {
+          if (networkState.equals(NetworkState.LOADING)) {
+            binding.loadingPage.setVisibility(View.VISIBLE);
+            binding.loading.setVisibility(View.VISIBLE);
+            binding.mainContent.setVisibility(View.GONE);
+            binding.loadingPage.setClickable(false);
+            binding.LoadingMessage.setText(getText(R.string.Loaing_message));
+          } else if (networkState.equals(NetworkState.LOADED)) {
+            binding.loadingPage.setVisibility(View.GONE);
+            binding.mainContent.setVisibility(View.VISIBLE);
+          } else if (networkState.equals(NetworkState.FAILED)) {
+            Toast.makeText(requireContext(), "Fetch Data Error. Please retry", Toast.LENGTH_LONG);
+            binding.LoadingMessage.setText(getText(R.string.retryLoading));
+            binding.loading.setVisibility(View.GONE);
+            binding.loadingPage.setClickable(true);
+            binding.loadingPage.setOnClickListener(new OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                initData();
+              }
+            });
+          }
+        });
+
   }
 
   private void addGenre(Genre... genres) {
@@ -280,24 +305,21 @@ public class PodcastDetailFragment extends Fragment {
   @SuppressLint("CheckResult")
   private void initData() {
     if (feed == null) {
-      Observable.timer(3, TimeUnit.SECONDS)
+      currentPodcastViewModel.setNetworkStatus(NetworkState.LOADING);
+      Observable.timer(1, TimeUnit.SECONDS)
           .subscribeOn(Schedulers.io())
           .subscribeOn(AndroidSchedulers.mainThread())
           .subscribe(aLong -> {
             feed = RssFetchUtils.getFeed(rssLink);
             if (feed != null) {
               currentPodcastViewModel.setCurrentPodcast(feed);
+              currentPodcastViewModel.setNetworkStatus(NetworkState.LOADED);
             } else {
-              Looper.prepare();
-              Toast.makeText(getContext(), "Data fetched failed - " + rssLink, Toast.LENGTH_LONG);
-              Looper.loop();
+              currentPodcastViewModel.setNetworkStatus(NetworkState.FAILED);
             }
           }, throwable -> {
             Log.e(TAG, "Throwable " + throwable.getMessage());
-            Looper.prepare();
-            Toast.makeText(getContext(), throwable.getMessage() + " - " + rssLink,
-                Toast.LENGTH_LONG);
-            Looper.loop();
+            currentPodcastViewModel.setNetworkStatus(NetworkState.FAILED);
           });
     } else {
       currentPodcastViewModel.setCurrentPodcast(feed);

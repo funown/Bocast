@@ -49,7 +49,6 @@ public class MediaIdHelper {
    * can correctly build the playing queue. This is specially useful when
    * one music can appear in more than one list, like "by genre -> genre_1"
    * and "by artist -> artist_1".
-
    * @param musicID Unique music ID for playable items, or null for browseable items.
    * @param categories hierarchy of categories representing this item's browsing parents
    * @return a hierarchy-aware media ID

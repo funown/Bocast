@@ -2,14 +2,10 @@ package per.funown.bocast;
 
 import android.media.AudioManager;
 import android.util.Log;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentManager.BackStackEntry;
 import androidx.fragment.app.FragmentTransaction;
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -24,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
   ActivityMainBinding binding;
 
   ViewPagerFragmentAdapter adapter;
-  private static boolean PLAYERINIT = false;
+  private static boolean PLAYERINITED = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
       }
     })).attach();
 
-    if (!PLAYERINIT) {
+    if (!PLAYERINITED) {
       initPlayer();
     }
   }
@@ -65,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void initPlayer() {
-    Log.i(TAG, "init Player -- " + PLAYERINIT);
+    Log.i(TAG, "init Player -- " + PLAYERINITED);
     FragmentManager supportFragmentManager = getSupportFragmentManager();
     Fragment player = (Fragment) ARouter.getInstance().build(ArouterConstant.FRAGMENT_LISTENER)
         .navigation();
@@ -73,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     transaction.add(binding.getRoot().getId(), player);
     transaction.addToBackStack(null);
     transaction.commit();
-    PLAYERINIT = true;
+    PLAYERINITED = true;
     setVolumeControlStream(AudioManager.STREAM_MUSIC);
   }
 

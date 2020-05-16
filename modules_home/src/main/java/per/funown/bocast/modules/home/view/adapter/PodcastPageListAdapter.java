@@ -132,7 +132,6 @@ public class PodcastPageListAdapter extends
       if (getItem(position) == null) {
         return;
       }
-      PodcastCellViewHolder podcastCellViewHolder = (PodcastCellViewHolder) holder;
       ((PodcastCellViewHolder) holder).onBindViewHolder(getItem(position), containerId, manager);
     }
   }

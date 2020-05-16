@@ -1,52 +1,45 @@
 package per.funown.bocast.modules.home.view.fragment;
 
-import android.annotation.SuppressLint;
 import android.net.Uri;
-import android.os.Looper;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
-import android.widget.Toast;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import com.alibaba.android.arouter.facade.annotation.Autowired;
-import com.alibaba.android.arouter.launcher.ARouter;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Iterator;
-
 import android.os.Bundle;
 import android.view.View;
+import android.view.KeyEvent;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import android.view.LayoutInflater;
-import android.support.v4.media.MediaBrowserCompat;
+import android.annotation.SuppressLint;
+import android.view.View.OnKeyListener;
+import android.view.View.OnClickListener;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.alibaba.android.arouter.launcher.ARouter;
 import com.alibaba.android.arouter.facade.annotation.Route;
+import com.alibaba.android.arouter.facade.annotation.Autowired;
 
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
-import per.funown.bocast.library.entity.Podcast;
-import per.funown.bocast.library.model.RssChannel;
-import per.funown.bocast.library.model.ItunesResponseEntity;
-import per.funown.bocast.library.net.NetworkState;
-import per.funown.bocast.library.net.service.iTunesSearchService;
+
 import per.funown.bocast.library.utils.RssFetchUtils;
 import per.funown.bocast.library.constant.ArouterConstant;
+import per.funown.bocast.library.net.NetworkState;
+import per.funown.bocast.library.net.service.iTunesSearchService;
 import per.funown.bocast.library.model.RssFeed;
+import per.funown.bocast.library.model.RssChannel;
 import per.funown.bocast.library.model.iTunesCategory;
-import per.funown.bocast.library.model.MediaBrowserProvider;
+import per.funown.bocast.library.model.ItunesResponseEntity;
 import per.funown.bocast.library.entity.Genre;
+import per.funown.bocast.library.entity.Podcast;
 import per.funown.bocast.library.entity.SubscribedPodcast;
 import per.funown.bocast.modules.home.R;
 import per.funown.bocast.modules.home.model.CurrentPodcastViewModel;
@@ -61,8 +54,6 @@ import per.funown.bocast.modules.home.view.adapter.PodcastRssEpisodeCellAdapter;
  */
 @Route(path = ArouterConstant.FRAGMENT_PODCAST_DETAIL)
 public class PodcastDetailFragment extends Fragment {
-
-  private static final String PODCAST_MEDIA_ID = "Podcast_media_id";
   private static final String TAG = PodcastDetailFragment.class.getSimpleName();
 
   @Autowired
@@ -82,9 +73,7 @@ public class PodcastDetailFragment extends Fragment {
   private CurrentPodcastViewModel currentPodcastViewModel;
   private SubscribedPodcastViewModel subscribedPodcastViewModel;
 
-  private boolean isFirstLoad = true;
   private boolean isReverse = false;
-  private boolean isSubscribrd = false;
 
   @Override
   public void onStart() {
@@ -113,11 +102,6 @@ public class PodcastDetailFragment extends Fragment {
   @Override
   public void onResume() {
     super.onResume();
-//    if (isFirstLoad) {
-//      initData();
-//      initEvent();
-//      isFirstLoad = false;
-//    }
 
     getView().setFocusableInTouchMode(true);
     getView().requestFocus();
@@ -200,7 +184,6 @@ public class PodcastDetailFragment extends Fragment {
             }
             binding.SubscribeCheck.setOnCheckedChangeListener(((buttonView, isChecked) -> {
               List<iTunesCategory> categorys = channel.getCategorys();
-              Log.e(TAG, "-->" + categorys.size());
               // subscribe op
               if (isChecked) {
                 Podcast podcast = new Podcast(
@@ -271,12 +254,7 @@ public class PodcastDetailFragment extends Fragment {
             binding.LoadingMessage.setText(getText(R.string.retryLoading));
             binding.loading.setVisibility(View.GONE);
             binding.loadingPage.setClickable(true);
-            binding.loadingPage.setOnClickListener(new OnClickListener() {
-              @Override
-              public void onClick(View v) {
-                initData();
-              }
-            });
+            binding.loadingPage.setOnClickListener(v -> initData());
           }
         });
 
@@ -324,12 +302,5 @@ public class PodcastDetailFragment extends Fragment {
     } else {
       currentPodcastViewModel.setCurrentPodcast(feed);
     }
-  }
-
-  private interface EpisodeListener extends MediaBrowserProvider {
-
-    void onMediaItemSelected(MediaBrowserCompat.MediaItem item);
-
-    void setToolbarTitle(CharSequence title);
   }
 }

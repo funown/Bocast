@@ -36,7 +36,6 @@ import per.funown.bocast.library.entity.Podcast;
 import per.funown.bocast.library.model.RssFeed;
 import per.funown.bocast.library.model.RssItem;
 import per.funown.bocast.library.download.DownloadFactory;
-import per.funown.bocast.library.playback.Playback;
 import per.funown.bocast.library.service.MusicService;
 import per.funown.bocast.library.utils.DateUtils;
 import per.funown.bocast.library.utils.DateUtils.DatePattern;
@@ -123,7 +122,7 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
         int duration = Integer.parseInt(item.getDuration().trim());
         int mins = duration / 60;
         int seconds = duration % 60;
-        holder.updateTime_durationTime.setText(item.getPubDate() + " " + mins + ":" + seconds);
+        holder.updateTime_durationTime.setText(pubDate + " " + mins + ":" + seconds);
       }
     }
     holder.toDetail.setOnClickListener(v -> {
@@ -237,7 +236,19 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
           }
         }
       } else {
-        Episode episode = new Episode(podcast.getId(),
+        Podcast newPodcast = podcast;
+        if (newPodcast == null) {
+          newPodcast = new Podcast(feed.getChannel().getTitle(),
+              feed.getChannel().getOwner().getName() == null ? feed.getChannel().getOwner()
+                  .getName() : feed.getChannel().getAuthor(),
+              feed.getChannel().getItems().size(),
+              feed.getChannel().getAtomLink().getHref(),
+              feed.getChannel().getImage().getHref());
+          long id = viewModel.addPodcast(newPodcast);
+          newPodcast.setId(id);
+          Log.e(TAG, String.valueOf(id));
+        }
+        Episode episode = new Episode(newPodcast.getId(),
             item.getGuid().getGuid(),
             item.getTitle(),
             item.getSubtitle(),

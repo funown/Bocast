@@ -26,6 +26,7 @@ import com.liulishuo.okdownload.core.breakpoint.BreakpointInfo;
 import com.lzx.starrysky.provider.SongInfo;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import me.tankery.lib.circularseekbar.CircularSeekBar;
 import per.funown.bocast.library.constant.ArouterConstant;
 import per.funown.bocast.library.entity.DownloadEpisode;
@@ -39,6 +40,7 @@ import per.funown.bocast.library.model.RssItem;
 import per.funown.bocast.library.repo.DownloadedEpisodeRepository;
 import per.funown.bocast.library.repo.EpisodeRepository;
 import per.funown.bocast.library.repo.PodcastRepository;
+import per.funown.bocast.library.service.MusicService;
 import per.funown.bocast.library.utils.FileUtil;
 import per.funown.bocast.library.utils.FragmentTransitionUtil;
 import per.funown.bocast.library.utils.ItemTouchHelperAdapter;
@@ -66,11 +68,16 @@ public class DownloadCellAdapter extends Adapter<DownloadCellHolder> implements
   private EpisodeRepository episodeRepository;
   boolean isDownloading;
   DownloadFactory instance;
+  MusicService service;
   Context context;
   private int containerId;
 
   public void setContainerId(int containerId) {
     this.containerId = containerId;
+  }
+
+  public void setService(MusicService service) {
+    this.service = service;
   }
 
   public DownloadCellAdapter(Context context) {
@@ -80,7 +87,8 @@ public class DownloadCellAdapter extends Adapter<DownloadCellHolder> implements
     downloadedEpisodeRepository = new DownloadedEpisodeRepository(context);
     episodeRepository = new EpisodeRepository(context);
     podcastRepository = new PodcastRepository(context);
-    List<DownloadEpisode> allDownloadEpisodes = downloadedEpisodeRepository.getAllDownloadEpisodes();
+    List<DownloadEpisode> allDownloadEpisodes = downloadedEpisodeRepository
+        .getAllDownloadEpisodes();
     for (DownloadEpisode episode : allDownloadEpisodes) {
       DownloadTask task = new Builder(episode.getUrl(), instance.getQueueDir())
           .setFilename(episode.getFilename())
@@ -166,11 +174,20 @@ public class DownloadCellAdapter extends Adapter<DownloadCellHolder> implements
     });
 
     holder.episodeTitle.setOnClickListener(v -> {
-      Fragment fragment = (Fragment) ARouter.getInstance()
-          .build(ArouterConstant.FRAGMENT_PODCAST_EPISODE_DETAIL)
-          .withString("feed", podcast.getRssLink())
-          .withString("guid", item.getGuid()).navigation();
-      FragmentTransitionUtil.getINSTANCE().transit(fragment, containerId);
+      RssFeed feed = RssFetchUtils.fetchRss(podcast.getRssLink());
+      feed.getChannel().getItems().forEach(new Consumer<RssItem>() {
+        @Override
+        public void accept(RssItem rssItem) {
+          if (rssItem.getGuid().getGuid().equals(item.getGuid())) {
+            Fragment fragment = (Fragment) ARouter.getInstance()
+                .build(ArouterConstant.FRAGMENT_PODCAST_EPISODE_DETAIL)
+                .withObject("item", rssItem).navigation();
+            FragmentTransitionUtil.getINSTANCE().transit(fragment, containerId);
+            return;
+          }
+        }
+      });
+
     });
 
     holder.itemView.setOnClickListener(v -> {

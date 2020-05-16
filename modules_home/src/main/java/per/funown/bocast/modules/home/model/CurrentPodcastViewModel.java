@@ -1,11 +1,6 @@
 package per.funown.bocast.modules.home.model;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Looper;
-import android.util.Log;
-import android.widget.Toast;
-import androidx.arch.core.util.Function;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -15,17 +10,8 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 
-import androidx.lifecycle.Transformations;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-import java.util.concurrent.TimeUnit;
-import per.funown.bocast.library.AppExecutors;
 import per.funown.bocast.library.model.RssFeed;
-import per.funown.bocast.library.model.RssItem;
 import per.funown.bocast.library.net.NetworkState;
-import per.funown.bocast.library.utils.LiveDataUtils;
-import per.funown.bocast.library.utils.RssFetchUtils;
 
 /**
  * <pre>

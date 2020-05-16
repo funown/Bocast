@@ -24,6 +24,7 @@ import per.funown.bocast.library.model.RssItem;
 import per.funown.bocast.library.utils.DateUtils;
 import per.funown.bocast.library.utils.DateUtils.DatePattern;
 import per.funown.bocast.library.utils.FragmentTransitionUtil;
+import per.funown.bocast.library.utils.RssFetchUtils;
 import per.funown.bocast.modules.home.model.CurrentPodcastViewModel;
 import per.funown.bocast.modules.home.databinding.FragmentEpisodeDetailBinding;
 
@@ -79,7 +80,7 @@ public class EpisodeDetailFragment extends Fragment {
       int duration = Integer.parseInt(item.getDuration().trim());
       int mins = duration / 60;
       int seconds = duration % 60;
-      binding.pubDate.setText(item.getPubDate() + " " + mins + ":" + seconds);
+      binding.pubDate.setText(pubDate + " " + mins + ":" + seconds);
     }
 
     binding.PodcastAuthor.setOnClickListener(new OnClickListener() {

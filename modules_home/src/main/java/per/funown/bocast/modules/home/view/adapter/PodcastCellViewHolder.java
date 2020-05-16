@@ -1,6 +1,7 @@
 package per.funown.bocast.modules.home.view.adapter;
 
 import android.net.Uri;
+import android.text.Html;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,7 +75,7 @@ public class PodcastCellViewHolder extends RecyclerView.ViewHolder {
   public void   onBindViewHolder(ItunesResponseEntity entity, int containerId, FragmentManager manager) {
     podcastLogo.setImageURI(Uri.parse(entity.getArtworkUrl60()));
     podcastTitle.setText(entity.getTrackName());
-    podcastAuthor.setText(entity.getArtistName());
+    podcastAuthor.setText(Html.fromHtml(entity.getArtistName(), Html.FROM_HTML_MODE_LEGACY));
     podcastCard.setOnClickListener(v -> {
       Fragment podcastFragment = (Fragment) ARouter.getInstance()
           .build(ArouterConstant.FRAGMENT_PODCAST_DETAIL)

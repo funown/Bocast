@@ -49,12 +49,12 @@ public class App extends Application {
     File cache = new File(getCacheDir(), "cache");
     NetManager.setCache(cache);
 
-    try {
-      Bmob.initialize(this, this.getPackageManager()
-          .getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA).metaData.getString(APPID_KEY));
-    } catch (NameNotFoundException e) {
-      e.printStackTrace();
-    }
+//    try {
+//      Bmob.initialize(this, this.getPackageManager()
+//          .getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA).metaData.getString(APPID_KEY));
+//    } catch (NameNotFoundException e) {
+//      e.printStackTrace();
+//    }
 
     Constraints constraints = new Constraints.Builder()
         .setRequiresCharging(true)

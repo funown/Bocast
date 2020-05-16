@@ -207,7 +207,7 @@
         app:layout_constraintTop_toTopOf="@+id/frameLayout"
         app:layout_constraintVertical_bias="0.50"
         app:lottie_colorFilter="#4A4A4A"
-        app:lottie_fileName="lottie_play_next_pre.json" />
+        app:lottie_fileName="lottie_next_track.json" />
       <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lav_prev"
         android:layout_width="40dp"
@@ -218,7 +218,7 @@
         app:layout_constraintEnd_toStartOf="@+id/frameLayout"
         app:layout_constraintTop_toTopOf="@+id/frameLayout"
         app:lottie_colorFilter="#4A4A4A"
-        app:lottie_fileName="lottie_play_next_pre.json" />
+        app:lottie_fileName="lottie_next_track.json" />
       <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/Episode_cover"
         android:layout_width="0dp"

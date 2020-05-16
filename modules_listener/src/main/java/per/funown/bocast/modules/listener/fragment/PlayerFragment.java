@@ -33,6 +33,9 @@ import java.time.ZoneId;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.function.Consumer;
+import per.funown.bocast.library.model.RssFeed;
+import per.funown.bocast.library.model.RssItem;
 import per.funown.bocast.library.service.MusicService;
 import per.funown.bocast.library.entity.DownloadEpisode;
 import per.funown.bocast.library.constant.ArouterConstant;
@@ -40,6 +43,7 @@ import per.funown.bocast.library.download.BaseDownloadListener;
 import per.funown.bocast.library.download.DownloadFactory;
 import per.funown.bocast.library.download.DownloadStatus;
 import per.funown.bocast.library.utils.FragmentTransitionUtil;
+import per.funown.bocast.library.utils.RssFetchUtils;
 import per.funown.bocast.modules.listener.R;
 import per.funown.bocast.modules.listener.viewmodel.PlayerViewModel;
 import per.funown.bocast.modules.listener.databinding.FragmentPlayerBinding;
@@ -48,7 +52,7 @@ import per.funown.bocast.modules.listener.databinding.FragmentPlayerBinding;
  * A simple {@link Fragment} subclass.
  */
 @Route(path = ArouterConstant.FRAGMENT_LISTENER)
-public class PlayerFragment extends Fragment implements OnPlayerEventListener{
+public class PlayerFragment extends Fragment implements OnPlayerEventListener {
 
   private static final String TAG = PlayerFragment.class.getSimpleName();
 
@@ -87,9 +91,12 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener{
         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     layoutParams.bottomMargin = getNavigationBarHeight();
     viewGroup.addView(binding.getRoot(), layoutParams);
+    if (service.getINSTANCE().getNowPlayingSongInfo() != null && service.getINSTANCE().isPlaying()) {
+      Log.e(TAG, "playing 0.5");
+      binding.btnPlayPause.setProgress(0.5f);
+      Log.e(TAG, "playing " + binding.btnPlayPause.getProgress());
+    }
 
-    binding.lavPrev.setColorFilter(getContext().getColor(R.color.grey));
-    binding.lavNext.setColorFilter(getContext().getColor(R.color.grey));
   }
 
   @Nullable
@@ -131,9 +138,6 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener{
       binding.PodcastAuthor.setText(songInfo.getArtist());
       binding.podcastTitle.setText(songInfo.getSongName());
       binding.progressBar.setMax((int) songInfo.getDuration());
-      if (instance.isPlaying()) {
-        binding.btnPlayPause.setProgress(0.5f);
-      }
     } else {
       binding.progressBar.setProgress(0);
       binding.trackbar.setProgress(0);
@@ -166,35 +170,6 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener{
         instance.playMusic();
       }
     });
-    binding.EpisodeTitle.setOnClickListener(v -> {
-      SongInfo songInfo = instance.getNowPlayingSongInfo();
-      if (songInfo != null) {
-        Fragment todetail = (Fragment) ARouter.getInstance()
-            .build(ArouterConstant.FRAGMENT_PODCAST_EPISODE_DETAIL)
-            .withString("feed", songInfo.getDescription())
-            .withString("guid", songInfo.getSongId()).navigation();
-        FragmentTransitionUtil.getINSTANCE().setManager(getActivity().getSupportFragmentManager());
-        FragmentTransitionUtil.getINSTANCE().transit(todetail);
-      }
-    });
-    binding.trackbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
-      @Override
-      public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-        if (fromUser) {
-          instance.seekTo(progress);
-        }
-      }
-
-      @Override
-      public void onStartTrackingTouch(SeekBar seekBar) {
-
-      }
-
-      @Override
-      public void onStopTrackingTouch(SeekBar seekBar) {
-
-      }
-    });
 
     binding.btnPlayPause.setOnClickListener(v -> {
       if (instance.isPlaying()) {
@@ -211,8 +186,6 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener{
       binding.btnPlayPause.playAnimation();
     });
 
-    binding.lavPrev.setColorFilter(getContext().getColor(R.color.grey));
-    binding.lavNext.setColorFilter(getContext().getColor(R.color.grey));
     binding.lavNext.setOnClickListener(v -> {
       PlayerControl instance12 = service.getINSTANCE();
       if (instance12.getPlayList().size() > 1) {
@@ -234,6 +207,44 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener{
         } else {
           Toast.makeText(requireContext(), "There are no more song", Toast.LENGTH_SHORT);
         }
+      }
+    });
+
+    binding.EpisodeTitle.setOnClickListener(v -> {
+      SongInfo songInfo = instance.getNowPlayingSongInfo();
+      if (songInfo != null) {
+        RssFeed feed = RssFetchUtils.fetchRss(songInfo.getDescription());
+        RssItem item = null;
+        for (RssItem rssItem : feed.getChannel().getItems()) {
+          if (rssItem.getEnclosure().getUrl().equals(songInfo.getSongUrl())) {
+            item = rssItem;
+            break;
+          }
+        }
+        Fragment todetail = (Fragment) ARouter.getInstance()
+            .build(ArouterConstant.FRAGMENT_PODCAST_EPISODE_DETAIL)
+            .withObject("item", item)
+            .withString("feed", songInfo.getDescription()).navigation();
+        FragmentTransitionUtil.getINSTANCE().setManager(getActivity().getSupportFragmentManager());
+        FragmentTransitionUtil.getINSTANCE().transit(todetail);
+      }
+    });
+    binding.trackbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+      @Override
+      public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (fromUser) {
+          instance.seekTo(progress);
+        }
+      }
+
+      @Override
+      public void onStartTrackingTouch(SeekBar seekBar) {
+
+      }
+
+      @Override
+      public void onStopTrackingTouch(SeekBar seekBar) {
+
       }
     });
 
@@ -361,9 +372,7 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener{
   @Override
   public void onPlayerStart() {
     binding.barBtnPlay.setImageDrawable(getActivity().getDrawable(R.drawable.ic_pause));
-    if (bottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
-      binding.btnPlayPause.setProgress(0.5f);
-    }
+    binding.btnPlayPause.setProgress(0.5f);
   }
 
   @Override

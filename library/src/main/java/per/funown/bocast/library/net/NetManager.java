@@ -50,6 +50,22 @@ public class NetManager {
     cache =  new Cache(file, 1024 * 1024 * 10); //10Mb;
   }
 
+  public void setNetworkState(NetworkState networkState) {
+    NetManager.networkState = networkState;
+  }
+
+  public NetworkState getNetworkState() {
+    return networkState;
+  }
+
+  public ItunesApiService getItunesApiService() {
+    return itunesApiService;
+  }
+
+  public Builder getBuilder() {
+    return builder;
+  }
+
   private NetManager() {
 
     builder = new OkHttpClient.Builder()
@@ -66,10 +82,6 @@ public class NetManager {
         .build();
     itunesApiService = retrofit.create(ItunesApiService.class);
     networkState = NetworkState.LOADED;
-  }
-
-  public Builder getBuilder() {
-    return builder;
   }
 
   public static synchronized NetManager getInstance() {
@@ -96,18 +108,6 @@ public class NetManager {
     Retrofit rssRetrofit = getRssRetrofit(baseUrl, TikXmlConverterFactory.create(build));
     RssService rssService = rssRetrofit.create(RssService.class);
     return rssService;
-  }
-
-  public void setNetworkState(NetworkState networkState) {
-    NetManager.networkState = networkState;
-  }
-
-  public NetworkState getNetworkState() {
-    return networkState;
-  }
-
-  public ItunesApiService getItunesApiService() {
-    return itunesApiService;
   }
 
   public iTunesRssTopPodcastService getITunesRssTopPodcastService(int limit, String genre) {

@@ -1,2 +1,2 @@
 # Bocast
-a podcast app
+a podcast demo app

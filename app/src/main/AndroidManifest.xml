@@ -32,12 +32,6 @@
       android:authorities="per.funown.bocast.BmobContentProvider">
     </provider>
 
-    <service android:name=".library.service.PlayService">
-      <intent-filter>
-        <action android:name="android.media.browse.MediaBrowserService"/>
-      </intent-filter>
-    </service>
-
   </application>
 
   <uses-permission android:name="android.permission.INTERNET" />

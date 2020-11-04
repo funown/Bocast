@@ -60,9 +60,11 @@ public class PodcastPageListAdapter extends
 
   public void updateNetworkState(NetworkState networkState) {
     this.networkState = networkState;
+    // 加载中则隐藏加载状态
     if (networkState.equals(NetworkState.INITIAL_LOADING)) {
       hideFooter();
     }
+    // 显示加载状态
     else {
       showFooter();
     }
@@ -110,9 +112,11 @@ public class PodcastPageListAdapter extends
   @NonNull
   @Override
   public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    // 加载成功
     if (viewType == R.layout.cell_podcast) {
       return PodcastCellViewHolder.newInstance(parent);
     }
+    // 加载失败
     else {
       LoadingFooterViewHolder footerViewHolder = LoadingFooterViewHolder.newInstance(parent);
       footerViewHolder.itemView.setOnClickListener(v -> {
@@ -124,10 +128,12 @@ public class PodcastPageListAdapter extends
 
   @Override
   public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    // 显示加载状态
     if (holder.getItemViewType() == R.layout.loading_footer) {
       LoadingFooterViewHolder footerViewHolder = (LoadingFooterViewHolder) holder;
       ((LoadingFooterViewHolder) holder).onBindViewHolder(networkState);
     }
+    // 显示新加载播客
     else {
       if (getItem(position) == null) {
         return;

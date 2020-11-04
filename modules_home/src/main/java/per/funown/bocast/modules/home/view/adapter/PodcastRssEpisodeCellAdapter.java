@@ -142,9 +142,10 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
         SongInfo songInfo = null;
         for (int i = 0; i < playList.size(); i++) {
           SongInfo info = playList.get(i);
-          if (info.getSongId().equals(item.getGuid().getGuid())) {
+          if (info.getSongUrl().trim().equals(item.getEnclosure().getUrl().trim())) {
             songInfo = info;
             instance.playMusicByIndex(i);
+            holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_pause));
             break;
           }
         }
@@ -191,86 +192,93 @@ public class PodcastRssEpisodeCellAdapter extends Adapter<PodcastEpisodeCellView
         isPlaying.set(false);
         service.getManager().stopToUpdateProgress();
       }
+    });
 
-      instance.playbackState().observe(activity, playbackStage -> {
-        if (playbackStage == null) {
-          return;
-        }
-        Log.e(TAG, playbackStage.getStage());
-        if (playbackStage.getStage() != PlaybackStage.NONE) {
-          SongInfo songInfo = playbackStage.getSongInfo();
-          if (songInfo.getSongUrl().equals(item.getEnclosure().getUrl())) {
+    instance.playbackState().observe(activity, playbackStage -> {
+      if (playbackStage == null) {
+        return;
+      }
+      Log.e(TAG, playbackStage.getStage());
+      if (playbackStage.getStage() != PlaybackStage.NONE) {
+        SongInfo songInfo = playbackStage.getSongInfo();
+        if (songInfo.getSongUrl().equals(item.getEnclosure().getUrl())) {
 
-            if (instance.getState() == PlaybackStateCompat.STATE_PLAYING) {
-              holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_pause));
-              isPlaying.set(true);
-            } else {
-              holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_play));
-              isPlaying.set(false);
-            }
+          if (instance.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_pause));
+            isPlaying.set(true);
+            holder.btn_addToList
+                .setImageDrawable(activity.getDrawable(R.drawable.ic_playlist_add_check));
           } else {
             holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_play));
             isPlaying.set(false);
           }
+        } else {
+          holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_play));
+          isPlaying.set(false);
         }
-      });
+      }
     });
 
+    Episode episode = episodesViewModel.getEpisode(item.getTitle());
     AtomicBoolean inList = new AtomicBoolean(false);
     instance.getPlayList().forEach(info -> {
-      if (info.getSongId().equals(item.getGuid().getGuid())) {
+      if (episode != null && info.getSongId().equals(String.valueOf(episode.getId()))) {
         holder.btn_addToList
             .setImageDrawable(activity.getDrawable(R.drawable.ic_playlist_add_check));
         inList.set(true);
       }
     });
-    holder.btn_addToList.setOnClickListener(v -> {
-      if (inList.get()) {
-        List<SongInfo> playList = service.getINSTANCE().getPlayList();
-        for (int i = 0; i < playList.size(); i++) {
-          if (playList.get(i).getSongId().equals(item.getGuid().getGuid())) {
-            service.removeSong(playList.get(i));
-            holder.btn_addToList
-                .setImageDrawable(activity.getDrawable(R.drawable.ic_playlist_plus));
-            inList.set(false);
+    holder.btn_addToList.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (inList.get()) {
+          List<SongInfo> playList = service.getINSTANCE().getPlayList();
+          for (int i = 0; i < playList.size(); i++) {
+            if (playList.get(i).getSongId().equals(item.getGuid().getGuid())) {
+              service.removeSong(playList.get(i));
+              holder.btn_addToList
+                  .setImageDrawable(activity.getDrawable(R.drawable.ic_playlist_plus));
+              inList.set(false);
+            }
           }
-        }
-      } else {
-        Podcast newPodcast = podcast;
-        if (newPodcast == null) {
-          newPodcast = new Podcast(feed.getChannel().getTitle(),
-              feed.getChannel().getOwner().getName() == null ? feed.getChannel().getOwner()
-                  .getName() : feed.getChannel().getAuthor(),
-              feed.getChannel().getItems().size(),
-              feed.getChannel().getAtomLink().getHref(),
-              feed.getChannel().getImage().getHref());
-          long id = viewModel.addPodcast(newPodcast);
-          newPodcast.setId(id);
-          Log.e(TAG, String.valueOf(id));
-        }
-        Episode episode = new Episode(newPodcast.getId(),
-            item.getGuid().getGuid(),
-            item.getTitle(),
-            item.getSubtitle(),
-            item.getPubDate(),
-            item.getDuration(),
-            item.getLink(),
-            item.getEnclosure().getUrl(),
-            item.getImage().getHref(),
-            item.getDescription());
-        long episodeId = episodesViewModel.insertEpisode(episode);
+        } else {
+          Podcast newPodcast = podcast;
+          if (newPodcast == null) {
+            newPodcast = new Podcast(feed.getChannel().getTitle(),
+                feed.getChannel().getOwner().getName() == null ? feed.getChannel().getOwner()
+                    .getName() : feed.getChannel().getAuthor(),
+                feed.getChannel().getItems().size(),
+                feed.getChannel().getAtomLink().getHref(),
+                feed.getChannel().getImage().getHref());
+            long id = viewModel.addPodcast(newPodcast);
+            newPodcast.setId(id);
+            Log.e(TAG, String.valueOf(id));
+          }
+          Episode episode = new Episode(newPodcast.getId(),
+              item.getGuid().getGuid(),
+              item.getTitle(),
+              item.getSubtitle(),
+              item.getPubDate(),
+              item.getDuration(),
+              item.getLink(),
+              item.getEnclosure().getUrl(),
+              item.getImage().getHref(),
+              item.getDescription());
+          long episodeId = episodesViewModel.insertEpisode(episode);
 
-        SongInfo songInfo = buildSongInfo(item, podcast, episodeId);
-        List<SongInfo> list = service.getINSTANCE().getPlayList();
-        list.add(songInfo);
-        service.getINSTANCE().updatePlayList(list);
-        service.addSong(songInfo);
-        inList.set(true);
-        holder.btn_addToList
-            .setImageDrawable(activity.getDrawable(R.drawable.ic_playlist_add_check));
-        Toast.makeText(activity.getApplicationContext(),
-            songInfo.getSongName() + "had been added to playlist" + service.getINSTANCE()
-                .getPlayList().size(), Toast.LENGTH_LONG).show();
+          SongInfo songInfo = PodcastRssEpisodeCellAdapter.this
+              .buildSongInfo(item, podcast, episodeId);
+          List<SongInfo> list = service.getINSTANCE().getPlayList();
+          list.add(songInfo);
+          service.getINSTANCE().updatePlayList(list);
+          service.addSong(songInfo);
+          inList.set(true);
+          holder.btn_addToList
+              .setImageDrawable(activity.getDrawable(R.drawable.ic_playlist_add_check));
+          Toast.makeText(activity.getApplicationContext(),
+              songInfo.getSongName() + "had been added to playlist" + service.getINSTANCE()
+                  .getPlayList().size(), Toast.LENGTH_LONG).show();
+        }
       }
     });
   }

@@ -70,9 +70,6 @@ public class HomePageFragment extends Fragment {
     podcastRssCellAdapter = new PodcastRssCellAdapter();
     podcastRssCellAdapter.setContainerId(containerId);
     podcastRssCellAdapter.setManager(requireActivity().getSupportFragmentManager());
-//    podcastCellAdapter = new PodcastCellAdapter();
-//    podcastCellAdapter.setManager(requireActivity().getSupportFragmentManager());
-//    podcastCellAdapter.setContainerId(containerId);
     binding.SubscribedPodcastPanel.setAdapter(podcastRssCellAdapter);
 
     recommendationSectionAdapter = new RecommendationSectionAdapter();
@@ -135,9 +132,9 @@ public class HomePageFragment extends Fragment {
     });
 
     // TODO
-    podcastViewModel.getDataStatus().observe(getViewLifecycleOwner(), dataStatus -> {
-
-    });
+//    podcastViewModel.getDataStatus().observe(getViewLifecycleOwner(), dataStatus -> {
+//
+//    });
 
     // Inflate the layout for this fragment
     return binding.getRoot();

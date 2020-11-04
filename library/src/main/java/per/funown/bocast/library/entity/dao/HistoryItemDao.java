@@ -32,6 +32,9 @@ public interface HistoryItemDao {
   @Query("SELECT * FROM HistoryItem")
   LiveData<List<HistoryItem>> getAll();
 
+  @Query("SELECT * FROM HistoryItem")
+  List<HistoryItem> getAllHistory();
+
   @Query("DELETE FROM HistoryItem")
   void deleteAll();
 

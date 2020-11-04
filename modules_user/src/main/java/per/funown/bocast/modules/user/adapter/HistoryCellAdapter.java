@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Handler;
+import android.support.v4.media.session.PlaybackStateCompat;
+import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -18,12 +20,14 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import com.alibaba.android.arouter.launcher.ARouter;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.android.material.snackbar.Snackbar;
+import com.lzx.starrysky.common.PlaybackStage;
 import com.lzx.starrysky.control.PlayerControl;
 import com.lzx.starrysky.provider.SongInfo;
 import java.util.Collections;
@@ -63,7 +67,7 @@ public class HistoryCellAdapter extends Adapter<HistoryItemViewHolder> implement
   private int containerId;
   MusicService service;
   PlayerControl instance;
-  Activity activity;
+  FragmentActivity activity;
   private final Context context;
   private HistoryViewModel viewModel;
   private View panel;
@@ -86,7 +90,7 @@ public class HistoryCellAdapter extends Adapter<HistoryItemViewHolder> implement
     this.containerId = containerId;
   }
 
-  public void setActivity(Activity activity) {
+  public void setActivity(FragmentActivity activity) {
     this.activity = activity;
   }
 
@@ -123,6 +127,28 @@ public class HistoryCellAdapter extends Adapter<HistoryItemViewHolder> implement
             .withString("feed", podcast.getRssLink())
             .withString("guid", episode.getGuid()).navigation();
         FragmentTransitionUtil.getINSTANCE().transit(fragment, containerId);
+      }
+    });
+    instance.playbackState().observe(activity, playbackStage -> {
+      if (playbackStage == null) {
+        return;
+      }
+      Log.e(TAG, playbackStage.getStage());
+      if (playbackStage.getStage() != PlaybackStage.NONE) {
+        SongInfo songInfo = playbackStage.getSongInfo();
+        if (songInfo.getSongId().equals(historyItem.getEpisodeId())) {
+
+          if (instance.getState() == PlaybackStateCompat.STATE_PLAYING) {
+            holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_pause));
+            isPlaying = true;
+          } else {
+            holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_play));
+            isPlaying = false;
+          }
+        } else {
+          holder.btn_play.setImageDrawable(activity.getDrawable(R.drawable.ic_play));
+          isPlaying = false;
+        }
       }
     });
     holder.btn_play.setOnClickListener(new OnClickListener() {

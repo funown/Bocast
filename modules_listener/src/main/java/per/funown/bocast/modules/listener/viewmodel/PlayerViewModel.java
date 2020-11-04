@@ -88,4 +88,15 @@ public class PlayerViewModel extends AndroidViewModel {
     historyItemRepository.addHistory(historyItem);
   }
 
+  public HistoryItem getHistory(long episodeId) {
+    List<HistoryItem> value = historyItemRepository.getAllItems();
+    if (value!= null) {
+      for (HistoryItem historyItem : value) {
+        if (historyItem.getEpisodeId() == episodeId) {
+          return historyItem;
+        }
+      }
+    }
+    return null;
+  }
 }

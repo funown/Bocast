@@ -157,4 +157,21 @@ public class Episode implements Serializable {
   public void setShowNotes(String showNotes) {
     this.showNotes = showNotes;
   }
+
+  @Override
+  public String toString() {
+    return "Episode{" +
+        "id=" + id +
+        ", podcastId=" + podcastId +
+        ", guid='" + guid + '\'' +
+        ", title='" + title + '\'' +
+        ", subtitle='" + subtitle + '\'' +
+        ", pubDate='" + pubDate + '\'' +
+        ", duration='" + duration + '\'' +
+        ", link='" + link + '\'' +
+        ", enclosure='" + enclosure + '\'' +
+        ", image='" + image + '\'' +
+        ", showNotes='" + showNotes + '\'' +
+        '}';
+  }
 }

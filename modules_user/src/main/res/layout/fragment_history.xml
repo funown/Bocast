@@ -20,7 +20,7 @@
       app:layout_constraintTop_toTopOf="parent">
       <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/materialToolbar"
-        style="@style/Widget.MaterialComponents.Toolbar.Primary"
+        style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
         android:background="@color/cast_expanded_controller_loading_indicator_color"
@@ -28,8 +28,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_back"
-        app:popupTheme="@android:style/Widget.Material.PopupMenu"
         app:subtitleTextAppearance="@style/TextAppearance.AppCompat.Large"
         app:title="@string/User_center_history_option"
         app:titleTextColor="@android:color/secondary_text_light" />

@@ -3,6 +3,7 @@ package per.funown.bocast.modules.user.fragment;
 import android.os.Bundle;
 import android.view.View.OnClickListener;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
@@ -42,6 +43,9 @@ public class UserCenterFragment extends Fragment {
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
     binding = FragmentUserCenterBinding.inflate(getLayoutInflater());
+
+    ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT);
+    binding.getRoot().setLayoutParams(lp);
     FragmentManager manager = getActivity().getSupportFragmentManager();
 
     binding.subscribed.setOnClickListener(

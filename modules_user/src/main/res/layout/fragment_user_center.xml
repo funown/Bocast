@@ -2,9 +2,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/UserCenter"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:id="@+id/UserCenter"
   android:background="#FFFFFF"
   tools:context=".fragment.UserCenterFragment">
   <androidx.constraintlayout.widget.ConstraintLayout
@@ -150,44 +150,44 @@
           app:layout_constraintTop_toTopOf="parent" />
       </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
-<!--    <TextView-->
-<!--      android:id="@+id/Username"-->
-<!--      android:textStyle="bold"-->
-<!--      android:layout_width="wrap_content"-->
-<!--      android:layout_height="wrap_content"-->
+    <!--    <TextView-->
+    <!--      android:id="@+id/Username"-->
+    <!--      android:textStyle="bold"-->
+    <!--      android:layout_width="wrap_content"-->
+    <!--      android:layout_height="wrap_content"-->
 
-<!--      android:layout_marginStart="16dp"-->
-<!--      android:fontFamily="@font/noto_sans"-->
-<!--      android:text="@string/test_title_cn"-->
-<!--      android:textAlignment="viewStart"-->
-<!--      android:textSize="18sp"-->
-<!--      app:layout_constraintStart_toEndOf="@+id/Avatar"-->
-<!--      app:layout_constraintTop_toTopOf="@+id/Avatar" />-->
-<!--    <TextView-->
-<!--      android:id="@+id/Login"-->
-<!--      android:textStyle="bold"-->
-<!--      android:layout_width="wrap_content"-->
-<!--      android:layout_height="wrap_content"-->
-<!--      android:layout_marginStart="16dp"-->
-<!--      android:clickable="true"-->
-<!--      android:fontFamily="@font/noto_sans"-->
-<!--      android:text="@string/Using_without_login"-->
-<!--      android:textAllCaps="true"-->
-<!--      android:textSize="18sp"-->
-<!--      android:visibility="gone"-->
-<!--      app:layout_constraintBottom_toBottomOf="@+id/Avatar"-->
-<!--      app:layout_constraintStart_toEndOf="@+id/Avatar"-->
-<!--      app:layout_constraintTop_toTopOf="@+id/Avatar" />-->
-<!--    <TextView-->
-<!--      android:id="@+id/textView4"-->
-<!--      android:textStyle="bold"-->
-<!--      android:layout_width="wrap_content"-->
-<!--      android:layout_height="wrap_content"-->
-<!--      android:fontFamily="@font/noto_sans"-->
-<!--      android:text="@string/test_email"-->
-<!--      android:textSize="16sp"-->
-<!--      app:layout_constraintBottom_toBottomOf="@+id/Avatar"-->
-<!--      app:layout_constraintStart_toStartOf="@+id/Username" />-->
+    <!--      android:layout_marginStart="16dp"-->
+    <!--      android:fontFamily="@font/noto_sans"-->
+    <!--      android:text="@string/test_title_cn"-->
+    <!--      android:textAlignment="viewStart"-->
+    <!--      android:textSize="18sp"-->
+    <!--      app:layout_constraintStart_toEndOf="@+id/Avatar"-->
+    <!--      app:layout_constraintTop_toTopOf="@+id/Avatar" />-->
+    <!--    <TextView-->
+    <!--      android:id="@+id/Login"-->
+    <!--      android:textStyle="bold"-->
+    <!--      android:layout_width="wrap_content"-->
+    <!--      android:layout_height="wrap_content"-->
+    <!--      android:layout_marginStart="16dp"-->
+    <!--      android:clickable="true"-->
+    <!--      android:fontFamily="@font/noto_sans"-->
+    <!--      android:text="@string/Using_without_login"-->
+    <!--      android:textAllCaps="true"-->
+    <!--      android:textSize="18sp"-->
+    <!--      android:visibility="gone"-->
+    <!--      app:layout_constraintBottom_toBottomOf="@+id/Avatar"-->
+    <!--      app:layout_constraintStart_toEndOf="@+id/Avatar"-->
+    <!--      app:layout_constraintTop_toTopOf="@+id/Avatar" />-->
+    <!--    <TextView-->
+    <!--      android:id="@+id/textView4"-->
+    <!--      android:textStyle="bold"-->
+    <!--      android:layout_width="wrap_content"-->
+    <!--      android:layout_height="wrap_content"-->
+    <!--      android:fontFamily="@font/noto_sans"-->
+    <!--      android:text="@string/test_email"-->
+    <!--      android:textSize="16sp"-->
+    <!--      app:layout_constraintBottom_toBottomOf="@+id/Avatar"-->
+    <!--      app:layout_constraintStart_toStartOf="@+id/Username" />-->
     <androidx.constraintlayout.widget.Guideline
       android:id="@+id/guideline4"
       android:layout_width="wrap_content"
@@ -212,14 +212,14 @@
       android:layout_height="wrap_content"
       android:orientation="vertical"
       app:layout_constraintGuide_end="16dp" />
-<!--    <de.hdodenhof.circleimageview.CircleImageView-->
-<!--      android:id="@+id/Avatar"-->
-<!--      android:layout_width="60dp"-->
-<!--      android:layout_height="60dp"-->
-<!--      android:layout_marginStart="32dp"-->
-<!--      android:src="@drawable/test_podcast_logo"-->
-<!--      app:layout_constraintBottom_toTopOf="@+id/guideline4"-->
-<!--      app:layout_constraintStart_toStartOf="@+id/guideline2"-->
-<!--      app:layout_constraintTop_toTopOf="@+id/guideline" />-->
+    <!--    <de.hdodenhof.circleimageview.CircleImageView-->
+    <!--      android:id="@+id/Avatar"-->
+    <!--      android:layout_width="60dp"-->
+    <!--      android:layout_height="60dp"-->
+    <!--      android:layout_marginStart="32dp"-->
+    <!--      android:src="@drawable/test_podcast_logo"-->
+    <!--      app:layout_constraintBottom_toTopOf="@+id/guideline4"-->
+    <!--      app:layout_constraintStart_toStartOf="@+id/guideline2"-->
+    <!--      app:layout_constraintTop_toTopOf="@+id/guideline" />-->
   </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -1,5 +1,6 @@
 package per.funown.bocast.library.entity;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import java.io.Serializable;
@@ -69,4 +70,14 @@ public class HistoryItem implements Serializable {
     this.id = id;
   }
 
+  @Override
+  public String toString() {
+    return "HistoryItem{" +
+        "id=" + id +
+        ", episodeId=" + episodeId +
+        ", percent=" + percent +
+        ", total=" + total +
+        ", date=" + date +
+        '}';
+  }
 }

@@ -1,6 +1,7 @@
 package per.funown.bocast.modules.user.fragment;
 
 import android.os.Bundle;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,6 +37,10 @@ public class SubscribedPodcastFragment extends Fragment {
       Bundle savedInstanceState) {
     viewModel = new ViewModelProvider(getActivity()).get(SubscribedViewModel.class);
     binding = FragmentSubscribedPodcastBinding.inflate(getLayoutInflater());
+
+    ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT);
+    binding.getRoot().setLayoutParams(lp);
+
     binding.getRoot().setClickable(true);
     adapter = new SubscribedPodcastCellAdapter();
     adapter.setViewModel(viewModel);

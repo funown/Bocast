@@ -34,6 +34,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Consumer;
+import per.funown.bocast.library.entity.HistoryItem;
 import per.funown.bocast.library.model.RssFeed;
 import per.funown.bocast.library.model.RssItem;
 import per.funown.bocast.library.service.MusicService;
@@ -79,6 +80,9 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
 
   }
 
+  /**
+   * 使播放器固定于界面底部
+   */
   @Override
   public void onResume() {
     super.onResume();
@@ -91,6 +95,7 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     layoutParams.bottomMargin = getNavigationBarHeight();
     viewGroup.addView(binding.getRoot(), layoutParams);
+    // 设置播放按钮状态
     if (service.getINSTANCE().getNowPlayingSongInfo() != null && service.getINSTANCE().isPlaying()) {
       Log.e(TAG, "playing 0.5");
       binding.btnPlayPause.setProgress(0.5f);
@@ -104,6 +109,7 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     Log.e(TAG, "on Create view...");
+    // 设置播放器的收缩扩展功能
     binding.playerContent.setVisibility(View.INVISIBLE);
     bottomSheetBehavior = BottomSheetBehavior.from(binding.mainContent);
     bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
@@ -129,6 +135,7 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
     PlayerControl instance = service.getINSTANCE();
     instance.addPlayerEventListener(this);
 
+    // 若已存在播放项目则初始化界面信息
     if (instance.getNowPlayingSongInfo() != null) {
       SongInfo songInfo = instance.getNowPlayingSongInfo();
       binding.EpisodeTitle.setText(songInfo.getSongName());
@@ -143,6 +150,7 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
       binding.trackbar.setProgress(0);
     }
 
+    // 创建播放进度监听
     TimerTaskManager timerTaskManager = service.getManager();
     timerTaskManager.setUpdateProgressTask(() -> {
       long position = instance.getPlayingPosition();
@@ -160,6 +168,8 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
       String time = convertTimeToString(position);
       binding.TrackStart.setText(time);
     });
+
+    // 设置播放按钮状态以及功能
     binding.btnPlayPause.setScaleType(ScaleType.CENTER_INSIDE);
     binding.barBtnPlay.setOnClickListener(v -> {
       if (instance.isPlaying()) {
@@ -186,6 +196,7 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
       binding.btnPlayPause.playAnimation();
     });
 
+    // 设置下一首功能
     binding.lavNext.setOnClickListener(v -> {
       PlayerControl instance12 = service.getINSTANCE();
       if (instance12.getPlayList().size() > 1) {
@@ -198,6 +209,7 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
       }
     });
 
+    // 设置上一首按钮功能
     binding.lavPrev.setOnClickListener(v -> {
       PlayerControl instance1 = service.getINSTANCE();
       if (instance1.getPlayList().size() > 1) {
@@ -210,6 +222,7 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
       }
     });
 
+    // 标题点击进入该分集详细信息
     binding.EpisodeTitle.setOnClickListener(v -> {
       SongInfo songInfo = instance.getNowPlayingSongInfo();
       if (songInfo != null) {
@@ -229,6 +242,8 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
         FragmentTransitionUtil.getINSTANCE().transit(todetail);
       }
     });
+
+    // 设置进度条拖动功能，使播放时间随拖动而变化
     binding.trackbar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
       @Override
       public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -248,8 +263,10 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
       }
     });
 
+    // 初始化下载按钮
     initDownloadButton(instance.getNowPlayingSongInfo());
 
+    // 设置播放列表
     binding.playlist.setOnClickListener(v -> EpisodeListDialogFragment.newInstance(getContext())
         .show(getActivity().getSupportFragmentManager(), "playlist"));
 
@@ -260,47 +277,65 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
     return binding.getRoot();
   }
 
+  /**
+   * 初始化下载按钮
+   * @param songInfo
+   */
   private void initDownloadButton(SongInfo songInfo) {
     Log.e(TAG, "initButton");
+    // 初始化状态
     binding.downloadProgress.setProgress(0);
     binding.downloadProgress.setVisibility(View.GONE);
     binding.btnDownload.setColorFilter(getContext().getColor(R.color.grey));
     binding.btnDownload.setImageDrawable(getContext().getDrawable(R.drawable.ic_download));
+    // 存在正在播放的项目则查询是否正在下载
     if (songInfo != null) {
       DownloadTask task = factory.getTask(songInfo.getSongUrl());
       DownloadEpisode downloadEpisode = viewModel
           .getDownloadEpisode(Long.valueOf(songInfo.getSongId()));
+      // 该分集处于下载状态
       if (downloadEpisode != null) {
+        // 下载已完成
         if (downloadEpisode.getStatus().equals(DownloadStatus.FINISHED.name())) {
           binding.btnDownload.setClickable(false);
           binding.btnDownload.setColorFilter(getContext().getColor(R.color.colorChecked));
           binding.btnDownload.setImageDrawable(getContext().getDrawable(R.drawable.ic_finish));
-        } else {
+        }
+        // 下载未完成
+        else {
+          // 存在该下载任务
           if (task != null) {
-            Log.e(TAG, "Not Finished -->" + downloadEpisode);
             binding.downloadProgress.setVisibility(View.VISIBLE);
             BreakpointInfo breakpointInfo = factory
                 .getBreakpointInfo(downloadEpisode.getUrl(), downloadEpisode.getFilename());
             DownloadEpisode item = (DownloadEpisode) task.getTag();
             binding.btnDownload.setColorFilter(getContext().getColor(R.color.colorChecked));
+
+            // 下载中
             if (item.getStatus().equals(DownloadStatus.DOWNLOADING)) {
               Log.e(TAG, "downloading -->" + downloadEpisode);
               binding.btnDownload.setImageDrawable(getContext().getDrawable(R.drawable.ic_pause));
-            } else {
+            }
+            // 下载暂停中
+            else {
               Log.e(TAG, "pause -->" + downloadEpisode);
               binding.btnDownload
                   .setImageDrawable(getContext().getDrawable(R.drawable.ic_arrow_down));
               binding.downloadProgress.setMax(breakpointInfo.getTotalLength());
               binding.downloadProgress.setProgress(breakpointInfo.getTotalOffset());
             }
+            // 创建新下载监听
             downloadListener = new BaseDownloadListener(item, getContext(),
                 binding.downloadProgress,
                 binding.btnDownload);
             factory.changeListener(task, downloadListener);
-          } else {
+          }
+          //未有对应下载任务则查找下载断点信息
+          else {
             Log.e(TAG, "history -->" + downloadEpisode);
             BreakpointInfo breakpointInfo = factory
                 .getBreakpointInfo(downloadEpisode.getUrl(), downloadEpisode.getFilename());
+            // 存在该断点
             if (breakpointInfo != null) {
               downloadEpisode.setOffset(breakpointInfo.getTotalOffset());
               downloadEpisode.setTotal(breakpointInfo.getTotalLength());
@@ -316,6 +351,7 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
       }
     }
 
+    // 实现下载
     binding.btnDownload.setOnClickListener(v -> {
       if (downloadListener != null) {
         String status = downloadListener.getItem().getStatus();
@@ -346,11 +382,13 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
     });
   }
 
+  // 转换时间
   public static String convertTimeToString(Long time) {
     DateTimeFormatter ftf = DateTimeFormatter.ofPattern("mm:ss");
     return ftf.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
   }
 
+  // 获取导航栏高度
   private int getNavigationBarHeight() {
     Resources resources = getActivity().getResources();
     int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
@@ -358,6 +396,10 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
     return height;
   }
 
+  /**
+   * 刷新播放器界面信息
+   * @param songInfo
+   */
   @Override
   public void onMusicSwitch(SongInfo songInfo) {
     binding.PodcastAuthor.setText(songInfo.getArtist());
@@ -367,6 +409,10 @@ public class PlayerFragment extends Fragment implements OnPlayerEventListener {
     binding.trackDuration.setText(convertTimeToString(songInfo.getDuration()));
     downloadListener = null;
     initDownloadButton(songInfo);
+    HistoryItem history = viewModel.getHistory(Long.valueOf(songInfo.getSongId()));
+    if (history != null) {
+     service.getINSTANCE().seekTo((long) history.getPercent());
+    }
   }
 
   @Override

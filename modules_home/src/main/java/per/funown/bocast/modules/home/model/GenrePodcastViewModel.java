@@ -34,6 +34,10 @@ public class GenrePodcastViewModel extends AndroidViewModel {
     return networkStatus;
   }
 
+  /**
+   * 设置播客列表以及加载状态
+   * @param genreId
+   */
   public void setPodcastList(
       String genreId) {
     genrePodcastDataSourceFactory = new GenrePodcastDataSourceFactory(

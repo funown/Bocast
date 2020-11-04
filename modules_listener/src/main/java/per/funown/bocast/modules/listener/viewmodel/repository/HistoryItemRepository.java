@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import per.funown.bocast.library.entity.HistoryItem;
 import per.funown.bocast.library.entity.dao.HistoryDatabase;
 import per.funown.bocast.library.entity.dao.HistoryItemDao;
@@ -30,6 +31,17 @@ public class HistoryItemRepository {
 
   public LiveData<List<HistoryItem>> getItems() {
     return dao.getAll();
+  }
+
+  public List<HistoryItem> getAllItems() {
+    try {
+      return new GetAllHistoryAsyncTask(dao).execute().get();
+    } catch (ExecutionException e) {
+      e.printStackTrace();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   public void addHistory(HistoryItem... items) {
@@ -115,6 +127,25 @@ public class HistoryItemRepository {
     protected Void doInBackground(Void... voids) {
       dao.deleteAll();
       return null;
+    }
+  }
+
+  static class GetAllHistoryAsyncTask extends AsyncTask<Void, Void, List<HistoryItem>> {
+
+    private HistoryItemDao dao;
+
+    public GetAllHistoryAsyncTask(HistoryItemDao dao) {
+      this.dao = dao;
+    }
+
+    @Override
+    protected List<HistoryItem> doInBackground(Void... voids) {
+      return dao.getAllHistory();
+    }
+
+    @Override
+    protected void onPostExecute(List<HistoryItem> historyItems) {
+      super.onPostExecute(historyItems);
     }
   }
 

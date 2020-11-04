@@ -11,7 +11,7 @@ import com.liulishuo.okdownload.core.dispatcher.DownloadDispatcher;
  * <pre>
  *     author : funown
  *     time   : 2020/03/26
- *     desc   :
+ *     desc   : 用于获取OkDownload实例
  *     version: 1.0
  * </pre>
  */

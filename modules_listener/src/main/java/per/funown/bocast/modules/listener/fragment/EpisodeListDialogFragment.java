@@ -156,7 +156,7 @@ public class EpisodeListDialogFragment extends BottomSheetDialogFragment {
       holder.title.setText(songInfo.getSongName());
       holder.author.setText(songInfo.getAlbumName());
       long min = songInfo.getDuration() / 60;
-      holder.duration.setText(String.valueOf(min) + " min");
+      holder.duration.setText(min + " min");
       holder.logo.setImageURI(songInfo.getSongCover());
       holder.btn_delete.setOnClickListener(new OnClickListener() {
         @Override

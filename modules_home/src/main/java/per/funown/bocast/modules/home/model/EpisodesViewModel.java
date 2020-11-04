@@ -46,22 +46,6 @@ public class EpisodesViewModel extends AndroidViewModel {
     return episodeRepository.getEpisodeByTitle(title);
   }
 
-  @SuppressLint("CheckResult")
-  public RssItem getCurrentEpisode(String Url, String guid) {
-    RssFeed rssFeed = RssCacheUtil.getFeed(Url);
-    RssFeed feed = rssFeed == null ? RssFetchUtils.fetchRss(Url) : rssFeed;
-    if (feed == null && feed.getChannel() == null && feed.getChannel().getItems() == null) {
-      return null;
-    }
-    feed.getChannel().getItems().forEach(item -> {
-      if (item.getGuid().getGuid().equals(guid)) {
-        currentEpisode = item;
-        return;
-      }
-    });
-    return currentEpisode;
-  }
-
   public String isDownloaded(long episodeId) {
     return downloadedEpisodeRepository.isDownloaded(episodeId);
   }

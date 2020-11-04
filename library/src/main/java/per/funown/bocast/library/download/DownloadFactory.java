@@ -28,7 +28,7 @@ import per.funown.bocast.library.repo.DownloadedEpisodeRepository;
  * <pre>
  *     author : funown
  *     time   : 2020/03/26
- *     desc   :
+ *     desc   : 下载工厂类
  *     version: 1.0
  * </pre>
  */
@@ -52,7 +52,7 @@ public class DownloadFactory {
       if (!parentDir.exists()) {
         parentDir.mkdir();
       }
-      INSTANCE = new DownloadFactory(context, parentDir);
+      INSTANCE = new DownloadFactory(context);
       repository = new DownloadedEpisodeRepository(context);
       LiveData<List<DownloadEpisode>> undownloadedEpisodes = repository.getUndownloadedEpisodes();
       if (undownloadedEpisodes.getValue() != null) {
@@ -71,7 +71,7 @@ public class DownloadFactory {
     return INSTANCE;
   }
 
-  private DownloadFactory(Context context, File parentDir) {
+  private DownloadFactory(Context context) {
     // TODO: remove this before release
     Util.enableConsoleLog();
     DownloadUtil.getINSTANCE(context);
@@ -82,6 +82,10 @@ public class DownloadFactory {
     return tasks.size();
   }
 
+  /**
+   * 获取下载路径
+   * @return
+   */
   public File getQueueDir() {
     return parentDir;
   }
@@ -90,6 +94,11 @@ public class DownloadFactory {
     return tasks;
   }
 
+  /**
+   * 根据下载链接获取任务
+   * @param url
+   * @return
+   */
   public DownloadTask getTask(String url) {
     for (DownloadTask task : tasks) {
       if (task.getUrl().equals(url)) {
@@ -99,11 +108,24 @@ public class DownloadFactory {
     return null;
   }
 
+  /**
+   * 获取下载任务断点信息
+   * @param url
+   * @param filename
+   * @return
+   */
   public BreakpointInfo getBreakpointInfo(@NonNull String url,
       @Nullable String filename) {
     return StatusUtil.getCurrentInfo(url, parentDir.getPath(), filename);
   }
 
+  /**
+   * 添加下载任务
+   * @param url
+   * @param filename
+   * @param episode
+   * @param listener
+   */
   public synchronized void addTask(String url, String filename, DownloadEpisode episode,
       DownloadListener listener) {
     DownloadTask task = new Builder(url, parentDir).setFilename(filename)
@@ -115,12 +137,22 @@ public class DownloadFactory {
     manager.enqueueTaskWithUnifiedListener(task, listener);
   }
 
+  /**
+   * 添加下载任务
+   * @param task
+   * @param listener
+   */
   public synchronized void addTask(DownloadTask task,
       DownloadListener listener) {
     tasks.add(task);
     manager.enqueueTaskWithUnifiedListener(task, listener);
   }
 
+  /**
+   * 更换下载监听
+   * @param task
+   * @param listener
+   */
   public void changeListener(DownloadTask task, DownloadListener listener) {
     manager.attachListener(task, listener);
   }
@@ -138,6 +170,11 @@ public class DownloadFactory {
     tasks.get(position).cancel();
   }
 
+  /**
+   * 停止下载
+   * @param task
+   * @param listener
+   */
   public void stop(DownloadTask task, BaseDownloadListener listener) {
     Log.i(TAG, "cancel..." + task.getUrl());
     manager.detachListener(task.getId());
@@ -147,6 +184,11 @@ public class DownloadFactory {
     listener.setItem(item);
   }
 
+  /**
+   * 重启下载
+   * @param url
+   * @param listener
+   */
   public void restart(String url, BaseDownloadListener listener) {
     DownloadTask task = getTask(url);
     DownloadEpisode downloadEpisode = repository.getDownloadEpisode(url);
@@ -164,6 +206,11 @@ public class DownloadFactory {
     }
   }
 
+  /**
+   * 移除下载任务以及文件
+   * @param position
+   * @param removeFile
+   */
   public void remove(int position, boolean removeFile) {
     DownloadTask task = tasks.remove(position);
     task.cancel();

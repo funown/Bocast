@@ -35,8 +35,6 @@ public class PodcastViewModel extends AndroidViewModel {
   private PodcastRepository podcastRepository;
   private GenreRepository genreRepository;
 
-  private boolean needToScrollToTop = true;
-
   private int totalPage = 1;
   private int currentPage = 1;
   private MutableLiveData<NetworkState> networkState;
@@ -57,10 +55,6 @@ public class PodcastViewModel extends AndroidViewModel {
     networkState = new MutableLiveData<>(podcastRepository.getNetworkState());
   }
 
-  public LiveData<NetworkState> getNetworkState() {
-    return networkState;
-  }
-
   public LiveData<List<Genre>> getGenres() {
     return genreRepository.getGenres();
   }
@@ -69,13 +63,6 @@ public class PodcastViewModel extends AndroidViewModel {
     return topPodcasts;
   }
 
-  public boolean isNeedToScrollToTop() {
-    return needToScrollToTop;
-  }
-
-  public void setNeedToScrollToTop(boolean needToScrollToTop) {
-    this.needToScrollToTop = needToScrollToTop;
-  }
 
   public Map<String, Genre> getMapGenres() {
     List<Genre> genres = genreRepository.getAll();
@@ -116,7 +103,6 @@ public class PodcastViewModel extends AndroidViewModel {
       totalPage = genreList.size() / PAGE_SIZE;
       networkState = new MutableLiveData<>(podcastRepository.getNetworkState());
       topPodcasts = podcastRepository.getTopPodcasts();
-      needToScrollToTop = true;
       fetchTopPodcasts();
     }
   }

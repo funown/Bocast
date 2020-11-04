@@ -1,6 +1,7 @@
 package per.funown.bocast.modules.user.fragment;
 
 import android.os.Bundle;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +44,10 @@ public class HistoryFragment extends Fragment {
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
+
+    ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT);
+    binding.getRoot().setLayoutParams(lp);
+
     binding.getRoot().setClickable(true);
     historyCellAdapter = new HistoryCellAdapter(getContext(), onStartDragListener,
         binding.historyItems, historyViewModel);

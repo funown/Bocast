@@ -29,7 +29,7 @@ import per.funown.bocast.library.repo.DownloadedEpisodeRepository;
  * <pre>
  *     author : funown
  *     time   : 2020/03/28
- *     desc   :
+ *     desc   : 下载监听
  *     version: 1.0
  * </pre>
  */
@@ -87,6 +87,7 @@ public class BaseDownloadListener extends DownloadListener4WithSpeed {
     Log.i(TAG, String
         .format("[%s] : %s Start Downloading, Priority: %d", task.getId(), task.getFilename(),
             task.getPriority()));
+    // 改变下载按钮以及进度条状态
     btn_download.setImageDrawable(context.getDrawable(R.drawable.ic_pause));
     progressBar.setVisibility(View.VISIBLE);
     int checkColor = context.getColor(R.color.colorChecked);
@@ -104,6 +105,13 @@ public class BaseDownloadListener extends DownloadListener4WithSpeed {
       @NonNull Map<String, List<String>> responseHeaderFields) {
   }
 
+  /**
+   * 设置下载信息
+   * @param task
+   * @param info
+   * @param fromBreakpoint
+   * @param model
+   */
   @Override
   public void infoReady(@NonNull DownloadTask task, @NonNull BreakpointInfo info,
       boolean fromBreakpoint, @NonNull Listener4SpeedModel model) {
@@ -121,6 +129,12 @@ public class BaseDownloadListener extends DownloadListener4WithSpeed {
       @NonNull SpeedCalculator blockSpeed) {
   }
 
+  /**
+   * 实时调整进度条进度
+   * @param task
+   * @param currentOffset
+   * @param taskSpeed
+   */
   @Override
   public void progress(@NonNull DownloadTask task, long currentOffset,
       @NonNull SpeedCalculator taskSpeed) {
@@ -146,18 +160,21 @@ public class BaseDownloadListener extends DownloadListener4WithSpeed {
       @Nullable Exception realCause, @NonNull SpeedCalculator taskSpeed) {
     Log.e(TAG, String.format("[%s] : Task end - cause: %s - %s", task.getId(), cause.name(),
         (realCause != null ? realCause.getMessage() : "Null Exception")));
-    // deal end cause
+    // 处理下载完成
     if (cause.equals(EndCause.COMPLETED)) {
       item.setStatus(DownloadStatus.FINISHED);
       progressBar.setVisibility(View.GONE);
       btn_download.setImageDrawable(context.getDrawable(R.drawable.ic_finish));
       btn_download.setClickable(false);
       progressBar = null;
-    } else {
+    }
+    // 下载停止
+    else {
       item.setStatus(DownloadStatus.PAUSE);
       item.setOffset((long) progressBar.getProgress());
       btn_download.setImageDrawable(context.getDrawable(R.drawable.ic_arrow_down));
     }
+    // 将该任务信息存入数据库
     repository.addDownload(item);
   }
 }

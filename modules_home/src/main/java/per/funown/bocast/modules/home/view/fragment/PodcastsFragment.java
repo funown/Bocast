@@ -14,7 +14,6 @@ import com.alibaba.android.arouter.facade.annotation.Autowired;
 import com.alibaba.android.arouter.facade.annotation.Route;
 import com.alibaba.android.arouter.launcher.ARouter;
 import per.funown.bocast.library.constant.ArouterConstant;
-import per.funown.bocast.modules.home.callback.DiffCallBack;
 import per.funown.bocast.modules.home.databinding.FragmentPodcastsBinding;
 import per.funown.bocast.modules.home.model.GenrePodcastViewModel;
 import per.funown.bocast.modules.home.view.adapter.PodcastPageListAdapter;
@@ -60,6 +59,7 @@ public class PodcastsFragment extends Fragment {
     binding.list.setLayoutManager(layoutManager);
     binding.list.setAdapter(adapter);
 
+    // 加载播客
     viewModel.getPodcastList().observe(getViewLifecycleOwner(), itunesResponseEntities -> {
       adapter.submitList(itunesResponseEntities);
       adapter.notifyDataSetChanged();
